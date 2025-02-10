@@ -108,7 +108,7 @@
         <StatusBar Name="sbar" DockPanel.Dock="Bottom"
                VerticalAlignment="Bottom" Background="White">
             <StatusBarItem>
-                <TextBlock>Downloading</TextBlock>
+                <TextBlock>Download Status: </TextBlock>
             </StatusBarItem>
             <StatusBarItem>
                 <ProgressBar Width="100" Height="20" Name="progbar"
@@ -117,7 +117,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock Name="StatusMessageDisplay">Online</TextBlock>
+                <TextBlock Name="StatusMessageDisplay">Ready to download</TextBlock>
             </StatusBarItem>
         </StatusBar>
     </DockPanel>

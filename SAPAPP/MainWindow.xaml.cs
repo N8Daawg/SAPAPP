@@ -27,12 +27,14 @@ namespace SAPAPP
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             progbar.IsIndeterminate = true;
+            StatusMessageDisplay.Text = "Starting Download";
 
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             progbar.IsIndeterminate = false;
+            StatusMessageDisplay.Text = "Download Canceled";
         }
     }
 }
