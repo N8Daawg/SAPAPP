@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SAPAPP"
         mc:Ignorable="d"
-        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center" WindowStyle="SingleBorderWindow"  Background="Yellow">
+        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center" WindowStyle="SingleBorderWindow"  Background="Yellow"
+        ContentRendered="Window_ContentRendered">
+        
 
     <DockPanel>
         <Menu DockPanel.Dock="Top" VerticalAlignment="Top">
@@ -39,15 +41,8 @@
 
                         <ComboBox x:Name="ProductPicker" DockPanel.Dock="Top" 
                               VerticalAlignment="Top" HorizontalAlignment="Left" 
-                              Width="360" Height="24" 
-                              IsSynchronizedWithCurrentItem="True" SelectedIndex="0">
-
-                            <ComboBoxItem Content="Procuct 1"/>
-                            <ComboBoxItem Content="Procuct 2"/>
-                            <ComboBoxItem Content="Procuct 3"/>
-                            <ComboBoxItem Content="Procuct 4"/>
-                            <ComboBoxItem Content="Procuct 5"/>
-                        </ComboBox>
+                              Width="360" Height="24" ItemsSource="{StaticResource ProductsList}"
+                              IsSynchronizedWithCurrentItem="True" SelectedIndex="0"/>
                     </DockPanel>
 
                     <DockPanel Margin="40,36,0,0" Width="360"
@@ -59,24 +54,16 @@
 
                         <ComboBox x:Name="PCBPicker" DockPanel.Dock="Top" 
                               VerticalAlignment="Top" HorizontalAlignment="Left" 
-                              Width="360" Height="24" 
-                              SelectedIndex="0" IsSynchronizedWithCurrentItem="True">
-
-                            <ComboBoxItem Content="PCB 1"/>
-                            <ComboBoxItem Content="PCB 2"/>
-                            <ComboBoxItem Content="PCB 3"/>
-                            <ComboBoxItem Content="PCB 4"/>
-                            <ComboBoxItem Content="PCB 5"/>
-                        </ComboBox>
+                              Width="360" Height="24" ItemsSource="{StaticResource PCBList}"
+                              SelectedIndex="0" IsSynchronizedWithCurrentItem="True"/>
                     </DockPanel>
 
                     <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left" 
                            Width="360" Margin="40,20,0,0">
-
                         <Border Margin="31,6,0,6" BorderThickness="1" CornerRadius="4" 
                              HorizontalAlignment="Left" VerticalAlignment="Top"
                             DockPanel.Dock="Left" BorderBrush="Black" Background="Red">
-
+                            
                             <Button x:Name="StopButton" Content="Stop" 
                                 HorizontalAlignment="Center" VerticalAlignment="Center"
                                 Margin="1" FontSize="36" Width="100" 
@@ -113,6 +100,18 @@
             <StatusBarItem>
                 <ProgressBar Width="100" Height="20" Name="progbar"
                          Minimum="0" Maximum="100" IsIndeterminate="False" >
+                    <ProgressBar.Triggers>
+                        <EventTrigger RoutedEvent="ProgressBar.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="progbar"
+                                        Storyboard.TargetProperty="Value"
+                                        From="0" To="100" Duration="0:0:5"  />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ProgressBar.Triggers>
                 </ProgressBar>
             </StatusBarItem>
             <Separator/>
