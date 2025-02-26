@@ -1,0 +1,1 @@
+%windir%\system32\certutil -addstore -f "TrustedPublisher" "USB_CDC_CERT.p7b"

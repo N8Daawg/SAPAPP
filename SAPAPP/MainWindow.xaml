@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SAPAPP"
         mc:Ignorable="d"
-        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center" WindowStyle="SingleBorderWindow"  Background="Yellow"
-        ContentRendered="Window_ContentRendered">
+        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center" WindowStyle="SingleBorderWindow"  Background="Yellow">
         
 
     <DockPanel>

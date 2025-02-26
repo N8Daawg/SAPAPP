@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trace Data File</title>
+<script src="components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="components-dbgtrc/ti-tdf/ti-tdf.html">
+<style>
+    body {
+      margin: 0px;
+      padding: 0px;
+    }
+    .top {
+      height: 100vh;
+    }
+    html {
+      --ti-primary-color: #115566;
+    }
+</style>
+<link rel="import" href="components-dbgtrc/ti-dbgtrc-styles/ti-dbgtrc-vaadin-trace-table-styles.html">
+</head>
+<body class="lightgray-theme" unresolved>
+  <div class="top">
+      <ti-tdf id="tdf"></ti-tdf>
+  </div>
+</body>
+</html>
