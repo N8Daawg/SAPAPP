@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../components/ti-widget-common/ti-widget-droplist.html">
+<link rel="import" href="../components/ti-widget-common/ti-widget-container.html">
+<link rel="import" href="../components/iron-validator-behavior/iron-validator-behavior.html">
+<link rel="import" href="../components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../components/paper-input/paper-input-error.html">
+<link rel="import" href="../components/paper-input/paper-input.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-model/ti-trace-model.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-progress.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-common-style.html">
+</head>
+
+<body class="ti-theme" unresolved>
+    <dom-module id="my-validator">
+        <script>
+            Polymer({
+                is: 'ti-trace-swo-validator',
+
+                behaviors: [
+                  Polymer.IronValidatorBehavior
+                ],
+
+                validate: function(value){
+                    if (value == "" || value == "0")
+                        return false;
+                    return true;
+                }
+          });
+          </script>
+    </dom-module>
+
+    <dom-module id='ti-trace-swo-receiver'>
+        <template>
+            <style include="ti-trace-common-style"> </style>
+            <style>
+                html {
+                    margin: 0px;
+                    padding: 0px;
+                }
+                body {
+                    padding: 0px;
+                    margin: 0;
+                    border: 0;
+                }
+                table {
+                    font-size: 12px;
+                    padding: 0px;
+                    margin: 0px;
+                }
+                td {
+                    text-align: left;
+                    padding: 1px;
+                    padding-left: 16px;
+                }
+                paper-input {
+                    --paper-input-container-label:  {
+                      font-size: 12px;
+                  };
+                  --paper-input-container-input:  {
+                      font-size: 12px;
+                  };
+                }
+                
+            </style>
+
+            <paper-card heading="">
+                <div id="title" class="title">
+                    <paper-icon-button id="expandButton" slot="top" icon="expand-more" on-click="_toggle"></paper-icon-button>
+                    Export Interface Configuration
+                </div>
+                <iron-collapse id="collapse">
+                    <div id="desc" class="desc">
+                        The data is exported over Serial Wire Output interface(SWO). Configure the SWO properties for UART mode.
+                    </div>
+                    <div id="params" class="params">
+                        <table>
+                            <tr>
+                                <td>
+                                    COM Port:
+                                </td>
+                                <td>
+                                    <ti-widget-droplist labels="{{comList}}" selected-text="{{comPort}}" on-value-changed="_comValueChanged"></ti-widget-droplist>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    System Clock:
+                                </td>
+                                <td>
+                                    <paper-checkbox label="Auto detect" checked="{{autoSystemClock}}" on-checked-changed="_autoSystemClockChanged"></paper-checkbox>
+                                </td>
+                                <td>
+                                    <ti-trace-swo-validator></ti-trace-swo-validator>
+                                    <paper-input id="input_clock" disabled="{{autoSystemClock}}" label="Enter Frequency in Hz..." value={{systemClockValue}} on-value-changed="_systemClockValueChanged" allowed-pattern="[0-9]" error-message="[[errMsgClock]]" validator="ti-trace-swo-validator"></paper-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Prescalar:
+                                </td>
+                                <td>
+                                    <paper-checkbox label="Auto configure" checked={{autoPrecalar}} on-checked-changed="_autoPrescalarChanged"></paper-checkbox>
+                                </td>
+                                <td>
+                                    <ti-trace-swo-validator></ti-trace-swo-validator>
+                                    <paper-input id="input_prescalar" disabled={{autoPrecalar}} label="Enter Prescalar..." value={{prescalarValue}} on-value-changed="_prescalarValueChanged" allowed-pattern="[0-9]" error-message="[[errMsgPrescaler]]" validator="ti-trace-swo-validator"></paper-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Runtime Decode:
+                                </td>
+                                <td>
+                                    <paper-checkbox label="Runtime Decode" checked={{runtimeDecode}}></paper-checkbox>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </iron-collapse>
+            </paper-card>
+
+        </template>
+
+        <script>
+            Polymer({
+                is : 'ti-trace-swo-receiver',
+                properties : {
+                    config : {
+                        type: Array,
+                        value: (function(){
+                            return [
+                                {
+                                    name: "Receiver Settings",
+                                    sub_properties: [
+                                        {
+                                            name: "Receiver",
+                                            type: "String",
+                                            value: "SWO Trace",
+                                            sub_properties: [
+                                                {name: "Encoding Type", type: "String", value: "UART"},
+                                                {name: "COM Port", type: "String", value: "", allowed_values: []},
+                                                {name: "System Clock", type: "String", value: "Auto"},
+                                                {name: "(Frequency in Hz)", type: "String", value: ""},
+                                                {name: "Prescalar", type: "String", value: "Auto"},
+                                                {name: "", type: "String", value: ""},
+                                                {name: "Formatter", type: "Boolean", value: false},
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ];
+                        }),
+                        notify: true,
+                        reflectToAttribute: true,
+                        observer: "_swoConfigChanged",
+                    },
+
+                    autoPrecalar: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    autoSystemClock: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    systemClockValue: {
+                        type: String,
+                        value: "0",
+                        notify: true,
+                    },
+
+                    prescalarValue: {
+                        type: String,
+                        value: "0",
+                        notify: true,
+                    },
+
+                    comList: {
+                        notify: true,
+                        reflectToAttribute: true,
+                        type: Array,
+                        value: [],
+                    },
+
+                    comPort: {
+                        type: String,
+                        value: "",
+                        notify: true,
+                        reflectToAttribute: true,
+                        observer: "_comValueChanged",
+                    },
+
+                    runtimeDecode: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                    },
+                    errMsgClock : {
+                        type: String,
+                        value : "",
+                    },
+
+                    errMsgPrescaler : {
+                        type: String,
+                        value : "",
+                    },
+                    setupError : {
+                        notify: true,
+                        type: Boolean,
+                    },
+                    setupErrMsg : {
+                        notify: true,
+                        type: String,
+                    },
+                    formatter : {
+                        notify: true,
+                        type: Boolean,
+                        value: false,
+                    },
+                },
+
+                _autoPrescalarChanged: function(evt) {
+                    if (evt.detail.value) {
+                        this.config[0].sub_properties[0].sub_properties[4].value = "Auto";
+                    }
+                    else {
+                        this.config[0].sub_properties[0].sub_properties[4].value = "Manual";
+                    }
+                },
+
+                _autoSystemClockChanged: function(evt) {
+                    if (evt.detail.value) {
+                        this.config[0].sub_properties[0].sub_properties[2].value = "Auto";
+                    }
+                    else {
+                        this.config[0].sub_properties[0].sub_properties[2].value = "Manual";
+                    }
+                },
+
+                _systemClockValueChanged: function(evt) {
+                    this.config[0].sub_properties[0].sub_properties[3].value = evt.detail.value;
+                    // Check valid system clock value for manual config
+                    if (!this.autoSystemClock)
+                    {
+                        if (!this.$.input_clock.validate())
+                        {
+                            this.errMsgClock = "Invalid Value";
+                            this.$.collapse.opened = true;
+                            this.setupError = true;
+                            this.setupErrMsg = "Please resolve Export Interface configuration errors";
+                        }
+                    }
+                },
+
+                _prescalarValueChanged: function(evt) {
+                    this.config[0].sub_properties[0].sub_properties[5].value = evt.detail.value;
+                    // Check valid prescalar value for manual config
+                    if (!this.autoPrecalar)
+                    {
+                        if (!this.$.input_prescalar.validate())
+                        {
+                            this.errMsgPrescaler = "Invalid Value";
+                            this.$.collapse.opened = true;
+                            this.setupError = true;
+                            this.setupErrMsg = "Please resolve Export Interface configuration errors";
+                        }
+                    }
+                },
+
+                _icon: function(expanded)
+                {
+                    return expanded ? 'expand-less' : 'expand-more';
+                },
+
+                _toggle: function(evt) {
+                    this.$.collapse.toggle();
+                    this.$.expandButton.setAttribute('aria-expanded', this.$.collapse.opened);
+                    this.$.expandButton.icon = this._icon(this.$.collapse.opened);
+                },
+
+                ready : function () {
+                    this.config[0].sub_properties[0].sub_properties[3].value = this.systemClockValue;
+                    this.config[0].sub_properties[0].sub_properties[5].value = this.prescalarValue;
+                },
+
+                _swoConfigChanged : function() {
+                    // Com Port List
+                    var comlist = this.config[0].sub_properties[0].sub_properties[1].allowed_values;
+                    comlist.shift(); // remove first element as it is an empty string
+                    this.comList = comlist;
+                    this.comPort = this.comList[0];
+                    // System Clock setting
+                    if ("Manual" == this.config[0].sub_properties[0].sub_properties[2].value)
+                    {
+                        this.autoSystemClock = false;
+                    }
+                    else {
+                        this.autoSystemClock = true;
+                    }
+                    this.systemClockValue = this.config[0].sub_properties[0].sub_properties[3].value;
+
+                    // Prescalar
+                    if ("Manual" == this.config[0].sub_properties[0].sub_properties[4].value)
+                    {
+                        this.autoPrecalar = false;
+                    }
+                    else {
+                        this.autoPrecalar = true;
+                    }
+                    this.prescalarValue = this.config[0].sub_properties[0].sub_properties[5].value;
+                },
+
+                _comValueChanged: function(value) {
+                    this.config[0].sub_properties[0].sub_properties[1].value = value;
+                },
+
+            });
+        </script>
+    </dom-module>
+</body>
+
+</html>

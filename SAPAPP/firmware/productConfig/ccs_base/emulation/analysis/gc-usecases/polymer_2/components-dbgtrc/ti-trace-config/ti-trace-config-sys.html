@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2019-2020, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-icon/iron-icon.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-button.html">
+<link rel="import" href="../ti-trace-config/ti-trace-config-cpt2.html">
+<link rel="import" href="../ti-trace-config/ti-trace-config-dma-ringacc.html">
+<link rel="import" href="../ti-trace-config/ti-trace-receivers.html">
+<link rel="import" href="../ti-trace-config/ti-dbgtrc-config-dialog.html">
+
+<!-- 
+'ti-profile-config'
+
+Page that provide configuration for setting up ETM trace for profiling
+-->
+
+<dom-module id="ti-trace-config-sys">
+    <template>
+        <style>
+            hr {
+                margin-left: 0.5em;
+                margin-right: 0.5em;
+            }
+            ti-dbgtrc-config-dialog {
+                padding-bottom: 5em;
+            }
+            .config {
+                padding: 0px;
+            }
+        </style>
+        <ti-dbgtrc-config-dialog id="configDlg" header-text="[[headerText]]" on-opened-changed="_openedChanged" no-cancel="[[noCancel]]">
+            <slot name="above"></slot>
+            <template is="dom-if" if="[[_isEqualTo(sysTraceType, 'dmaringacc')]]">
+                <ti-trace-config-dma-ringacc id="dmaRingAccConfig"
+                    class="config"
+                    ta="[[ta]]"
+                    working-aet-prop-trees="{{workingAetPropTrees}}"
+                    sub-system-selected="{{subSystemSelected}}"
+                    info-dlg-message="{{infoDlgMessage}}"
+                    debugger-enabled-trace="{{debuggerEnabledTrace}}">
+                </ti-trace-config-dma-ringacc>
+            </template>
+            <template is="dom-if" if="[[_isEqualTo(sysTraceType, 'cpt2')]]">
+                <ti-trace-config-cpt2 id="cpt2Config"
+                    class="config"
+                    ta="[[ta]]"
+                    working-aet-prop-trees="{{workingAetPropTrees}}"
+                    sub-system-selected="{{subSystemSelected}}"
+                    info-dlg-message="{{infoDlgMessage}}"
+                    debugger-enabled-trace="{{debuggerEnabledTrace}}">
+                </ti-trace-config-cpt2>
+            </template>
+            <ti-trace-receivers id="receiver" class="config" probe="[[deviceInfo.name]]" 
+                receiver-array="[[_receiverArray]]" receiver-selected="{{_receiverSelected}}"
+                buffer-type="{{_bufferType}}" pin-array="[[_pinArray]]" pin-selected="{{_pinSelected}}"
+                buffer-size-array="[[_bufferSizeArray]]" buffer-size-selected="{{_bufferSizeSelected}}"
+                sync-halt-cores="[[syncHaltCores]]" sync-halt-core="{{syncHaltCore}}">
+            </ti-trace-receivers>
+            <slot></slot>
+        </ti-dbgtrc-config-dialog>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-trace-config-sys',
+            properties: {
+                headerText : {
+                    type: String,
+                    value: "",
+                },
+                outFile : {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: undefined
+                },
+                ta : {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: undefined
+                },
+                noCancel : {
+                    type: Boolean,
+                    value: false
+                },
+                deviceInfo : {
+                    type: Object,
+                    value: undefined
+                },
+                traceRoutes : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                },
+                traceRoute: {
+                    type: Object,
+                    value: undefined,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                _receiverArray : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+                _receiverSelected : {
+                    type: Number,
+                    value: undefined,
+                    observer: "_receiverSelectedChanged"
+                },
+                _pinArray : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+                _pinSelected : {
+                    type: Number,
+                    value: undefined,
+                },
+                _bufferSizeArray : {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                _bufferSizeSelected : {
+                    type: Number,
+                    value: undefined,
+                },
+                core : {
+                    type: String,
+                    value: undefined
+                },
+                _traceOn : {
+                    type: Boolean,
+                    value: undefined
+                },
+                _bufferType : {
+                    type: String,
+                    value: undefined,
+                },
+                aetPropertyTrees: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                workingAetPropTrees: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                receiverPropertyTree : {
+                    type: Object,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                settingsSummary: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    reflectToAttribute: true,
+                    notify: true,
+                },
+                getSysTraceCore: {
+                    type: Object,
+                    notify: true
+                },
+                sysTraceType: {
+                    type: String,
+                    notify: true,
+                    value: 'none'
+                },
+                subSystemSelected: {
+                    type: Number,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                infoDlgMessage : {
+                    type: Array,
+                    value: function () {return [];},
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                debuggerEnabledTrace: {
+                    type: Boolean,
+                    value: true,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                syncHaltCores: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                syncHaltCore: {
+                    type: String,
+                    value: "",
+                    notify: true,
+                    reflectToAttribute: true
+                }
+            },
+            observers: ["_traceRoutesChanged(traceRoutes.splices)"],
+            ready: function()
+            {
+                var indx = window.location.href.indexOf('?');
+                if (indx >= 0) {
+                    var params = window.location.href.substr(indx+1).split('&').map(p => {
+                        var tmp = p.split("=");
+                        return {name : tmp[0], value: tmp[1]};
+                    });
+                    
+                    var item = params.find(x => x.name === "traceArchType");
+
+                    if (item !== undefined) {
+                        this._traceArch = item.value;
+                    }
+                }
+            },
+            open : function()
+            {
+                this.$.configDlg.open();
+            },
+            close : function ()
+            {
+                this.$.configDlg.close();
+            },
+            toggle : function ()
+            {
+                this.$.configDlg.toggle();
+            },
+            _traceRoutesChanged: function () {
+                this._traceRouteOk = (this.traceRoutes !== undefined) && (this.traceRoutes.length > 0);
+                if (this._traceRouteOk) {
+                    var rcvList = this.traceRoutes[0].receiver;
+                    this._receiverArray = [this.traceRoutes[0].receiver];
+                    for (var i = 1; i < this.traceRoutes.length; i++) {
+                            rcvList += "," + this.traceRoutes[i].receiver;
+                            this._receiverArray.push(this.traceRoutes[i].receiver);
+                        }
+                    this._receiverList = rcvList;
+                    this._receiverSelected = this._receiverArray.indexOf("ETB");
+                    if (this._receiverSelected < 0) {
+                        this._receiverSelected = 0;
+                    }
+                } else {
+                    this._receiverList = "";
+                    this._receiverSelected = undefined;
+                    this._receiverArray = [];
+                }
+            },
+            _receiverSelectedChanged: function (val) {
+                if (val != undefined) {
+                    this.traceRoute = this.traceRoutes.find(r => r.receiver === this._receiverArray[val]);
+                }
+            },
+            _getTreeProperty: function (prop, names)
+            {
+                if (names.length === 0) return prop;
+
+                el = prop.find(function (el) {
+                    return el.name === names[0];
+                });
+                if (el === undefined) return undefined;
+
+                if (names.length === 1) return el;
+
+                return this._getTreeProperty(el.sub_properties, names.slice(1));
+            },
+            _getReceiverProperties: function() {
+                
+                var traceCpu = this.getSysTraceCore();
+                var _self = this;
+                if (this.deviceInfo.name.includes("XDSPRO")) {
+                    var proOp = undefined;
+                    this.ta.cloudTrace.createOperation(traceCpu,"Trace").then(function (ret) {
+                        proOp = ret.handle;
+                        return _self.ta.cloudTrace.getProperties(proOp);
+                    }).then(function (ret) {
+                        var props = ret.cfg;
+                        props[0].sub_properties[0].value = "Pro Trace";
+                        return _self.ta.cloudTrace.setProperties(proOp, props);
+                    }).then(function () {
+                        return _self.ta.cloudTrace.getProperties(proOp);
+                    }).then(function (ret) {
+                        var props = ret.cfg[0].sub_properties[0].sub_properties;
+                        var pins = props.find( el => (el.name === "Pins"));
+                        var buffs = props.find( el => (el.name === "Buffer size"));
+                        _self._pinArray = pins.allowed_values;
+                        _self._pinList = pins.allowed_values.toString();
+                        _self._pinSelected = pins.allowed_values.indexOf(pins.value);
+                        _self._bufferSizeList = buffs.allowed_values.toString();
+                        _self._bufferSizeArray = buffs.allowed_values;
+                        _self._bufferSizeSelected = buffs.allowed_values.indexOf(buffs.value);
+                    }).finally(function () {
+                        if (proOp !== undefined) {
+                            _self.ta.cloudTrace.releaseOperation(proOp);
+                        }
+                    });
+                } else {
+                    this._pinList = "";
+                    this._pinArray = [];
+                    this._pinSelected = undefined;
+                    this._bufferSizeArray = [];
+                    this._bufferSelected = undefined;
+                    this._bufferSizeList = "";
+                }
+                
+                var aetOp = undefined;
+                var traceOp = undefined;
+                var aetProps = undefined;
+                var traceProps = undefined;
+                var ops = [];
+                ops.push(this.ta.cloudTrace.createOperation(traceCpu,"AET"));
+                ops.push(this.ta.cloudTrace.createOperation(traceCpu,"Trace"));
+                Q.all([this.ta.cloudTrace.createOperation(traceCpu,"AET"), this.ta.cloudTrace.createOperation(traceCpu,"Trace")]).then(function (ret) {
+                    aetOp = ret[0].handle;
+                    traceOp = ret[1].handle;
+                    return Q.all([_self.ta.cloudTrace.getProperties(aetOp),_self.ta.cloudTrace.getProperties(traceOp)]);
+                }).then(function (ret) {
+                    aetProps = ret[0].cfg;
+                    traceProps = ret[1].cfg;
+                    aetProps[0].value = "Trace";
+                    aetProps[0].sub_properties[0].value = "NAVSS Trace";
+                    return _self.ta.cloudTrace.setProperties(aetOp, aetProps);
+                }).then(function (ret) {
+                    return _self.ta.cloudTrace.getProperties(aetOp);
+                }).then(function (ret) {
+                    var aetProps = ret.cfg;
+                    var promises = [];
+
+                    aetProps[0].sub_properties[0].sub_properties[0].allowed_values.forEach(function(domain) {
+                        var tempAetProps = aetProps;
+                        tempAetProps[0].sub_properties[0].sub_properties[0].value = domain;
+                        promises.push(_self.ta.cloudTrace.setProperties(aetOp, tempAetProps));
+                        promises.push(_self.ta.cloudTrace.getProperties(aetOp));
+                    });
+                    return Q.all(promises);
+                }).then(function (ret) {
+                    
+                    var workingAetPropTrees = [];
+
+                    for (var i = 1; i < ret.length; i += 2) {
+                        //console.log(JSON.stringify(ret[i], null, 2));
+                        var tree = ret[i].cfg;
+
+                        // Set defaults. TODO: For some reason the default XML values are not being picked up in property tree.
+                        
+                        // Debugger enabled trace
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].value = true;
+                        // All rings
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[1].value = true;
+                        // Ring number
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[2].value = 0;
+                        // Message data
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[3].value = true;
+                        // Overflow ring
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[4].value = 1023;
+                        // Event ring
+                        tree[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[0].sub_properties[5].value = 1024;
+
+                        workingAetPropTrees.push(tree);
+                    }
+
+                    _self.workingAetPropTrees = workingAetPropTrees;
+
+                }).finally(function () {
+                    if (aetOp !== undefined) {
+                        _self.ta.cloudTrace.releaseOperation(aetOp);
+                    }
+                    if (traceOp !== undefined) {
+                        _self.ta.cloudTrace.releaseOperation(traceOp);
+                    }
+                });
+            },
+            _openedChanged: function()
+            {
+                if (!this.$.configDlg.opened) {
+                    if (this.$.configDlg.closingReason === "confirmed") {
+
+                        if (((this.$.filters !== undefined) && (this.$.filters.hasErrors)) || 
+                            ((this.$.triggers !== undefined) && (this.$.triggers.hasErrors)) || this.$.receiver.hasErrors || !this._traceRouteOk) {
+                            this.toggle();
+                        } else {
+                            var i;
+                            var propertyTrees = [];
+                            var settings = [];
+
+                            propertyTrees.push(new this.SysProperties(this.workingAetPropTrees, this.subSystemSelected, this.syncHaltCores[this.syncHaltCore]));
+
+                            var aggrNameFull = this.deviceInfo.name + '/' + this.workingAetPropTrees[this.subSystemSelected][0].sub_properties[0].sub_properties[0].sub_properties[0].name;
+
+                            var isCircular = (this._bufferType === "Circular");
+                            var config = {
+                                type: this._receiverArray[this._receiverSelected],
+                                pins: this._pinArray[this._pinSelected],
+                                size: this._bufferSizeArray[this._bufferSizeSelected],
+                                circular: isCircular
+                            };
+                            this.traceRoute = this.traceRoutes.find(r => r.source === aggrNameFull);
+                            this.receiverPropertyTree = new this.SysReceiverProperties(config);
+                            this.settingsSummary = settings;
+                            // generate notification
+                            this.splice('aetPropertyTrees', 0, this.aetPropertyTrees.length, ...propertyTrees);
+                        }
+                    }
+                } else {
+                    if (this.aetPropertyTrees.length > 0) {
+                        this.splice('aetPropertyTrees', 0 ,this.aetPropertyTrees.length);
+                    }
+                    this._getReceiverProperties();
+                }
+            },
+            _isEqualTo(title, string) {
+                return title == string;
+            },
+            SysProperties: function (aetProps, aetPropsIndex, syncCore) {
+                this.name = "Type";
+                this.type = "String";
+                this.value = "Trace";
+
+                this.sub_properties = aetProps[aetPropsIndex][0].sub_properties;
+
+                // Set sync core manually since it isn't tied to an observer function.
+                aetProps[aetPropsIndex][0].sub_properties[0].sub_properties[0].sub_properties[1].sub_properties[2].value = syncCore;
+            },
+            SysReceiverProperties : function (config)
+            {
+                this.name = "Receiver Settings";
+                this.sub_properties = [];
+                var subprops = [];
+                if (config.type === "Pro Trace") {
+                    subprops.push({name: "Pins",                    type: "String",  value: config.pins});
+                    subprops.push({name: "Buffer size",             type: "String",  value: config.size});
+                    subprops.push({name: "Trace Buffer Type",       type: "String",  value: config.circular ? "Circular" : "Stop-on-full"});
+                } else {
+                    subprops.push({name: "Connection Type",         type: "String",  value: "Auto"});
+                    subprops.push({name: "Buffer Type",             type: "String",  value : config.circular ? "Circular" : "Stop-on-full"});
+                    subprops.push({name: "Trigger Type",            type: "String",  value : "None"});
+                }
+                this.sub_properties.push({name: "Receiver", type: "String", value: config.type, sub_properties: subprops});
+            }
+        });
+    </script>
+</dom-module>

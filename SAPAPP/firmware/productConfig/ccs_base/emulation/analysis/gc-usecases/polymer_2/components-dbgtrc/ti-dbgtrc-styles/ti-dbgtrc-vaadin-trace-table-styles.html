@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<link rel="import" href="../../components/font-roboto/font-roboto.html">
+
+<dom-module id="ti-dbgtrc-vaadin-styles" theme-for="vaadin-grid">
+    <template>
+        <style>
+
+           :host(.traceTabular) [part~="cell"] {
+                font-family: "Roboto Mono";
+                -ms-text-size-adjust: 100%;
+                -webkit-text-size-adjust: 100%;
+                font-weight: 400;
+                font-size: 12px;
+                min-height: 0.5rem;
+            }
+            :host(.config-dialog) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
+                padding: 3px 7px 3px 7px;
+                min-height: 0.5rem;
+            }
+            :host(.terms) [part~="cell"] ::slotted(vaadin-grid-cell-content){
+                padding: 3px 7px 3px 7px;
+                min-height: 0.5rem;
+                font-size: 12px;
+            }
+            :host(.traceTabular) [part~="cell"]:not([part~="details-cell"]) ::slotted(vaadin-grid-cell-content) {
+                padding: 1px 7px 1px 7px;
+                min-height: 0.5rem;
+                text-overflow: ellipsis;
+            }
+            :host(.traceTabular) [part~="details-cell"] ::slotted(vaadin-grid-cell-content) {
+                padding: 0px;
+                min-height: 0.5rem;
+            }
+            [part~="header-cell"]:not(.groupheader) {
+                white-space: normal;
+                background-color: #e5e5e5;
+                color: black;
+            }
+            [part~="resize-handle"]::before {
+                width: 8px;
+            }
+            [last-column][part~="resize-handle"]::before,
+            [last-column][part~="resize-handle"]::before {
+                width: 4px;
+            }
+            [part~="body-cell"] {
+                white-space: nowrap;
+            }
+            /* [part~="cell"]:not([part~="details-cell"]) {
+                align-items: baseline;
+            } */
+            .traceTabular :host(.traceTabular, :not([theme~="no-row-borders"])) [part~="row"][first] [part~="cell"]:not([part~="details-cell"]) {
+                min-height: 0.5rem;
+            }
+            :host(.traceTabular) [part~="row"]:only-child [part~="header-cell"] {
+                min-height: 0.5rem;
+            }
+            :host(.traceTabular) [part~="row"] /*[selected] [part~="cell"]:not([part~="details-cell"]) */ {
+                background-color: #f1f1f1;
+            }
+            :host(.traceTabular:not([reordering])) [part~="row"] /*[selected] [part~="body-cell"]:not([part~="details-cell"]) */{
+                background-image: linear-gradient(#f1f1f1, #f1f1f1);
+                background-repeat: repeat;
+            }
+        </style>
+    </template>
+</dom-module>

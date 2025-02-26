@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018-2020, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<link rel="import" href="../../components/polymer/polymer.html">
+<script src="../../components/webcomponentsjs/webcomponents-lite.js"></script>
+<script type='text/javascript' src="../../components/ti-core-assets/scripts/q.js"></script>
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components-dbgtrc/ti-trace-config/ti-config-card.html">
+<link rel="import" href="../../components/paper-input/paper-input.html">
+<link rel="import" href="../../components/vaadin-grid/theme/material/vaadin-grid.html">
+<dom-module id="ti-trace-triggers">
+    <template>
+        <style is="custom-style">
+            vaadin-grid#triggerTable {
+                display: flex;
+                height: auto;
+                width: 100%;
+                white-space: normal;
+                --vaadin-grid-body-cell: {
+                    padding: 3px 0 3px 5px;
+                    white-space: nowrap;
+                }
+            };
+            .triggers {
+                --paper-input-container-input: {
+                    font-size: 12px;
+                    line-height: 20px;
+                };
+                --paper-input-container-label: {
+                    font-size: 12px;
+                };
+                --paper-input-container: {
+                    padding: 0;
+                }
+                --paper-radio-button-size: 12px;
+                font-size: 12px;
+            }
+            .triggers.floated-label-placeholder {
+                font-size: 10px;
+                line-height: 16px;
+            };
+            paper-radio-button.triggers {
+                padding: 4px 4px;
+            }
+            paper-tooltip {
+                padding: 0px;
+            }
+            paper-checkbox {
+                --paper-checkbox-size: 12px;
+            }
+           
+            vaadin-grid paper-icon-button {
+                --paper-icon-button: {
+                    padding: 0px;
+                    margin: 0px;
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        </style>
+        <ti-config-card title="Triggers">
+            <span slot="buttons">
+                <paper-icon-button id="errors" slot="top" icon="warning" style="display:none"></paper-icon-button>
+                <paper-tooltip for="errors" class="custom" position="left">
+                    <table>
+                        <template is="dom-repeat" items="[[_triggerIssues]]">
+                            <tr><td>[[item.msg]]</td></tr>
+                        </template>
+                    </table>
+                </paper-tooltip>
+            </span>
+            <span slot="header">
+                Triggers determine when trace collection is active by turning trace on or off when instructions at specific addresses are executed.
+            </span>
+            <span>
+                <span class="triggers" style="float:right;padding:0px 7px">
+                    <paper-checkbox id="traceOn" checked="{{traceOn}}">Trace on from start</paper-checkbox>
+                </span>
+                <vaadin-grid id="triggerTable" items="{{triggers}}" class="triggers config-dialog" height-by-rows="true">
+                    <vaadin-grid-column flex-grow="0" width="32px">
+                        <template>
+                            <div>
+                                <template is="dom-if" if="[[item.hasError]]">
+                                    <paper-icon-button id="error-[[index]]" slot="top" icon="warning"></paper-icon-button>
+                                    <paper-tooltip for="error-[[index]]" class="custom" position="right">
+                                        <table>
+                                            <template is="dom-repeat" items="[[_getTriggerIssues(index)]]">
+                                                <tr><td>[[item.msg]]</td></tr>
+                                            </template>
+                                        </table>
+                                    </paper-tooltip>
+                                </template>
+                            </div>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="2">
+                        <template>
+                            <paper-input id="input-[[index]]" class="triggers" on-change="_locationChanged" label="[[item.location_hex]]" floating-label value="{{item.location::change}}"></paper-input>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="0" width="8rem">
+                        <template>
+                            <paper-radio-group id="radioGroup-[[index]]" selected="{{item.type}}" on-selected-changed="_validateAll" allow-empty-selection="false">
+                                <paper-radio-button class="triggers" id="radioStart-[[index]]" name="Start" noink>Start</paper-radio-button>
+                                <paper-radio-button class="triggers" id="radioStop-[[index]]" name="Stop" noink>Stop</paper-radio-button>
+                            </paper-radio-group>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="0" width="32px">
+                        <template>
+                            <paper-icon-button id="remove-[[index]]" icon="delete-forever"  on-tap="_deleteRow"></paper-icon-button>
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
+            </span>
+        </ti-config-card title="Triggers">
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-trace-triggers',
+            properties: {
+                triggers: {
+                    type: Array,
+                    value: function () {return [{location: "", location_hex: "Label or address", type: "Start", hasError: false}];},
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                _triggerIssues : {
+                    type: Array,
+                    value: function() {return [];}
+                },
+                ta : {
+                    type: Object,
+                    value: undefined
+                },
+                outFile : {
+                    type: String,
+                    value: undefined,
+                },
+                traceOn : {
+                    type: Boolean,
+                    value: true,
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: "_traceOnChanged"
+                },
+                hasErrors: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+            ready: function()
+            {
+                var indx = window.location.href.indexOf('?');
+                if (indx >= 0) {
+                    var params = window.location.href.substr(indx+1).split('&').map(p => {
+                        var tmp = p.split("=");
+                        return {name : tmp[0], value: tmp[1]};
+                    });
+                    var traceArch;
+                    var version;
+
+                    var item = params.find(x => x.name === "traceArchType");
+                    if (item !== undefined) {
+                        traceArch = item.value;
+                    }
+                    item = params.find(x => x.name === 'traceArchVersion');
+                    if (item !== undefined) {
+                        version = item.value;
+                    }
+                    if (traceArch === 'etm') {
+                        this._isDSP = false;
+                        item = params.find(x => x.name === 'deviceName');
+                        if (item !== undefined && item.value === "AM64x") {
+                            this._isAM64x = true;
+                            this._traceOnChanged(this.traceOn);
+                        }
+                        if (parseInt(version) < 4) {
+                            this._multiIncExc = false;
+                        }
+                    } else if (traceArch === 'dsp') {
+                        this._isDSP = true;
+                    }
+                }
+            },
+            _addRow: function()
+            {
+                this.push('triggers',{location: "", location_hex: "Label or address", type: "Start", hasError: false});
+            },
+            _deleteRow: function(e)
+            {
+                var indx;
+                if (e.hasOwnProperty("model")) {
+                    indx = e.model.index;
+                } else {
+                    indx = e;
+                }
+                var hadError = this.triggers[indx].hasError;
+                this.splice('triggers',indx,1);
+                if (indx == this.triggers.length) {
+                    this._addRow();
+                    this.shadowRoot.querySelector("#input-"+indx).invalid = false;
+                    this.set('triggers.'+indx+'.hasError', false);
+                }
+                this._validateAll();
+            },
+            _locationChanged: function (e)
+            {
+                if (e.hasOwnProperty("model") && (e.model.index !== undefined))
+                {
+                    var indx = e.model.index;
+                    var value = e.target.value;
+                    var hexAddr = 0;
+                    this.triggers[indx].location = value;
+                    var _self = this;
+                    if (value !== "") {
+                        var numeric = this._isNumericAddress(value);
+                        if (numeric !== null) {
+                            hexAddr = "0x"+numeric.toString(16);
+                            this.triggers[indx].location_hex = hexAddr;
+                            e.target.label = hexAddr;
+                            e.target.invalid = false;
+                            Polymer.RenderStatus.beforeNextRender(null, function() {
+                                _self._validateAll();
+                            });
+                        } else {
+                            var handle = undefined;
+                            var target = e.target;
+                            this.ta.cloudTrace.getOutFileHandle(this.outFile).then(function (ret) {
+                                handle = ret.handle;
+                                return _self.ta.cloudTrace.getSymbolValue(handle, value);
+                            }).then(function (ret) {
+                                hexAddr = "0x" + parseInt(ret.value).toString(16);
+                                console.log("value of "+value+" is: "+hexAddr);
+                                target.label = hexAddr;
+                                target.invalid = false;
+                            }).catch(function (err) {
+                                target.label = value + ": symbol not found!";
+                                target.value = "";
+                                target.invalid = true;
+                                hexAddr = undefined;
+                            }).finally(function () {
+                                if (handle !== undefined) {
+                                    _self.ta.cloudTrace.releaseOutFileHandle(handle);
+                                    _self.triggers[indx].location_hex = hexAddr;
+                                }
+                                _self._validateAll();
+                            });
+                        }
+                    } else {
+                        e.target.invalid = false;
+                        //this.triggers[indx].location_hex = "Label or address";
+                        Polymer.RenderStatus.beforeNextRender(null, function() {
+                            _self.set('triggers.'+indx+'.location_hex', "Label or address");
+                            _self.triggers[idnx].location_hex = "Label or address";
+                            _self._validateAll();
+                        });
+                    }
+                }
+            },
+            _isNumericAddress : function(val)
+            {
+                var match = val.match(/0x[0-9a-f]+/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val,16);
+                }
+                match = val.match(/0[0-7]*/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val,8);
+                }
+                match = val.match(/[1-9][0-9]*/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val, 10);
+                }
+                return null;
+            },
+            _flip: function()
+            {
+                var expanded = this.$.triggersCollapse.opened;
+                if (expanded) {
+                    this._validateAll();
+                    this.$.expandButton.icon = 'expand-more';
+                } else {
+                    this.$.expandButton.icon = 'expand-less';
+                }
+                this.$.triggersCollapse.toggle();
+            },
+            _getTriggerIssues: function (indx)
+            {
+                return this._triggerIssues.filter(f => f.index == indx);
+            },
+            _traceOnChanged: function (n, o)
+            {
+                if (n !== undefined) { 
+                    if (this._isAM64x) {
+                        if (n) {
+                            this.$$('#triggerTable').style = "visibility:hidden";
+                            this.$$("#errors").style = "display:none";
+                        } else {
+                            this.$$('#triggerTable').style = "visibility:visible";
+                            this._validateAll();
+                        }
+                    } else {
+                        this._validateAll();
+                    }
+                }
+            },
+            _validate: function(i)
+            {
+                var error = false;
+                var issues = [];
+                var el = this.shadowRoot.querySelector("#input-"+i);
+                if ((el != null) && (el.invalid !== undefined) && el.invalid)
+                {
+                    issues.push({index: i, msg: "trigger " + i + ": invalid entry"});
+                    error = true;
+                }
+                // If it's the last trigger, don't flag errors if the address is set to uninitialized
+                if ((i !== this.triggers.length - 1) || (this.triggers[i].location_hex !== "Label or address")) {
+                    if (this.triggers[i].location_hex === undefined) {
+                        issues.push({index: i, msg: "trigger "+i+": missing location"});
+                        error = true;
+                    }
+                }
+                el = this.shadowRoot.querySelector("#radioGroup-"+i);
+                if (el != null) {
+                    this.triggers[i].type = el.selected;
+                }
+                if ((this.triggers[i].type !== "Start") && (this.triggers[i].type !== "Stop")) {
+                    issues.push({index: i, msg: "trigger "+i+": trigger type not selected"});
+                    error = true;
+                }
+                this.set('triggers.'+i+'.hasError',error);
+                return issues;
+            },
+            _validateAll: function()
+            {
+                if (this._triggerIssues === undefined) {
+                    return;
+                }
+                var hasErrors = false;
+                var allIssues = [];
+
+                var hasErrors = false;
+                var numStart = 0;
+                if (this.traceOn) {
+                    numStart = 1;
+                }
+                for (var i in this.triggers) {
+                    var issues = this._validate(i);
+                    if (issues.length > 0) {
+                        allIssues.push(...issues);
+                        hasErrors = true;
+                    }
+                    if (this.triggers[i].location_hex && this.triggers[i].location_hex.startsWith("0x") && (this.triggers[i].type === "Start")) {
+                        numStart += 1;
+                    }
+                }
+
+                if ((numStart == 0) && !this._isDSP) {
+                    allIssues.push({index: -1, msg: "Trace-on is not set and there is no start trigger"});
+                    hasErrors = true;
+                }
+
+                this.hasErrors = hasErrors;
+                if (hasErrors) {
+                    this.$$("#errors").style = "display:inline-block";
+                } else {
+                    this.$$("#errors").style = "display:none";
+                }
+                this.splice('_triggerIssues',0,this._triggerIssues.length,...allIssues);
+
+                if (!hasErrors) {
+                    this.$$("#errors").style = "display:none";
+                // remove empty triggers that aren't last
+                    for (var i = this.triggers.length - 2; i >= 0; i--) {
+                        if ((this.triggers[i].location === "") && (this.triggers[i].location_hex == "Label or address")) {
+                            this._deleteRow(i);
+                        }
+                    }
+                    var last = this.triggers.length - 1;
+                    if (this.triggers[last].location !== "") {
+                        // last trigger not empty, add a row
+                        this._addRow();
+                    }
+                }
+            }
+        });
+    </script>
+</dom-module>

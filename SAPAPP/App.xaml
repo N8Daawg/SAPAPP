@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:SAPAPP"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+
         <x:Array x:Key="ProductsList" Type="sys:String">
             <sys:String>Product 1</sys:String>
             <sys:String>Product 2</sys:String>
