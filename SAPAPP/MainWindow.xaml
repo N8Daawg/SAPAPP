@@ -5,118 +5,90 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SAPAPP"
         mc:Ignorable="d"
-        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center" WindowStyle="SingleBorderWindow"  Background="Yellow">
-        
+        Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center"
+        WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithGrip">
 
-    <DockPanel>
-        <Menu DockPanel.Dock="Top" VerticalAlignment="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Close"/>
-                <MenuItem Header="_Save"/>
-            </MenuItem>
+	<Grid>
+		<!-- Background Image -->
+		<Grid.Background>
+			<ImageBrush ImageSource="C:\Users\lego1\Downloads\st-hero-min-1024x667.png" Stretch="UniformToFill"/>
+		</Grid.Background>
 
-            <MenuItem Header="_Settings">
-                <MenuItem Header="_Configure File Paths"/>
-            </MenuItem>
+		<!-- Transparent Overlay -->
+		<Border Background="CadetBlue" Opacity="0.5"/>
 
-            <MenuItem Header="_Help"/>
-        </Menu>
+		<!-- Original Content -->
+		<Viewbox Stretch="Fill">
+			<DockPanel Height="380" Width="720">
 
-        <DockPanel DockPanel.Dock="Top">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="49*" />
-                    <ColumnDefinition Width="23*" />
-                </Grid.ColumnDefinitions>
+				<Menu DockPanel.Dock="Top" Height="18">
+					<MenuItem Header="_File">
+						<MenuItem Header="_Open"/>
+						<MenuItem Header="_Close"/>
+						<MenuItem Header="_Save"/>
+					</MenuItem>
+					<MenuItem Header="_Settings">
+						<MenuItem Header="_Configure File Paths"/>
+					</MenuItem>
+					<MenuItem Header="_Help"/>
+				</Menu>
 
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
-                    <DockPanel Margin="40,16,0,0" Width="360"
-                           VerticalAlignment="Top" HorizontalAlignment="Left" >
+				<Grid DockPanel.Dock="Top">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="49*" />
+						<ColumnDefinition Width="23*" />
+					</Grid.ColumnDefinitions>
 
-                        <Label Content="Product" DockPanel.Dock="Top" 
-                           VerticalAlignment="Top" HorizontalAlignment="Left" 
-                           FontSize="24" FontWeight="Bold"/>
+					<StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
+						<DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
+							<Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="White"/>
+							<ComboBox x:Name="ProductPicker" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Height="24" ItemsSource="{StaticResource ProductsList}" IsSynchronizedWithCurrentItem="True" SelectedIndex="0"/>
+						</DockPanel>
 
-                        <ComboBox x:Name="ProductPicker" DockPanel.Dock="Top" 
-                              VerticalAlignment="Top" HorizontalAlignment="Left" 
-                              Width="360" Height="24" ItemsSource="{StaticResource ProductsList}"
-                              IsSynchronizedWithCurrentItem="True" SelectedIndex="0"/>
-                    </DockPanel>
+						<DockPanel Margin="40,36,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
+							<Label Content="PCB" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="White"/>
+							<ComboBox x:Name="PCBPicker" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Height="24" ItemsSource="{StaticResource PCBList}" SelectedIndex="0" IsSynchronizedWithCurrentItem="True"/>
+						</DockPanel>
 
-                    <DockPanel Margin="40,36,0,0" Width="360"
-                           VerticalAlignment="Top" HorizontalAlignment="Left" >
+						<DockPanel VerticalAlignment="Center" HorizontalAlignment="Left" Width="360" Margin="40,20,0,0">
+							<Border Margin="31,6,0,6" BorderThickness="1" CornerRadius="4" HorizontalAlignment="Left" VerticalAlignment="Top" DockPanel.Dock="Left" BorderBrush="Black" Background="Red">
+								<Button x:Name="StopButton" Content="Stop" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1" FontSize="36" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="StopButton_Click" />
+							</Border>
 
-                        <Label Content="PCB" DockPanel.Dock="Top" 
-                           VerticalAlignment="Top" HorizontalAlignment="Left" 
-                           FontSize="24" FontWeight="Bold"/>
+							<Border Margin="0,6,31,6" BorderThickness="1" CornerRadius="4" VerticalAlignment="Top" HorizontalAlignment="Right" DockPanel.Dock="Right" BorderBrush="Black" Background="#FF00E100">
+								<Button x:Name="StartButton" Content="Start" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1" FontSize="36" Width="100" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="StartButton_Click" />
+							</Border>
+						</DockPanel>
+					</StackPanel>
 
-                        <ComboBox x:Name="PCBPicker" DockPanel.Dock="Top" 
-                              VerticalAlignment="Top" HorizontalAlignment="Left" 
-                              Width="360" Height="24" ItemsSource="{StaticResource PCBList}"
-                              SelectedIndex="0" IsSynchronizedWithCurrentItem="True"/>
-                    </DockPanel>
+					<StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200">
+						<Image Source="C:\Users\lego1\Downloads\OIP-removebg-preview.png" Width="175" Height="136"/>
+					</StackPanel>
+				</Grid>
 
-                    <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left" 
-                           Width="360" Margin="40,20,0,0">
-                        <Border Margin="31,6,0,6" BorderThickness="1" CornerRadius="4" 
-                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            DockPanel.Dock="Left" BorderBrush="Black" Background="Red">
-                            
-                            <Button x:Name="StopButton" Content="Stop" 
-                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Margin="1" FontSize="36" Width="100" 
-                                Background="{x:Null}" BorderBrush="{x:Null}" Click="StopButton_Click" />
-                        </Border>
-
-                        <Border Margin="0,6,31,6" BorderThickness="1" CornerRadius="4" 
-                            VerticalAlignment="Top" HorizontalAlignment="Right"
-                            DockPanel.Dock="Right" BorderBrush="Black" Background="#FF00E100">
-
-                            <Button x:Name="StartButton" Content="Start" 
-                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                                Margin="1" FontSize="36" Width="100" 
-                                Background="{x:Null}" BorderBrush="{x:Null}" Click="StartButton_Click" />
-
-                        </Border>
-                    </DockPanel>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1"
-                        HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock>LOGO STAND IN</TextBlock>
-                </StackPanel>
-            </Grid>
-        </DockPanel>
-
-
-
-        <StatusBar Name="sbar" DockPanel.Dock="Bottom"
-               VerticalAlignment="Bottom" Background="White">
-            <StatusBarItem>
-                <TextBlock>Download Status: </TextBlock>
-            </StatusBarItem>
-            <StatusBarItem>
-                <ProgressBar Width="100" Height="20" Name="progbar"
-                         Minimum="0" Maximum="100" IsIndeterminate="False" >
-                    <ProgressBar.Triggers>
-                        <EventTrigger RoutedEvent="ProgressBar.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="progbar"
-                                        Storyboard.TargetProperty="Value"
-                                        From="0" To="100" Duration="0:0:5"  />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ProgressBar.Triggers>
-                </ProgressBar>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Name="StatusMessageDisplay">Ready to download</TextBlock>
-            </StatusBarItem>
-        </StatusBar>
-    </DockPanel>
+				<StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="White" Width="800">
+					<StatusBarItem>
+						<TextBlock>Download Status:</TextBlock>
+					</StatusBarItem>
+					<StatusBarItem>
+						<ProgressBar Width="100" Height="20" Name="progbar" Minimum="0" Maximum="100" IsIndeterminate="False">
+							<ProgressBar.Triggers>
+								<EventTrigger RoutedEvent="ProgressBar.Loaded">
+									<BeginStoryboard>
+										<Storyboard>
+											<DoubleAnimation Storyboard.TargetName="progbar" Storyboard.TargetProperty="Value" From="0" To="100" Duration="0:0:5" />
+										</Storyboard>
+									</BeginStoryboard>
+								</EventTrigger>
+							</ProgressBar.Triggers>
+						</ProgressBar>
+					</StatusBarItem>
+					<Separator/>
+					<StatusBarItem>
+						<TextBlock Name="StatusMessageDisplay">Ready to download</TextBlock>
+					</StatusBarItem>
+				</StatusBar>
+			</DockPanel>
+		</Viewbox>
+	</Grid>
 </Window>
