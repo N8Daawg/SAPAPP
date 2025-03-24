@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2020, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<script src="../../components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../components/paper-card/paper-card.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<dom-module id="ti-config-card">
+    <template>
+        <style is="custom-style">
+            paper-card {
+                --paper-icon-button: {
+                    padding: 0px;
+                    margin: 0px;
+                    width: 20px;
+                    height: 20px;
+                }
+                margin: 0px;
+                width: 100%; /*calc(100% - 10px);*/
+                padding: 0px;
+                --paper-card-content: {
+                    margin: 0px;
+                    padding: 5px;
+                }
+            }
+            .title {
+                font-weight:500;
+                font-size: small;
+            }
+            iron-collapse div {
+                font-size: small;
+                padding: 0px 10px 5px 10px;
+            }
+            .element {
+                padding: 0px 10px 5px 10px;
+            }
+        </style>
+        <paper-card>
+            <div class="card-content">
+                <div class="element">
+                    <span class="title">[[title]]</span>
+                    <span style="float:right">
+                        <slot name="buttons"></slot>
+                        <paper-icon-button id="expandButton" icon="expand-more" on-tap="_flip"></paper-icon-button>
+                    </span>
+                </div>
+                <iron-collapse id="cardCollapse">
+                    <div class="element">
+                        <slot name="header"></slot>
+                    </div>
+                    <div class="element">
+                        <slot></slot>
+                    </div>
+                </iron-collapse>
+            </div>
+        </paper-card>
+    </template>
+    <script>
+        Polymer({
+            is: 'ti-config-card',
+            properties: {
+                title : {
+                    type: String,
+                    value: undefined
+                }
+            },
+            _flip: function () {
+                var expanded = this.$.cardCollapse.opened;
+                if (expanded) {
+                    this.$.expandButton.icon = 'expand-more';
+                } else {
+                    this.$.expandButton.icon = 'expand-less';
+                }
+                this.$.cardCollapse.toggle();
+            },
+        });
+    </script>
+</dom-module>

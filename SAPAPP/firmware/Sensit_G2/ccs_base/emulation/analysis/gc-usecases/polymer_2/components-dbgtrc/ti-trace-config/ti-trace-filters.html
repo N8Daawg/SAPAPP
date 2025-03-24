@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018-2020, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<script src="../../components/webcomponentsjs/webcomponents-lite.js"></script>
+<script type='text/javascript' src="../../components/ti-core-assets/scripts/q.js"></script>
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/paper-input/paper-input.html">
+<link rel="import" href="../../components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../components/vaadin-grid/theme/material/vaadin-grid.html">
+<link rel="import" href="../../components-dbgtrc/ti-trace-config/ti-config-card.html">
+<dom-module id="ti-trace-filters">
+    <template>
+        <style is="custom-style">
+            vaadin-grid#filterTable {
+                display: flex;
+                height: auto;
+                width: 100%;
+                white-space: normal;
+                --vaadin-grid-body-cell: {
+                    padding: 3px 0 3px 0px;
+                    white-space: nowrap;
+                }
+            }
+            .filters {
+                --paper-input-container-input: {
+                    font-size: 12px;
+                    line-height: 16px;
+                };
+                --paper-input-container-label-floating : {
+                    font-size: small;
+                    line-height: 14px
+                }
+                --paper-input-container-label: {
+                    font-size: small;
+                };
+                --paper-input-container: {
+                    padding: 0;
+                }
+                --paper-radio-button-size: 12px;
+                font-size: 12px;
+            }
+
+            .filters.floated-label-placeholder {
+                height: 14px
+            }
+
+            paper-radio-button.filters {
+                padding: 4px 4px;
+            }
+
+            paper-tooltip {
+                padding: 0px;
+            }
+            vaadin-grid paper-icon-button {
+                --paper-icon-button: {
+                    padding: 0px;
+                    margin: 0px;
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        </style>
+        <ti-config-card title="Filters">
+                <span slot="buttons">
+                    <paper-icon-button id="errors" slot="top" icon="warning" style="display:none"></paper-icon-button>
+                    <paper-tooltip for="errors" class="custom">
+                        <table>
+                            <template is="dom-repeat" items="[[_filterIssues]]">
+                                <tr>
+                                    <td>[[item.msg]]</td>
+                                </tr>
+                            </template>
+                        </table>
+                    </paper-tooltip>
+                </span>
+                <span slot="header">
+                    <template is="dom-if" if="[[_isDSP]]">
+                        Filters restrict the trace data that is collected. Filters automatically turn trace on (include) or off (exclude)
+                        for the specified address ranges, regardless of the state of the triggers. Exclude ranges have the highest priority.
+                    </template>
+                    <template is="dom-if" if="[[!_isDSP]]">
+                        Filters restrict the trace data that is collected while trace is turned on (see triggers).
+                        Filters are used to include or exclude trace data from specific address ranges.
+                        <template is="dom-if" if="[[!_multiIncExc]]">
+                            The include/exclude setting applies to all filters.
+                        </template>
+                    </template>
+                </span>
+                <span>
+                    <vaadin-grid id="filterTable" class="filters config-dialog" items="{{filters}}" height-by-rows="true">
+                        <vaadin-grid-column flex-grow="0" width="32px">
+                            <template>
+                                <div>
+                                    <template is="dom-if" if="[[item.hasError]]">
+                                        <paper-icon-button id="error-[[index]]" slot="top" icon="warning"></paper-icon-button>
+                                        <paper-tooltip for="error-[[index]]" class="custom" position="right">
+                                            <table>
+                                                <template is="dom-repeat" items="[[_getFilterIssues(index)]]">
+                                                    <tr>
+                                                        <td>[[item.msg]]</td>
+                                                    </tr>
+                                                </template>
+                                            </table>
+                                        </paper-tooltip>
+                                    </template>
+                                </div>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="2">
+                            <template>
+                                <paper-input id="input-start-[[index]]" class="filters" on-change="_rangeChanged"
+                                    label="[[item.start_hex]]" floating-label value="{{item.start::change}}"></paper-input>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="2">
+                            <template>
+                                <paper-input id="input-stop-[[index]]" class="filters" on-change="_rangeChanged"
+                                    label="[[item.stop_hex]]" floating-label value="{{item.end::change}}"></paper-input>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="0" width="10rem">
+                            <template>
+                                <template is="dom-if" if="[[!_disableRadio(index)]]">
+                                    <paper-radio-group id="filterType-[[index]]" selected="{{item.type}}" on-selected-changed="_radioChanged" >
+                                        <paper-radio-button class="filters" id="radioInclude-[[index]]" name="Include" noink>Include</paper-radio-button>
+                                        <paper-radio-button class="filters" id="radioExclude-[[index]]" name="Exclude" noink>Exclude</paper-radio-button>
+                                    </paper-radio-group>
+                                </template>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="0" width="32px">
+                            <template>
+                                <paper-icon-button id="remove-[[index]]" icon="delete-forever" on-tap="_deleteRow"></paper-icon-button>
+                            </template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+                <span>
+        </ti-config-card>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-trace-filters',
+            properties: {
+                filters: {
+                    type: Array,
+                    value: function () { return [{ start: "", end: "", type: "Include", hasError: false, start_hex: "Start of range", stop_hex: "End of range" }]; },
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                _disabled: {
+                    type: Array,
+                    value: function () {return [false];},
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _filterIssues: {
+                    type: Array,
+                    value: function () { return []; },
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _multiIncExc : {
+                    type: Boolean,
+                    value: true,
+                },
+                _isDSP : {
+                    type: Boolean,
+                    value: false,
+                },
+                ta: {
+                    type: Object,
+                    value: undefined,
+                },
+                outFile: {
+                    type: String,
+                    value: undefined,
+                },
+                hasErrors: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+            ready: function () {
+                var indx = window.location.href.indexOf('?');
+                if (indx >= 0) {
+                    var params = window.location.href.substr(indx+1).split('&').map(p => {
+                        var tmp = p.split("=");
+                        return {name : tmp[0], value: tmp[1]};
+                    });
+                    var traceArch;
+                    var version;
+
+                    var item = params.find(x => x.name === "traceArchType");
+                    if (item !== undefined) {
+                        traceArch = item.value;
+                    }
+                    item = params.find(x => x.name === 'traceArchVersion');
+                    if (item !== undefined) {
+                        version = item.value;
+                    }
+                    if (traceArch === 'etm') {
+                        this._isDSP = false;
+                        if (parseInt(version) < 4) {
+                            this._multiIncExc = false;
+                        }
+                    } else if (traceArch === 'dsp') {
+                        this._isDSP = true;
+                    }
+                }
+            },
+            _disableRadio: function (indx) {
+                if (indx >= this._disabled.length) {
+                    return true;
+                }
+                return this._disabled[indx];
+            },
+            _addRow: function () {
+                this.push('_disabled', !this._multiIncExc)
+                var str = "Include";
+                if (this.filters.length > 0) {
+                    str = (this._multiIncExc ? "Include" : null);
+                }
+                this.push('filters', { start: "", end: "", type: str, hasError: false, start_hex: "Start of range", stop_hex: "End of range" });
+            },
+            _deleteRow: function (e) {
+                var indx;
+                if (e.hasOwnProperty("model")) {
+                    indx = e.model.index;
+                } else {
+                    indx = e;
+                }
+                var hadError = this.filters[indx].hasError;
+                this.splice('filters', indx, 1);
+                this.splice('_disabled', indx, 1);
+                if (indx == this.filters.length) {
+                    this._addRow();
+                    this.shadowRoot.querySelector("#input-start-"+indx).invalid = false;
+                    this.shadowRoot.querySelector("#input-stop-"+indx).invalid = false;
+                    this.set('filters.' + indx + '.hasError', false);
+                }
+                this._validateAll();
+            },
+            _rangeChanged: function (e) {
+                if (e.hasOwnProperty("model") && (e.model.index !== undefined)) {
+                    var indx = e.model.index;
+                    var res = e.target.id.split('-');
+                    var value = e.target.value;// e.detail.newValue;
+                    if (res[1] == "start") {
+                        this.filters[indx].start = value;
+                    } else {
+                        this.filters[indx].stop = value;
+                    }
+                    var hexAddr = 0;
+                    var _self = this;
+                    if (value !== "") {
+                        var numeric = this._isNumericAddress(value);
+                        if (numeric !== null) {
+                            hexAddr = "0x" + numeric.toString(16);
+                            if (res[1] === "start") {
+                                this.filters[indx].start_hex = hexAddr;
+                            } else {
+                                this.filters[indx].stop_hex = hexAddr;
+                            }
+                            e.target.label = hexAddr;
+                            e.target.invalid = false;
+                            Polymer.RenderStatus.beforeNextRender(null, function() {
+                                _self._validateAll();
+                            });
+                        } else {
+                            var handle = undefined;
+                            var target = e.target;
+                            this.ta.cloudTrace.getOutFileHandle(this.outFile).then(function (ret) {
+                                handle = ret.handle;
+                                return _self.ta.cloudTrace.getSymbolValue(handle, value);
+                            }).then(function (ret) {
+                                hexAddr = "0x" + parseInt(ret.value).toString(16);
+                                console.log("value of " + value + " is: " + hexAddr);
+                                target.label = hexAddr;
+                                target.invalid = false;
+                            }).catch(function (err) {
+                                target.label = value + ": symbol not found!";
+                                target.value = "";
+                                target.invalid = true;
+                                hexAddr = undefined;
+                            }).finally(function () {
+                                if (handle !== undefined) {
+                                    _self.ta.cloudTrace.releaseOutFileHandle(handle);
+                                    if (res[1] === "start") {
+                                        _self.filters[indx].start_hex = hexAddr;
+                                    } else if (res[1] === "stop") {
+                                        _self.filters[indx].stop_hex = hexAddr;
+                                    }
+                                }
+                                _self._validateAll();
+                            });
+                        }
+                    } else {
+                        e.target.invalid = false;
+                        Polymer.RenderStatus.beforeNextRender(null, function() {
+                            if (res[1] === "start") {
+                                _self.set('filters.'+indx+'.start_hex', "Start of range");
+                                _self.filters[indx].start_hex = "Start of range";
+                            } else {
+                                _self.set('filters.'+indx+'.stop_hex', "End of range");
+                                _self.filters[indx].stop_hex = "End of range";
+                            }
+                            _self._validateAll();
+                        });
+                    }
+                }
+            },
+            _radioChanged: function(evt)
+            {
+                if (!this._multiIncExc) {
+                    for (var i = 1; i < this.filters.length; i++) {
+                        this.filters[i].type = evt.detail.value;
+                    }
+                }
+            },
+            _flip: function () {
+                var expanded = this.$.filtersCollapse.opened;
+                if (expanded) {
+                    this.$.expandButton.icon = 'expand-more';
+                    this._validateAll();
+                } else {
+                    this.$.expandButton.icon = 'expand-less';
+                }
+                this.$.filtersCollapse.toggle();
+            },
+            _getFilterIssues: function (indx) {
+                return this._filterIssues.filter(f => f.index == indx);
+            },
+            _validate: function (i) {
+                var error = false;
+                var issues = [];
+                var elStart = this.shadowRoot.querySelector("#input-start-"+i);
+                var elStop = this.shadowRoot.querySelector("#input-stop-"+i);
+                if (((elStart != null) && elStart.invalid) || ((elStop != null) && elStop.invalid))
+                {
+                    issues.push({index: i, msg: "filter " + i + ": invalid entry"});
+                    error = true;
+                }
+                // If it's the last filter, don't flag errors if the start or end address of the ranges are set to uninitialized
+                if ((i !== this.filters.length - 1) || (this.filters[i].start_hex !== "Start of range") || (this.filters[i].stop_hex !== "End of range")) {
+                    if (this.filters[i].start_hex === undefined) {
+                        issues.push({index: i, msg: "filter " + i + ": missing start address" });
+                        error = true;
+                    }
+                    if (this.filters[i].stop_hex === undefined) {
+                        issues.push({index: i, msg: "filter " + i + ": missing end address" });
+                        error = true;
+                    }
+                }
+                if (((this.filters[i].start_hex !== undefined) && (!this.filters[i].start_hex.startsWith("0x"))) && 
+                    ((this.filters[i].stop_hex !== undefined) && (this.filters[i].stop_hex.startsWith("0x")))) {
+                    issues.push({ index: i, msg: "filter " + i + ": missing start address" });
+                    error = true;
+                }
+                if (((this.filters[i].start_hex !== undefined) && (this.filters[i].start_hex.startsWith("0x"))) && 
+                    ((this.filters[i].stop_hex !== undefined) && (!this.filters[i].stop_hex.startsWith("0x")))) {
+                    issues.push({ index: i, msg: "filter " + i + ": missing end address" });
+                    error = true;
+                }
+                if (parseInt(this.filters[i].start_hex, 16) > parseInt(this.filters[i].stop_hex)) {
+                    issues.push({ index: i, msg: "filter " + i + ": start address > end address" });
+                    error = true;
+                }
+                if ((i > 0) && !this._multiIncExc) {
+                    this.filters[i].type = this.filters[0].type;
+                }
+                if ((this.filters[i].type !== "Include") && (this.filters[i].type !== "Exclude")) {
+                    issues.push({ index: i, msg: "filter " + i + ": filter type not selected" });
+                    error = true;
+                }
+                this.set('filters.' + i + '.hasError', error);
+                return issues;
+            },
+            _validateAll: function () {
+                var hasErrors = false;
+                var allIssues = [];
+                for (var i in this.filters) {
+                    var issues = this._validate(i);
+                    if (issues.length > 0) {
+                        allIssues.push(...issues);
+                        hasErrors = true;
+                    }
+                }
+                this.hasErrors = hasErrors;
+                if (hasErrors) {
+                    this.$$("#errors").style = "display:inline-block";
+                } else {
+                    this.$$("#errors").style = "display:none";
+                }
+                this.splice('_filterIssues', 0, this._filterIssues.length, ...allIssues);
+
+                if (!hasErrors) {
+                    // remove empty filters that aren't last
+                    for (var i = this.filters.length - 2; i >= 0; i--) {
+                        if ((this.filters[i].start === "") && (this.filters[i].start_hex == "Start of range") &&
+                            (this.filters[i].stop === "") && (this.filters[i].stop_hex = "End of range")) {
+                            this._deleteRow(i);
+                        }
+                    }
+                    var last = this.filters.length - 1;
+
+                    if (this.filters[last].start !== "") { 
+                        // last filter not empty, add a row
+                        this._addRow();
+                    }
+                }
+
+            },
+            _isNumericAddress: function (val) {
+                var match = val.match(/0x[0-9a-f]+/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val, 16);
+                }
+                match = val.match(/0[0-7]*/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val, 8);
+                }
+                match = val.match(/[1-9][0-9]*/gi);
+                if ((match !== null) && (match[0].length == val.length)) {
+                    return parseInt(val, 10);
+                }
+                return null;
+            },
+        });
+    </script>
+</dom-module>

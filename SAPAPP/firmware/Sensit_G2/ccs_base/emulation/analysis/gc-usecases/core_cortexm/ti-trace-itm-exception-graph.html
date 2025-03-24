@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="import" href="../components/polymer/polymer.html"/>
+    <script type='text/javascript' src="../components/ti-core-assets/scripts/q.js"></script>
+    <!--link rel="import" href="../components/vaadin-grid/vaadin-grid.html"/-->
+    <!--link rel="import" href="../components/vaadin-grid/vaadin-grid-sorter.html"/-->
+    <!--link rel="import" href="../components/paper-styles/color.html"/-->
+    <!--link rel="import" href="../components/iron-icons/iron-icons.html"/-->
+    <link rel="import" href="../components/ti-core-stylesheets/ti-core-stylesheets.html">
+    <link rel="import" href="../components/ti-widget-common/ti-widget-checkbox.html"/>
+    <link rel="import" href="../components/ti-widget-common-behaviors/ti-widget-common-behaviors.html"/>
+    <!--link rel="import" href="../components/ti-widget-plot/ti-widget-plot.html"/-->
+    <!--link rel="import" href="../components/ti-widget-common/ti-widget-container.html"-->
+    <link rel="import" href="../components-dbgtrc/ti-trace-graphs/ti-trace-graph.html">
+</head>
+
+<body class="ti-theme" unresolved>
+    <dom-module name="ti-trace-itm-exception-graph">
+        <template>
+            <style>
+
+            </style>
+
+            <ti-trace-graph id="excgraph"  y-value-formatter=[[yValueFormatter]] y-axis-label-formatter=[[yAxisLabelFormatter]] data=[[data]] labels=[[labels]] title=[[title]] xlabel=[[xlabel]] ylabel=[[ylabel]] draw-points="[[drawPoints]]" stroke-width=[[strokeWidth]] point-size=[[pointSize]]  draw-point-style=[[drawPointStyle]] block-draw=[[blockDraw]] plot-function=[[plotItm]] y-value-range=[[yValueRange]] x-value-range=[[xValueRange]] click-callback=[[clickCallback]] zoom-callback=[[zoomCallback]]> </ti-trace-graph>
+
+        </template>
+        <script>
+            Polymer ({
+                is: "ti-trace-itm-exception-graph",
+
+                properties: {
+                    data: {
+                        type: Array,
+                        reflectToAttribute: true,
+                    },
+
+                    labels: {
+                        type: Array,
+                        value: [],
+                        reflectToAttribute: true,
+                    },
+
+                    excList: {
+                        type: Array,
+                        value: [],
+                        reflectToAttribute: true,
+                        observer : "_excListChanged"
+                    },
+
+                    timeRange: {
+                        type: Array,
+                        value: [0, 0],
+                        reflectToAttribute: true,
+                        observer : "_timeRangeChanged"
+                    },
+
+                    title: {
+                        type: String,
+                        value: "",
+                        reflectToAttribute: true,
+                    },
+
+                    ylabel: {
+                        type: String,
+                        value: "Exception",
+                        reflectToAttribute: true,
+                    },
+
+                    xlabel: {
+                        type: String,
+                        value: "Time(ms)",
+                        reflectToAttribute: true,
+                    },
+
+                    drawPoints: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true,
+                    },
+
+                    strokeWidth: {
+                        type: Number,
+                        value: 20,
+                        reflectToAttribute: true,
+                    },
+
+                    pointSize: {
+                        type: Number,
+                        value: 1,
+                        reflectToAttribute: true,
+                    },
+
+                    yAxisLabelFormatter: {
+                        type: Object,
+                        value: undefined,
+                        reflectToAttribute: true,
+                    },
+
+                    yValueFormatter: {
+                        type: Object,
+                        value: undefined,
+                        reflectToAttribute: true,
+                    },
+
+                    drawPointStyle: {
+                        type: String,
+                        value: "Square",
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    blockDraw: {
+                        type: Boolean,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    plotItm : {
+                        type: Object,
+                        value: undefined,
+                        reflectToAttribute: true,
+                    },
+
+                    yValueRange : {
+                        type: Array,
+                        value: [],
+                        reflectToAttribute: true,
+                    },
+
+                    xValueRange : {
+                        type: Array,
+                        value: [],
+                        reflectToAttribute: true,
+                        notify: true,
+                    },
+
+                    clickCallback : {
+                        type: Object,
+                        reflectToAttribute: true,
+                    },
+
+                    zoomCallback : {
+                        type: Object,
+                        reflectToAttribute: true,
+                    },
+
+                },
+
+                _clickCallback : function(e, x, points) {
+                    //console.log("Click Callback");
+                    //console.log(e);
+                    //console.log("x = " + e.offsetX + " y = " + e.offsetY);
+
+                    //var yrange = [0, this.excList.length + 1];
+                    //this.yValueRange = [];
+                    //this.yValueRange = yrange;
+
+                    //var xrange = this.timeRange;
+                    //this.xValueRange = [];
+                    //this.xValueRange = xrange;
+                },
+
+                _zoomCallback : function(minx, maxx, yvalue) {
+                    //console.log("Zoom Callback");
+                    //console.log(minx);
+                    //console.log(maxx);
+                    //console.log(yvalue);
+
+                    var yrange = [0, this.excList.length + 1];
+                    this.yValueRange = [];
+                    this.yValueRange = yrange;
+
+                },
+
+                _yAxisLabelFormatter: function(y) {
+                    if (y == Math.round(y) && y > 0 && y <= this.excList.length)
+                    {
+                        var ylabeloffset = y - 1;
+                        return this.excList[ylabeloffset].name + "<br />" + this.excList[ylabeloffset].num;
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                },
+
+                _yValueFormatter: function(y , opts, seriesName, dygraph, row, col) {
+                    var yValue = "";
+                    var exc = dygraph.getValue(row, this.EXC_INFO_COL+1);
+                    if (exc !== null && exc !== undefined)
+                    {
+                        for (var e = 0 ; e < exc.length; e++)
+                        {
+                            var excIndex = exc[e][0];
+                            var excState;
+                            switch(exc[e][1])
+                            {
+                                case this.EXC_STATE_ENTER:
+                                    excState = "ENTER";
+                                    break;
+                                case this.EXC_STATE_EXIT :
+                                    excState = "EXIT";
+                                    break;
+                                case this.EXC_STATE_RET :
+                                    excState = "RETURN";
+                                    break;
+                                case this.EXC_STATE_PREEMPT :
+                                    excState = "PREEMPT";
+                                    break;
+                                default:
+                                    excState = "Unknown";
+                                    break;
+                            }
+                            yValue += "<br />" + "Exc " + this.excList[excIndex].num + " "+ excState;
+                        }
+                    }
+                    return yValue;
+                },
+
+                resize: function() {
+                    this.$.excgraph._resize();
+                },
+
+                _plotItm : function (e) {
+                    //console.log(e);
+                    if (e.seriesIndex > 0)
+                        return;
+                    this._plotException(e);
+                },
+
+                _excListChanged : function(newValue) {
+                    if (newValue !== undefined)
+                    {
+                        //console.log("_excListChanged");
+                        //console.log(newValue);
+                        this.yValueRange = [];
+                        this.yValueRange = [0, newValue.length + 1];
+                    }
+                },
+
+                _timeRangeChanged : function(newValue) {
+                    if (newValue !== undefined)
+                    {
+                        //console.log("_timeRangeChanged");
+                        //console.log(newValue);
+                        this.xValueRange = [];
+                        this.xValueRange = newValue;
+                    }
+                },
+
+                EXC_STATE_ENTER : 1,
+                EXC_STATE_EXIT : 2,
+                EXC_STATE_RET : 3,
+                EXC_STATE_PREEMPT : 0,
+
+                EVENT_TYPE_EXCEPTION : 0,
+
+                EVT_TYPE_COL : 0,
+                EXC_INFO_COL : 1,
+
+                _plotException : function(e) {
+                    //console.log(e);
+                    var BAR_HEIGHT = 8;
+                    var area = e.plotArea;
+                    var ctx = e.drawingContext;
+                    var axis = e.axis;
+
+                    var eventType = e.allSeriesPoints[this.EVT_TYPE_COL];
+                    var eventVal = e.allSeriesPoints[this.EXC_INFO_COL];
+
+                    var xresolution = area.w / (e.dygraph.xAxisRange()[1] - e.dygraph.xAxisRange()[0]);
+                    var yresolution = area.h / axis.yrange;
+
+                    var startindex = 0;
+                    for (startindex=0 ; startindex < eventType.length ; startindex++)
+                    {
+                        if (eventType[startindex].yval === this.EVENT_TYPE_EXCEPTION)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (startindex === eventType.length)
+                    {
+                        return;
+                    }
+
+                    var previndex = startindex;
+
+                    for (var p = startindex + 1; p < eventVal.length ; p++)
+                    {
+                        if (eventType[p].yval !== this.EVENT_TYPE_EXCEPTION)
+                        {
+                            continue;
+                        }
+
+                        for (var q = 0; q < eventVal[previndex].yval.length; q++)
+                        {
+                            for (var r = 0; r < eventVal[p].yval.length; r++)
+                            {
+                                if (eventVal[previndex].yval[q][0] === eventVal[p].yval[r][0])
+                                {
+                                    var rectTop =  area.h - ((eventVal[previndex].yval[q][0] + 1) * yresolution) - (BAR_HEIGHT / 2);
+                                    var rectLeft = area.x + ((eventVal[previndex].xval - e.dygraph.xAxisRange()[0]) * xresolution);
+                                    var rectWidth = (eventVal[p].xval - eventVal[previndex].xval) * xresolution;
+
+                                    if (rectWidth < 1)
+                                    {
+                                        rectWidth += 1;
+                                        rectLeft -= 0.5;
+                                    }
+
+                                    var excProcessing = false;
+
+                                    if (eventVal[previndex].yval[q][1] === this.EXC_STATE_ENTER || eventVal[previndex].yval[q][1] === this.EXC_STATE_RET)
+                                    {
+                                        excProcessing = true;
+                                        // Active exception
+                                        ctx.fillStyle ='#008000';
+                                        ctx.fillRect(rectLeft, rectTop, rectWidth, BAR_HEIGHT);
+                                    }
+                                    else if (eventVal[previndex].yval[q][1] === this.EXC_STATE_PREEMPT)
+                                    {
+                                        excProcessing = true;
+                                        // Preempted exception
+                                        ctx.fillStyle ='#808080';
+                                        ctx.fillRect(rectLeft, rectTop, rectWidth, BAR_HEIGHT);
+                                        ctx.fillStyle ='#ff0000';
+                                        ctx.fillRect(rectLeft, rectTop+BAR_HEIGHT, rectWidth, BAR_HEIGHT);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        previndex = p;
+                    }
+                },
+
+                ready: function()
+                {
+                    this.yAxisLabelFormatter = this._yAxisLabelFormatter.bind(this);
+                    this.yValueFormatter = this._yValueFormatter.bind(this);
+                    this.plotItm = this._plotItm.bind(this);
+                    this.clickCallback = this._clickCallback.bind(this);
+                    this.zoomCallback = this._zoomCallback.bind(this);
+
+                    /*
+                    Data	Domain	Class	Type	Data Size	Timestamp
+                    12	DWT	Entry to Exception	Address		0
+                    12	DWT	Exit from Exception	Address		241085792
+                    11	DWT	Entry to Exception	Address		241201032
+                    11	DWT	Exit from Exception	Address		482285548
+                    10	DWT	Entry to Exception	Address		482401016
+                    10	DWT	Exit from Exception	Address		714714608
+                    0	DWT	Return to Exception	Address		722401016
+                    12	DWT	Entry to Exception	Address		954714580
+                    12	DWT	Exit from Exception	Address		1203590564
+                    11	DWT	Entry to Exception	Address		1203600992
+                    11	DWT	Exit from Exception	Address		1444790448
+                    10	DWT	Entry to Exception	Address		1444800980
+                    10	DWT	Exit from Exception	Address		1677167484
+                    0	DWT	Return to Exception	Address		1684800968
+                    12	DWT	Entry to Exception	Address		1917167404
+                    11	DWT	Entry to Exception	Address		1925167632
+                    10	DWT	Entry to Exception	Address		1925990612
+                    10	DWT	Exit from Exception	Address		2158813468
+                    11	DWT	Return to Exception	Address		2166000944
+                    11	DWT	Exit from Exception	Address		2398367388
+                    12	DWT	Return to Exception	Address		2406000924
+                    12	DWT	Exit from Exception	Address		2638367372
+                    0	DWT	Return to Exception	Address		2646000924
+                    */
+                    /*
+                    this.excList = [{num: 0, name: "Exc djfjkf 1 dfjdsfash"},
+                                    {num: 1, name: "Exc2"},
+                                    {num: 2, name: "Exc3"}
+                                   ];
+                    this.labels = ['Time', 'EventType', 'EventInfo'];
+
+                    this.timeRange = [0, 2646000924];
+
+                    this.data = [
+                                    [ 100000000, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_ENTER],] ],
+                                    [ 241085792, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_EXIT],] ],
+                                    [ 241201032, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_ENTER],] ],
+                                    [ 482285548, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_EXIT],] ],
+                                    [ 482401016, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_ENTER],] ],
+                                    [ 714714608, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_EXIT],] ],
+                                    [ 954714580, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_ENTER],] ],
+                                    [ 1203590564, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_EXIT],] ],
+                                    [ 1203600992, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_ENTER],] ],
+                                    [ 1444790448, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_EXIT],] ],
+                                    [ 1444800980, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_ENTER],] ],
+                                    [ 1677167484, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_EXIT],] ],
+                                    [ 1917167404, this.EVENT_TYPE_EXCEPTION, [[0,this.EXC_STATE_ENTER],] ],
+                                    [ 1925167632, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_ENTER], [0, this.EXC_STATE_PREEMPT], ] ],
+                                    [ 1925990612, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_ENTER], [0, this.EXC_STATE_PREEMPT], [1, this.EXC_STATE_PREEMPT], ] ],
+                                    [ 2158813468, this.EVENT_TYPE_EXCEPTION, [[2, this.EXC_STATE_EXIT], [0, this.EXC_STATE_PREEMPT], [1, this.EXC_STATE_PREEMPT], ] ],
+                                    [ 2166000944, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_RET], [0, this.EXC_STATE_PREEMPT], ] ],
+                                    [ 2398367388, this.EVENT_TYPE_EXCEPTION, [[1, this.EXC_STATE_EXIT], [0, this.EXC_STATE_PREEMPT], ] ],
+                                    [ 2406000924, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_RET],] ],
+                                    [ 2638367372, this.EVENT_TYPE_EXCEPTION, [[0, this.EXC_STATE_EXIT],] ],
+                    ];
+                    */
+                }
+            });
+        </script>
+    </dom-module>
+
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!--
+    Copyright (c) 2018, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/paper-toast/paper-toast.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-icon/iron-icon.html">
+<link rel="import" href="../../components/ti-core-assets/ti-core-assets.html">
+<link rel="import" href="../../components/ti-core-backplane/ti-core-backplane.html">
+<script src="trace.js"></script>
+
+<dom-module id='ti-service-trace'>
+    <template>
+        <ti-core-backplane id="backplane"></ti-core-backplane>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        /* global TITraceAgent:false */
+        /* global Q: false */
+        var gc = gc || {};
+        (function() {
+            Polymer ({
+                is: 'ti-service-trace',
+                properties: {
+                    backplane: {
+                        notify: true,
+                        type: String,
+                        value: undefined,
+                        observer: "backplaneChanged"
+                    },
+                    deviceName : {
+                        notify: true,
+                        type: String,
+                        value: undefined,
+                        reflectToAttribute: true
+                    },
+                    ds : {
+                        notify: true,
+                        type: Object,
+                        value: undefined,
+                        reflectToAttribute: true
+                    },
+                    deviceId : {
+                        notify: true,
+                        type: Number,
+                        value: undefined,
+                        reflectToAttribute: true,
+                        //observer: "_deviceIdChanged"
+                    },
+                    deviceInfo : {
+                        notify: true,
+                        type: Object,
+                        value: undefined,
+                        reflectToAttribute: true
+                    },
+                    activeCore : {
+                        notify: true,
+                        type: String,
+                        value: undefined,
+                        reflectToAttribute: true
+                    },
+                    activeOutFileName : {
+                        notify: true,
+                        type: String,
+                        value: undefined,
+                        reflectToAttribute: true
+                    },
+                    traceAgent : {
+                        notify: true,
+                        type: Object,
+                        reflectToAttribute: true,
+                        value: undefined
+                    },
+                    currentState: {
+                        notify: true,
+                        type: String,
+                        value: undefined,
+                        reflectToAttribute: true,
+                        observer: "currentStateChanged"
+                    }
+                },
+                states: [
+                    {
+                        'name': 'disconnected',
+                        'events': {
+                            'cloudtrace_ready': 'connected',
+                            'cloudtrace_failed': 'disconnected',
+                            'cloudtrace_disconnected': 'disconnected'
+                        }
+                    },
+                    {
+                        'name': 'connected',
+                        events: {
+                            'backplane_ready' : 'ready',
+                            'backplane_failed' : 'disconnected',
+                            'cloudtrace_disconnected': 'disconnected'
+                        }
+                    },
+                    {
+                        'name': 'ready',
+                        events: {
+                            'backplane_ready' : 'ready',
+                            'backplane_disconnected' : 'disconnected',
+                            'cloudtrace_disconnected' : 'disconnected'
+                        }
+                    }
+                ],
+                created: function() {
+                    this.updateStateMachine = this._updateStateMachine.bind(this);
+                    this.currentStateChanged = this._currentStateChanged.bind(this);
+                    this.backplaneCurrentStateChangedHdlr = this._backplaneCurrentStateChangedHdlr.bind(this);
+                    this.backplaneConnectionStatusChangedHdlr = this._backplaneConnectionStatusChangedHdlr.bind(this);
+                    this.backplaneBtnVisibilityChangedHdlr = this._backplaneBtnVisibilityChangedHdlr.bind(this);
+                    this.activeContextChanged = this._activeContextChanged.bind(this);
+                },
+                attached: function() {
+                    gc.services = gc.services || {};
+                    gc.services['ti-service-trace'] = this;
+                },
+                detached: function() {
+                    if (gc.services['ti-service-trace'] === this) {
+                        gc.services['ti-service-trace'] = undefined;
+                    }
+                },
+                ready: function() {
+                    var _self = this;
+
+                    this.backplane = this.$.backplane;
+                    this.stateIndices = {};
+                    for (var i = 0; i < this.states.length; i++) {
+                        this.stateIndices[this.states[i].name] = i;
+                    }
+                    this.currentState = this.states[0].name;
+                    this.previousState = this.currentState;
+                    this.initComplete = true;
+                    TITraceAgent.Init().then(function (traceAgent) {
+                        _self.traceAgent = traceAgent;
+                        console.log("connected to trace service");
+                        _self.updateStateMachine('cloudtrace_ready');
+                    }).catch(function() {
+                        console.log("connection to trace service failed");
+                        _self.updateStateMachine('cloudtrace_failed');
+                    }).done();
+                },
+                initComplete: false,
+                initCore: function (name)
+                {
+                    if (this.ds !== undefined)
+                    {
+                        var _core = undefined;
+                        this.ds.getSubModule(name).then(function (c) {
+                            _core = c;
+                            return _core.targetState.connect();
+                        }).then(function () {
+                            return _core.targetState.disconnect();
+                        }).catch(function () {
+                            return;
+                        });
+                    }
+                },        
+                connectToCore: function(name)
+                {   
+                    var promise = Q.defer();
+                    if (this.ds !== undefined)
+                    {
+                        this.ds.getSubModule(name).then(function (c) {
+                            return c.targetState.connect();
+                        }).then(function () {
+                            promise.resolve("connected");
+                        }).catch(function (e) {
+                            if ((e.message !== undefined) && (e.message === "Target is already connected")) {
+                                promise.resolve("connected");
+                            } else {
+                                promise.reject(e);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        promise.resolve(null);
+                    }
+                    return promise.promise;
+                },
+                disconnectFromCore: function(name)
+                {
+                    if (this.ds !== undefined)
+                    {
+                        this.ds.getSubModule(name).then(function (c) {
+                            return c.targetState.disconnect();
+                        }).catch(function () {
+                            return;
+                        });
+                    }
+                },
+                _updateDeviceId: function (devices)
+                {
+                    if (devices.length > 0) {
+                        this.deviceName = devices[0].name;
+                        this.deviceId = devices[0].id;
+                        this.deviceInfo = devices[0].device_info;
+                        this.activeCore = this._tmpActiveCore;
+                        if ((this.deviceInfo !== undefined) && (this.activeCore !== undefined)) {
+                            var fname = this._getActiveOutFileName(this.deviceInfo.children);
+                            if (fname !== this.activeOutFileName) {
+                                this.activeOutFileName = fname;
+                            }
+                        } else {
+                            this.activeOutFileName = undefined;
+                        }
+                    } else {
+                        if (this.deviceId !== undefined) {
+                            this.deviceName = undefined;
+                            this.deviceId = undefined;
+                            this.deviceInfo = undefined;
+                            this.activeCore = undefined;
+                            this.activeOutFileName = undefined;
+                        }
+                    }
+                },
+                _getDevice: function () {
+                    var _self = this;
+                    this.traceAgent.cloudTrace.getDevices({live: true}).then(
+                        function (resp) {
+                            _self._updateDeviceId(resp.devices);
+                        },
+                        function () {
+                            _self.ds.listCores().then(
+                                function (cores) {
+                                    if (cores.nonDebugCores.length !== 0) {
+                                        var re = /CS_DAP/;
+                                        var dapCore = cores.nonDebugCores.find(function (element) {
+                                            return (element.match(re) !== null);
+                                        });
+                                        if (dapCore !== undefined) {
+                                            _self.ds.getSubModule(dapCore).then(function(dap) {
+                                                dap.targetState.connect();
+                                            }).then(function () {
+                                                return _self.traceAgent.cloudTrace.getDevices({live: true});
+                                            }).then(
+                                                function (resp) {
+                                                    _self._updateDeviceId(resp.devices);
+                                                }, 
+                                                function () {
+                                                    _self._updateDeviceId([]);
+                                                }
+                                            );
+                                        }
+                                    } else {
+                                        _self._updateDeviceId([]);
+                                    }
+                                },
+                                function () {
+                                    _self._updateDeviceId([]);
+                                }
+                            );
+                        }
+                    );
+                    if (_self.hasOwnProperty("ds")) {
+                        _self.ds.listCores().then(function (cores) {
+                            if (cores.nonDebugCores.length !== 0) {
+                                var re = /CS_DAP/;
+                                var dapCore = cores.nonDebugCores.find(function (element) {
+                                    return (element.match(re) !== null);
+                                });
+                                if (dapCore !== undefined) {
+                                    _self.ds.getSubModule(dapCore).then(function(dap) {
+                                        dap.targetState.connect();
+                                        return dap;
+                                    }).then(function () {
+                                        return _self.traceAgent.cloudTrace.getDevices({live: true});
+                                    }).then(function (resp) {
+                                        _self._updateDeviceId(resp.devices);
+
+                                    }).catch(function (e) {
+                                        console.log(JSON.stringify(e, null, 3));                                    
+                                        _self._updateDeviceId([]);
+                                    });
+                                }
+                            } else {
+                                _self._updateDeviceId([]);
+                            }
+                        }).catch(function () {
+                            _self._updateDeviceId([]);
+                        });
+                    }
+                },
+                _activeContextChanged: function (info)
+                {
+                    var _self = this;
+                    var contexts;
+                    if (Array.isArray(info)) {
+                        contexts = info;
+                    } else {
+                        contexts = info.data;
+                    }
+                    if (contexts[0] !== undefined) {
+                        var last = contexts[0].core.lastIndexOf('/') + 1;
+                        this._tmpActiveCore = contexts[0].core.slice(last);
+                        this.debounce('getDevice',function() {
+                            _self._getDevice();
+                        }, 1000);
+                    }
+                }, 
+                activeContextChanged: undefined,
+
+                _backplaneCurrentStateChangedHdlr: function(e) {
+                    switch (e.target.currentState.name) {
+                        case 'ready':
+                            var _self = this;
+                            this.backplane.agent.getSubModule('EventBroker').then(function(broker) {
+                                _self.broker = broker;
+                                broker.fetchData("ccs.debug.activeContext").then(function(data) {
+                                    _self.activeContextChanged(data);
+                                });	
+                                broker.addListener("ccs.debug.activeContextChangedEvent", _self.activeContextChanged);
+                                return _self.backplane.agent.getSubModule('DS');
+                            }).then(function (ds) {
+                                _self.ds = ds;
+                            }).then(function () {
+                                _self._getDevice();
+                            }).catch(function (e) {
+                                console.log(JSON.stringify(e, null, 3));
+                            });
+                            break;
+                        case 'failedToConnect':
+                            this.updateStateMachine('backplane_failed');
+                            break;
+                        case 'disconnected':
+                            this.updateStateMachine('backplane_disconnected');
+                            break;
+                    }
+                },
+
+                backplaneCurrentStateChangedHdlr: undefined,
+                _backplaneConnectionStatusChangedHdlr: function(e) {
+                    console.log('ti-service-trace: backplaneConnectionState changed .isConnectedToCloudAgent=' + e.target.isConnectedToCloudAgent);
+                },
+                backplaneConnectionStatusChangedHdlr: undefined,
+
+                _backplaneBtnVisibilityChangedHdlr: function(e) {
+                    console.log('ti-service-trace: backplaneBtnVisibility changed to '+e);
+                },
+                backplaneBtnVisibilityChangedHdlr: undefined,
+
+                backplaneChanged: function(newBackplane, oldBackplane) {
+                    if ((oldBackplane !== undefined) && (oldBackplane !== null) && (oldBackplane.removeEventListener)) {
+                        oldBackplane.removeEventListener("currentStateUpdated", this.backplaneCurrentStateChangedHdlr);
+                        oldBackplane.removeEventListener("connectionStatusChanged", this.backplaneConnectionStatusChangedHdlr);
+                        oldBackplane.removeEventListener("btnVisibilityChanged", this.backplaneBtnVisibilityChangedHdlr);    
+                    }
+                    if ((this.backplane !== undefined) && (this.backplane.addEventListener)) {
+                        this.backplane.addEventListener("currentStateUpdated", this.backplaneCurrentStateChangedHdlr);
+                        this.backplane.addEventListener("connectionStatusChanged", this.backplaneConnectionStatusChangedHdlr);
+                        this.backplane.addEventListener("btnVisibilityChanged", this.backplaneBtnVisibilityChangedHdlr);
+                        if (this.backplane.currentState !== undefined) {
+                            console.log('ti-service-trace: backplane event handlers initialized. backplane.currentState.name=' + this.backplane.currentState.name);
+                        }
+                    }
+                    //this.fire('backplaneChanged');
+                },
+                _getActiveOutFileName: function (kids) {
+                    for (var i in kids) {
+                        var el = kids[i];
+                        var names = el.name.split('/');
+                        var name = names[names.length - 1];
+                        if (el.hasOwnProperty("out_file_name") && (name === this.activeCore)) {
+                            return el.out_file_name;
+                        }
+                        var tmp = this._getActiveOutFileName(el.children);
+                        if (tmp !== undefined) {
+                            return tmp;
+                        }
+                    }
+                    return undefined;
+                },
+                // _deviceIdChanged: function (newId) {
+                //     if (newId === "") {
+                //         this.deviceInfo = {};
+                //     } else {
+                //         var _self = this;
+                //         this.traceAgent.cloudTrace.getDeviceInfo(this.deviceName).then(function (info) {
+                //             _self.deviceInfo = info.device;
+
+                //         });
+                //     }
+                // },
+                _currentStateChanged: function() {
+                    console.log("**** **** ****");
+                    if (this.initComplete) {
+                        console.log('ti-trace-service: onCurrentStateChanged: currentState ' + this.currentState);
+                        this.prevState = this.currentState;
+                        switch (this.currentState) {
+                        case 'disconnected':
+                            this.deviceId = undefined;
+                            break;
+                        case 'connected':
+                            this.backplane.connect();
+                            break;
+                        case 'ready':
+                            console.log('trace service READY');
+                            break;
+                        }
+                    }
+                    this.fire('currentStateUpdated');
+                },
+
+                currentStateChanged: undefined,
+
+                _updateStateMachine: function(eventName) {
+                    var origStateName = this.currentState;
+                    var indx = this.stateIndices[origStateName];
+                    var newStateName = this.states[indx].events[eventName];
+                    if (newStateName) {
+                        console.log("trace service state: "+newStateName);
+                        this.currentState = newStateName;
+                    }
+                },
+            });
+        }());
+    </script>
+</dom-module>

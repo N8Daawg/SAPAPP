@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Orientation = System.Windows.Controls.Orientation;
 using ProgressBar = System.Windows.Controls.ProgressBar;
+using SAPAPP.Scripts;
 
 
 
@@ -22,13 +23,13 @@ namespace SAPAPP
     public partial class MainWindow : Window
     {
         //private GangScripts gs;
-        private FETScripts fs;
+        private FetScript fs;
 
         public MainWindow()
         {
             InitializeComponent();
             //gs = new GangScripts();
-            fs = new FETScripts();
+            fs = new FetScript();
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -40,12 +41,11 @@ namespace SAPAPP
             {
                 if (ProductPicker.SelectedIndex == 1)
                 {
-                    Process_Feedback(fs.MSP430Download());
+                    fs.Download();
                 }
             }
             
             //CLI_test();
-            //StatusMessageDisplay.Text =  gs.GangInit();
 
         }
 
