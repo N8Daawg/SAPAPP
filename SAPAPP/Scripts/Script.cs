@@ -11,7 +11,7 @@ namespace SAPAPP.Scripts
     {
 
         protected string workingDirectory;
-        protected const bool testing = false;
+        protected const bool testing = true;
 
         public Script()
         {

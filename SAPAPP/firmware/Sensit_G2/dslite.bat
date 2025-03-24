@@ -11,7 +11,7 @@ set DEBUGSERVER_ROOT=%~dp0ccs_base\DebugServer\
 set MODE=flash
 set EXECUTABLE="!DEBUGSERVER_ROOT!bin\DSLite"
 
-set GENERATED_COMMAND=-c user_files/configs/MSP430F2418.ccxml -l user_files/settings/generated.ufsettings -s VerifyAfterProgramLoad="No verification" -e -f -v "user_files/images/SensitG2_v205_Turkish.txt" 
+set GENERATED_COMMAND=-c user_files/configs/MSP430F2418.ccxml -s VerifyAfterProgramLoad="No verification" -e -f -v "user_files/images/SensitG2_v205_Turkish.txt" 
 set ADDITIONALS=
 
 REM list available modes
