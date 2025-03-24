@@ -4,22 +4,28 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:SAPAPP"
              StartupUri="MainWindow.xaml">
-    <Application.Resources>
+	<Application.Resources>
 
-        <x:Array x:Key="ProductsList" Type="sys:String">
-            <sys:String>Product 1</sys:String>
-            <sys:String>Product 2</sys:String>
-            <sys:String>Product 3</sys:String>
-            <sys:String>Product 4</sys:String>
-            <sys:String>Product 5</sys:String>
-        </x:Array>
+		<x:Array x:Key="ProductsList" Type="sys:String">
+			<sys:String>Select A Product:</sys:String>
+			<sys:String>Texas Instruments MSP430</sys:String>
+			<sys:String>Microchip ATmega</sys:String>
+			<sys:String>STMicroelectronics STM32</sys:String>
+			<sys:String>Ezurio BL654 Series Bluetooth/NFC Module</sys:String>
+			<sys:String>Texas Instruments Battery Fuel Gauges</sys:String>
+		</x:Array>
 
-        <x:Array x:Key="PCBList" Type="sys:String">
-            <sys:String>PCB 1</sys:String>
-            <sys:String>PCB 2</sys:String>
-            <sys:String>PCB 3</sys:String>
-            <sys:String>PCB 4</sys:String>
-            <sys:String>PCB 5</sys:String>
-        </x:Array>
-    </Application.Resources>
+		<x:Array x:Key="PCBList" Type="sys:String">
+			<sys:String>Select A PCB:</sys:String>
+			<sys:String>MSP-FET</sys:String>
+			<sys:String>MSP-GANG</sys:String>
+			<sys:String>MPLAB PICkit 5</sys:String>
+			<sys:String>MPLAB ICE 4</sys:String>
+			<sys:String>MPLAB ICD 5</sys:String>
+			<sys:String>STLINK-V3MINIE</sys:String>
+			<sys:String>STLINK-V3SET</sys:String>
+			<sys:String>Arduino UNO R3</sys:String>
+		</x:Array>
+	</Application.Resources>
 </Application>
+

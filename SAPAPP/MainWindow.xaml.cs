@@ -36,9 +36,9 @@ namespace SAPAPP
             progbar.IsIndeterminate = true;
             StatusMessageDisplay.Text = "Starting Download";
 
-            if (PCBPicker.SelectedIndex == 0)
+            if (PCBPicker.SelectedIndex == 1)
             {
-                if (ProductPicker.SelectedIndex == 0)
+                if (ProductPicker.SelectedIndex == 1)
                 {
                     Process_Feedback(fs.MSP430Download());
                 }

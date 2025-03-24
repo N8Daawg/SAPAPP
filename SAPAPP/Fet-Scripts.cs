@@ -10,7 +10,7 @@ public class FETScripts
     private const string localBatInstallDir = @"\firmware\productConfig";
     private const string loadfile = "dslite.bat";
 
-    private const bool testing = true;
+    private const bool testing = false;
     
 
 
