@@ -12,7 +12,6 @@ namespace SAPAPP.Scripts
     {
         private const string localBatInstallDir = @"\firmware\Sensit_G2";
         private const string loadfile = "dslite.bat";
-        private const string configFile = "one_time_setup.bat";
 
         public FetScript() 
             : base(){}
