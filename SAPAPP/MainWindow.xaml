@@ -9,12 +9,12 @@
         WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithGrip">
 
 	<Grid>
-		<!-- Background Image -->
-		<Grid.Background>
-			<ImageBrush ImageSource="C:\Users\lego1\Downloads\st-hero-min-1024x667.png" Stretch="UniformToFill"/>
-		</Grid.Background>
+        <!-- Background Image -->
+        <Grid.Background>
+            <ImageBrush ImageSource="/st-hero-min-1024x667.png" Stretch="UniformToFill"/>
+        </Grid.Background>
 
-		<!-- Transparent Overlay -->
+        <!-- Transparent Overlay -->
 		<Border Background="CadetBlue" Opacity="0.5"/>
 
 		<!-- Original Content -->
@@ -61,10 +61,10 @@
 						</DockPanel>
 					</StackPanel>
 
-					<StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200">
-						<Image Source="C:\Users\lego1\Downloads\OIP-removebg-preview.png" Width="175" Height="136"/>
-					</StackPanel>
-				</Grid>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="200">
+                        <Image Source="/OIP-removebg-preview.png" Width="175" Height="136"/>
+                    </StackPanel>
+                </Grid>
 
 				<StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="White" Width="800">
 					<StatusBarItem>
