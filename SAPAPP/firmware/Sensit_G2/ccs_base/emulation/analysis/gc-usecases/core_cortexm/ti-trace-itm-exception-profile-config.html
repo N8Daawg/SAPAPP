@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<!--link rel="import" href="../components/ti-widget-common/ti-widget-checkbox.html"-->
+<!--link rel="import" href="../components/ti-widget-common/ti-widget-table.html"-->
+<!--link rel="import" href="../components/ti-widget-common/ti-widget-droplist.html"-->
+<!--link rel="import" href="../components/ti-widget-common/ti-widget-input.html"-->
+<!--link rel="import" href="../components/ti-widget-common/ti-widget-container.html"-->
+<!--link rel="import" href="../components/iron-flex-layout/iron-flex-layout.html"-->
+<link rel="import" href="../components/paper-card/paper-card.html">
+<!--link rel="import" href="../components/ti-widget-card/ti-widget-card.html"-->
+<link rel="import" href="../components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-model/ti-trace-model.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-progress.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-common-style.html">
+</head>
+
+<body class="ti-theme" unresolved>
+    <dom-module id='ti-trace-itm-exception-profile-config'>
+        <template>
+            <style include="ti-trace-common-style"> </style>
+            <style>
+                html {
+                    margin: 0px;
+                    padding: 0px;
+                }
+                body {
+                    padding: 0px;
+                    margin: 0;
+                    border: 0;
+                }
+                paper-card {
+                    height: auto;
+                }
+            </style>
+
+            <paper-card heading="">
+                <div id="title" class="title">
+                    <paper-checkbox class="usecase" checked={{enableUsecase}} on-checked-changed="handleCheckEvent"></paper-checkbox>
+                    <paper-icon-button id="expandButton" slot="top" icon="expand-more" on-click="_toggle"></paper-icon-button>
+                     Exception Profile
+                </div>
+                <iron-collapse id="collapse">
+                <div id="desc" class="desc">
+                    Exception Profile allows for examination of exceptions taken by the core. Exception entry, exit and preemption are traced and displayed in a graph.
+                </div>
+                </iron-collapse>
+
+            </paper-card>
+
+        </template>
+
+        <script>
+            Polymer({
+                is : 'ti-trace-itm-exception-profile-config',
+                properties : {
+                    config : {
+                        type: Array,
+                        value: (function(){
+                            return [
+                                {
+                                    name: "Type",
+                                    type: "String",
+                                    value: "Trace",
+                                    sub_properties: [
+                                        {
+                                            name: "Triggers",
+                                            type: "String",
+                                            value: "Trace DWT Event",
+                                            sub_properties: [
+                                                {
+                                                    name: "Enable Exception Trace",
+                                                    type: "Boolean",
+                                                    value: true,
+                                                },
+                                                {
+                                                    name: "Exception Overhead Count Event",
+                                                    type: "Boolean",
+                                                    value: true,
+                                                },
+                                                {
+                                                    name: "Timestamping",
+                                                    type: "String",
+                                                    value: "(open to select)",
+                                                    sub_properties: [
+                                                        {
+                                                            name: "Local Timestamp Enable",
+                                                            type: "Boolean",
+                                                            value: true,
+                                                            sub_properties: [
+                                                                {
+                                                                    name: "Local Timestamp Prescaler",
+                                                                    type: "String",
+                                                                    value: "Divide by 4",
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ];
+                        }),
+                    },
+
+                    enableUsecase: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    tsPrescaler : {
+                        type: String,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+                },
+
+                savedSettings : [],
+
+                _icon: function(expanded)
+                {
+                    return expanded ? 'expand-less' : 'expand-more';
+                },
+
+                _toggle: function(evt) {
+                    this.$.collapse.toggle();
+                    this.$.expandButton.setAttribute('aria-expanded', this.$.collapse.opened);
+                    this.$.expandButton.icon = this._icon(this.$.collapse.opened);
+                },
+
+                handleCheckEvent : function (evt) {
+                    this.$.collapse.opened = true;
+                    this.$.expandButton.setAttribute('aria-expanded', this.$.collapse.opened);
+                    this.$.expandButton.icon = this._icon(this.$.collapse.opened);
+                },
+
+                _tsPrescalerChanged: function(newValue) {
+                    this.config[0].sub_properties[0].sub_properties[2].sub_properties[0].sub_properties[0].value = newValue;
+                },
+
+                getConfig : function() {
+                    if (this.enableUsecase)
+                    {
+                        this.config[0].sub_properties[0].sub_properties[2].sub_properties[0].sub_properties[0].value = this.tsPrescaler;
+                        this._savesettings();
+
+                        return this.config;
+                    }
+
+                    return null;
+                },
+
+                _savesettings: function() {
+                    this.savedSettings = [];
+                    // push new settings
+                    this.savedSettings.push(this.enableUsecase);
+                },
+
+                _revertsettings: function() {
+                    if (this.savedSettings.length === 1)
+                    {
+                        this.enableUsecase = this.savedSettings[0];
+                    }
+
+                },
+
+                hasError: function() {
+                    return false;
+                },
+
+                ready : function () {
+                    this._savesettings();
+                }
+            });
+        </script>
+    </dom-module>
+</body>
+
+</html>

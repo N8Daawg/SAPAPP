@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2019, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<link rel="import" href="../../components/polymer/polymer.html">
+<script type='text/javascript' src="../../components/ti-core-assets/scripts/q.js"></script>
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-radio-group.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-radio-button.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-label.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-droplist.html">
+<link rel="import" href="../../components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../components/paper-item/paper-item.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/paper-card/paper-card.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-droplist.html">
+<dom-module id="ti-trace-receivers">
+    <template>
+        <style is="custom-style">
+            * {
+                font-size: 12px;
+                font-family: Roboto, sans-serif;
+            }
+
+            ti-widget-radio-button.receivers {
+                padding: 4px 12px;
+            }
+
+            paper-tooltip {
+                padding: 0px;
+            }
+
+            paper-card {
+                --paper-icon-button: {
+                    margin: 0px;
+                    padding: 0px;
+                    height: 24px;
+                    width: 24px;
+                }
+                margin: 0px;
+                width: 100%; /*calc(100% - 10px);*/
+                padding: 0px;
+                --paper-card-content: {
+                    margin: 0px;
+                    padding: 8px;
+                }
+            }
+            vaadin-grid paper-icon-button {
+                --paper-icon-button: {
+                    padding: 0px;
+                    margin: 0px;
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            paper-dropdown-menu {
+                --paper-listbox: {
+                    width: 6em;
+                }
+                --paper-dropdown-menu: {
+                    width: 8rem;
+                }
+                --paper-input-container: {
+                    padding: 0px;
+                }
+                --paper-input-container-input : {
+                    font-size: 12px;
+                }
+                --paper-input-container-label : {
+                    font-size: 12px;
+                }
+                --paper-item-min-height: 16px;
+                --paper-item: {
+                    font-size: 12px;
+                    padding: 0px 16px;
+                }
+            }
+
+            paper-dropdown-menu#pinDrop {
+                --paper-listbox: {
+                    width: 3.5rem;
+                }
+            }
+
+            paper-dropdown-menu#rcvDrop {
+                --paper-listbox: {
+                    width: 7rem;
+                }
+            }
+
+            paper-icon-button {
+                padding: 0px;
+                width: 24px;
+                height: 24px;
+            }
+        </style>
+        <paper-card>
+            <div class="card-content">
+                <span class="title" style="font-weight:500">Receiver Settings</span>
+                <span style="float:right">
+                    <template is="dom-if" if="[[hasErrors]]">
+                        <paper-icon-button id="errors" slot="top" icon="warning"></paper-icon-button>
+                    </template>
+                    <paper-icon-button id="expandButton" slot="top" icon="expand-more" on-tap="_flip"></paper-icon-button>
+                </span>
+                <iron-collapse id="receiverCollapse">
+                        <div style="padding:10px 20px">
+                            The receiver captures the trace data and stores it until it can be read and decoded.
+                        </div>
+                        <div style="padding:10px 20px">
+                            <span>
+                                <ti-widget-label label="Receiver"></ti-widget-label>
+                                <ti-widget-droplist id="rcvDrop" labels="[[_arrayToString(receiverArray)]]"
+                                selected-index="{{receiverSelected}}"></ti-widget-droplist>
+                                <template is="dom-if" if="{{_isProRcv(receiverSelected)}}">
+                                    <ti-widget-label label="Pins"></ti-widget-label>
+                                    <ti-widget-droplist id="pinDrop" labels="[[_arrayToString(pinArray)]]"
+                                    selected-index="{{pinSelected}}"></ti-widget-droplist>
+                                    <ti-widget-label label="Buffer Size"></ti-widget-label>
+                                    <ti-widget-droplist id="bufferSizeDrop" labels="[[_arrayToString(bufferSizeArray)]]"
+                                    selected-index="{{bufferSizeSelected}}"></ti-widget-droplist>
+                                </template>
+                            </span>
+                        </div>
+
+                        <div style="padding:10px 20px">
+                            Buffer type:
+                            <ti-widget-radio-group id="bufferGroup" selected-text="{{bufferType}}" allow-empty-selection="false">
+                                
+                                <ti-widget-radio-button class="receivers" id="bufferCircular" label="Circular" value="Circular">
+                                </ti-widget-radio-button>
+                                <paper-tooltip for="bufferCircular">
+                                    Continuously captures trace data until halted
+                                </paper-tooltip>
+                                
+                                <ti-widget-radio-button class="receivers" id="bufferStopOnFull" label="Stop when full" value="Stop-on-full">
+                                </ti-widget-radio-button>
+                                <paper-tooltip for="bufferStopOnFull">
+                                    Stops capturing trace data when the trace buffer is full
+                                </paper-tooltip>
+
+                            </ti-widget-radio-group>
+                        </div>
+                        <div style="padding:10px 20px">
+                            Halt trace capture when specified core halts.
+                            <ti-widget-droplist id="syncCoreHalt" labels="[[_arrayToString(syncCores)]]"
+                            selected-text="{{syncCoreHalt}}"></ti-widget-droplist>
+                        </div>
+                </iron-collapse>
+            </div>
+        </paper-card>
+    </template>
+    <script>
+        Polymer({
+            is: 'ti-trace-receivers',
+            properties: {
+                probe: {
+                    type: String,
+                    value: undefined,
+                    observer: '_probeChanged'
+                },
+                hasErrors: {
+                    type: Boolean,
+                    value: false
+                },
+                _proReceiver: {
+                    type: Boolean,
+                    value: false
+                },
+                receiverArray: {
+                    type: Array,
+                    value: function () {return [];},
+                    notify: true,
+                    observer: '_receiverArrayChanged'
+                },
+                receiverArrayStr: {
+                    type: String,
+                    value: "",
+                    notify: true
+                },
+                receiverSelected: {
+                    type: Number,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                pinArray: {
+                    type: Array,
+                    value: function () {return [];}
+                },
+                pinSelected: {
+                    type: Number,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                bufferSizeArray: {
+                    type: Array,
+                    value: function() {return [];}
+                },
+                bufferSizeSelected: {
+                    type: Number,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                bufferType: {
+                    type: String,
+                    value: "Circular",
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                synchronizeWithTarget: {
+                    type: Boolean,
+                    value: true,
+                    reflectToAttribute: true,
+                },
+                syncCores: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true
+                },
+                syncCoreHalt: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    reflectToAttribute: true
+                }
+            },
+            observers: ["_receiverChanged(receiverSelected)"],
+            _probeChanged: function () {
+                this._proReceiver = (this.probe !== undefined) && this.probe.includes(" XDSPRO ");
+            },
+            _isPro: function (selection) {
+                return this._proReceiver && (selection !== undefined) && (selection.toLowerCase().includes("pro"));
+            },
+            _isProRcv: function (selection) {
+                return this._proReceiver && (selection !== undefined) && (this.receiverArray[selection].toLowerCase().includes("pro trace"));
+            },
+            _flip: function () {
+                var expanded = this.$.receiverCollapse.opened;
+                if (expanded) {
+                    this.$.expandButton.icon = 'expand-more';
+                } else {
+                    this.$.expandButton.icon = 'expand-less';
+                    this._receiverChanged(this.receiverSelected);
+                }
+                this.$.receiverCollapse.toggle();
+            },
+            _receiverChanged: function(selection)
+            {
+                if (!this._isProRcv(selection)) {
+                    this.bufferType = "Circular";
+                }
+            },
+            _receiverArrayChanged: function(val) {
+                this.receiverArrayStr = this._arrayToString(this.receiverArray);
+            },
+            _arrayToString: function(val) {
+                return val.join(",");
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,42 @@
+paper-toolbar {
+    border-bottom: 1px solid #aaaaaa;
+}
+
+table {
+    border-spacing: 0;
+}
+
+
+table {
+    width: 100%;
+    padding: 20px;
+}
+
+html .lightgray-theme paper-tabs[no-bar] paper-tab.iron-selected {
+  background-color: #115566;  /* this controls the background color of the selected tab */
+  color: white;
+}
+
+html .lightgray-theme paper-tabs,
+html .lightgray-theme iron-toolbar,
+html#designer-frame .designer-theme paper-tabs,
+html#designer-frame .designer-theme iron-toolbar {
+  background-color: darkgray; /* this controls the background color of the unselected tabs */
+  color: white;
+}
+
+html .lightgray-theme ti-widget-button[raised]:not(.idunno),
+html .lightgray-theme paper-button[raised],
+html#designer-frame .designer-theme ti-widget-button[raised]:not(.idunno),
+html#designer-frame .designer-theme paper-button[raised] {
+  background-color: white;
+  color: #115566; 
+}
+
+html .lightgray-theme,html#designer-frame .designer-theme {
+    font-size: 12px;
+}
+
+
+
+

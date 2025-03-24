@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-icon/iron-icon.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-button.html">
+<link rel="import" href="../ti-trace-stm/ti-dbgtrc-config-dialog.html">
+<link rel="import" href="../ti-trace-stm/ti-trace-receivers.html">
+
+<!-- 
+'ti-profile-config'
+
+Page that provide configuration for setting up ETM trace for profiling
+-->
+
+<dom-module id="ti-trace-stm-config">
+    <template>
+        <style>
+            hr {
+                margin-left: 0.5em;
+                margin-right: 0.5em;
+            }
+            ti-dbgtrc-config-dialog {
+                padding-bottom: 5em;
+            }
+            .config {
+                padding: 0px;
+            }
+        </style>
+        <ti-dbgtrc-config-dialog id="configDlg" header-text="[[headerText]]" on-opened-changed="_openedChanged" no-cancel="[[noCancel]]">
+            <slot name="above"></slot>
+            <!-- <template is="dom-if" if="[[_hasOptions]]">
+                <ti-trace-options id="options" class="config" options="{{options}}"></ti-trace-options>
+            </template> -->
+            <!-- <ti-trace-filters id="filters" class="config" out-file="[[outFile]]" ta="[[ta]]" filters="{{_filters}}"></ti-trace-filters> -->
+            <!-- <ti-trace-triggers id="triggers" class="config" out-file="[[outFile]]" ta="[[ta]]" trace-on="{{_traceOn}}" triggers="{{_triggers}}"></ti-trace-triggers> -->
+            <!-- <ti-trace-receivers id="receiver" class="config" probe="[[deviceInfo.name]]" receiver-list="[[receiverList]]" receiver="{{_receiver}}" buffer-type="{{_bufferType}}"
+            synchronize-with-target="{{_syncWithTarget}}"></ti-trace-receivers> -->
+            <ti-trace-receivers id="receiver" class="config" probe="[[deviceInfo.name]]" 
+                                receiver-array="[[_receiverArray]]" receiver-selected="{{_receiverSelected}}"
+                                buffer-type="{{_bufferType}}" 
+                                pin-array="[[_pinArray]]" pin-selected="{{_pinSelected}}"
+                                buffer-size-array="[[_bufferSizeArray]]" buffer-size-selected="{{_bufferSizeSelected}}"
+                                sync-cores="[[syncCores]]"
+                                sync-core-halt="{{syncCoreHalt}}"
+                                synchronize-with-target="{{_syncWithTarget}}"></ti-trace-receivers>
+            <slot></slot>
+        </ti-dbgtrc-config-dialog>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-trace-stm-config',
+            properties: {
+                headerText : {
+                    type: String,
+                    value: "",
+                },
+                outFile : {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: undefined
+                },
+                ta : {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: undefined
+                },
+                noCancel : {
+                    type: Boolean,
+                    value: false
+                },
+                deviceInfo : {
+                    type: Object,
+                    value: undefined
+                },
+                traceRoutes : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                },
+                traceRoute: {
+                    type: Object,
+                    value: undefined,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                _receiverArray : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+                _receiverSelected : {
+                    type: Number,
+                    value: undefined,
+                },
+                _pinArray : {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+                _pinSelected : {
+                    type: Number,
+                    value: undefined,
+                },
+                _bufferSizeArray : {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                _bufferSizeSelected : {
+                    type: Number,
+                    value: undefined,
+                },
+                core : {
+                    type: String,
+                    value: undefined
+                },
+                options : {
+                    type: Array,
+                    value: function () { return []},
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                _hasOptions: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+                _filters: {
+                    type: Array,
+                    value: undefined
+                },
+                _triggers : {
+                    type: Array,
+                    value: undefined,
+                },
+                _traceOn : {
+                    type: Boolean,
+                    value: undefined
+                },
+                _bufferType : {
+                    type: String,
+                    value: undefined,
+                },
+                _syncWithTarget : {
+                    type: Boolean,
+                    value: undefined,
+                },
+                aetPropertyTrees: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                receiverPropertyTree : {
+                    type: Object,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                settingsSummary: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    reflectToAttribute: true,
+                    notify: true,
+                },
+                syncCores: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true
+                },
+                syncCoreHalt: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    reflectToAttribute: true
+                }
+            },
+            observers: ["_traceRoutesChanged(traceRoutes.splices)","_optionsChanged(options.splices)"],
+            open : function()
+            {
+                this.$.configDlg.open();
+            },
+            _optionsChanged : function ()
+            {
+                this._hasOptions = (this.options !== undefined) && (this.options.length > 0);
+            },
+            close : function ()
+            {
+            },
+            toggle : function ()
+            {
+                this.$.configDlg.toggle();
+            },
+            _traceRoutesChanged: function () {
+
+                // Using temporary receiver array to fix ti-trace-stm/ti-trace-receivers.html receiver issues.
+                // Will be removed when migrating to Polymer 2.
+                var tempReceiverArray = [];
+
+                this._traceRouteOk = (this.traceRoutes !== undefined) && (this.traceRoutes.length > 0);
+                if (this._traceRouteOk) {
+                    var rcvList = this.traceRoutes[0].receiver;
+                    tempReceiverArray = [this.traceRoutes[0].receiver];
+                    for (var i = 1; i < this.traceRoutes.length; i++) {
+                        rcvList += "," + this.traceRoutes[i].receiver;
+                        tempReceiverArray.push(this.traceRoutes[i].receiver);
+                    }
+
+                    this._receiverArray = tempReceiverArray;
+
+                    this._receiverList = rcvList;
+                    this._receiverSelected = this._receiverArray.indexOf("ETB");
+                    if (this._receiverSelected < 0) {
+                        this._receiverSelected = 0;
+                    }
+                } else {
+                    this._receiverList = "";
+                    this._receiverSelected = undefined;
+                    this._receiverArray = [];
+                }
+            },
+            _getCode: function(name) {
+                if (name === "Global Timestamp") return "globalTimestamp";
+                /*
+                if (name === "Return Stack Tracing") return "returnStack";
+                if (name === "Context ID Tracing") return "ctxId";
+                if (name === "Virtual Machine ID Tracing") return "vmid";
+                */
+                return undefined;
+            },
+            _getReceiverProperties: function() {
+                //var traceCpu = this.deviceInfo.name + "/" + this.core;
+                var traceCpu = this.core;
+                var _self = this;
+                if (this.deviceInfo.name.includes("XDSPRO")) {
+                    var traceCpu = this.core;
+                    var proOp = undefined;
+                    this.ta.cloudTrace.createOperation(traceCpu,"Trace").then(function (ret) {
+                        proOp = ret.handle;
+                        return _self.ta.cloudTrace.getProperties(proOp);
+                    }).then(function (ret) {
+                        var props = ret.cfg;
+                        props[0].sub_properties[0].value = "Pro Trace";
+                        return _self.ta.cloudTrace.setProperties(proOp, props);
+                    }).then(function () {
+                        return _self.ta.cloudTrace.getProperties(proOp);
+                    }).then(function (ret) {
+                        var props = ret.cfg[0].sub_properties[0].sub_properties;
+                        var pins = props.find( el => (el.name === "Pins"));
+                        var buffs = props.find( el => (el.name === "Buffer size"));
+                        _self._pinArray = pins.allowed_values;
+                        _self._pinList = pins.allowed_values.toString();
+                        _self._pinSelected = pins.allowed_values.indexOf(pins.value);
+                        _self._bufferSizeList = buffs.allowed_values.toString();
+                        _self._bufferSizeArray = buffs.allowed_values;
+                        _self._bufferSizeSelected = buffs.allowed_values.indexOf(buffs.value);
+                        _self.ta.cloudTrace.releaseOperation(proOp);
+                    }).catch(function (e) {
+                        if (proOp !== undefined) {
+                            _self.ta.cloudTrace.releaseOperation(proOp);
+                        }
+                    });
+                } else {
+                    this._pinList = "";
+                    this._pinArray = [];
+                    this._pinSelected = undefined;
+                    this._bufferSizeArray = [];
+                    this._bufferSelected = undefined;
+                    this._bufferSizeList = "";
+                }
+                var aetOp = undefined;
+                this.ta.cloudTrace.createOperation(traceCpu,"AET").then(function (ret) {
+                    aetOp = ret.handle;
+                    return _self.ta.cloudTrace.getProperties(aetOp);
+                }).then(function (ret) {
+                    var props = ret.cfg;
+                    props[0].value = "Trace";
+                    return _self.ta.cloudTrace.setProperties(aetOp, props);
+                }).then(function (ret) {
+                    return _self.ta.cloudTrace.getProperties(aetOp);
+                }).then(function (ret) {
+                    var subprops = ret.cfg[0].sub_properties;
+                    var tmp = [];
+                    subprops.forEach(function (el) {
+                        if (el.type === "Boolean") {
+                            var codeName = _self._getCode(el.name);
+                            if (codeName !== undefined) {
+                                tmp.push(
+                                    {text: el.name, value: el.value, help: el.desc, code: codeName}
+                                );
+                            }
+                        }
+                    });
+                    _self.splice("options", 0, _self.options.length, ...tmp);
+                    console.log(JSON.stringify(_self.options));
+                    console.log(JSON.stringify(ret.cfg));
+                }).finally(function () {
+                    if (aetOp !== undefined) {
+                        //_self.ta.cloudTrace.releaseOperation(aetOp);
+                    }
+                });
+            },
+            _openedChanged: function()
+            {
+                if (!this.$.configDlg.opened) {
+                    if (this.$.configDlg.closingReason === "confirmed") {
+                        if (this.$.receiver.hasErrors || !this._traceRouteOk) {
+                            this.toggle();
+                        } else {
+                            var i;
+                            var propertyTrees = [];
+                            var settings = [];
+                            /*
+                            if (this._traceOn) {
+                                propertyTrees.push(new this.StmProperties("", undefined, undefined, this.options));
+                                settings.push({category: 'Trace On', type: '', value: 'Trace on from start'});
+                            } else {
+                                settings.push({category: 'Trace off', type: '', value: 'Trace off at start'});
+                            }*/
+                            // for (i = 0; i < this._filters.length - 1; i++) {
+                            //     settings.push({category: 'Filter', type: this._filters[i].type, value: this._filters[i].start + " - " + this._filters[i].end});
+                            //     propertyTrees.push(new this.EtmProperties(this._filters[i].type, parseInt(this._filters[i].start_hex,16), parseInt(this._filters[i].stop_hex,16), this.options));
+                            // }
+                            // for (i = 0; i < this._triggers.length - 1; i++) {
+                            //     settings.push({category: 'Trigger', type: this._triggers[i].type, value: this._triggers[i].location});
+                            //     propertyTrees.push(new this.EtmProperties(this._triggers[i].type, parseInt(this._triggers[i].location_hex,16), this.options));
+                            // }
+                            var isCircular = (this._bufferType === "Circular");
+                            var config = {
+                                type: this._receiverArray[this._receiverSelected],
+                                pins: this._pinArray[this._pinSelected],
+                                size: this._bufferSizeArray[this._bufferSizeSelected],
+                                circular: isCircular,
+                                sync: true,
+                            };
+                            this.traceRoute = this.traceRoutes.find(r => r.receiver === this._receiverArray[this._receiverSelected]);
+                            this.receiverPropertyTree = new this.ReceiverProperties(config);
+                            this.settingsSummary = settings;
+                            // generate notification
+                            //this.splice('aetPropertyTrees', 0, this.aetPropertyTrees.length, ...propertyTrees);
+                        }
+                    }
+                } else {
+                    /*
+                    if (this.aetPropertyTrees.length > 0) {
+                        this.splice('aetPropertyTrees', 0 ,this.aetPropertyTrees.length);
+                    }*/
+                    this._getReceiverProperties();
+                }
+            },  
+            StmProperties: function (pType, addr1, addr2, options) {
+                this.name = "Type";
+                this.type = "String",
+                this.value = "Trace";
+                this.sub_properties = [];
+                var subprops = [];
+
+                /*
+                var progaddress = [{name: "Program Address", type: "Boolean", value: true}];
+                switch (pType) {
+                    case "Include":
+                        subprops.push({name : "What to Trace", type: "String", value: "(Select data to trace)", sub_properties: progaddress});
+                        subprops.push({name: "Start Location", type : "Location2", value : {address : addr1, page: 0}});
+                        subprops.push({name: "End Location", type : "Location2", value : {address : addr2, page: 0}});
+                        subprops.push({name: "Match Context", type: "Boolean", value: false});
+                        subprops.push({name: "Match VM", type: "Boolean", value: false});
+                        this.sub_properties.push({name : "Actions", type: "String", value: "Trace in Range", sub_properties: subprops});
+                        break;
+                    case "Exclude":                        
+                        subprops.push({name : "What to Trace", type: "String", value: "(Select data to trace)", sub_properties: progaddress});
+                        subprops.push({name: "Start Location", type : "Location2", value : {address : addr1, page: 0}});
+                        subprops.push({name: "End Location", type : "Location2", value : {address : addr2, page: 0}});
+                        subprops.push({name: "Match Context", type: "Boolean", value: false});
+                        subprops.push({name: "Match VM", type: "Boolean", value: false});
+                        this.sub_properties.push({name : "Actions", type: "String", value: "Don't Trace in Range", sub_properties: subprops});
+                        break;
+                    case "Start":
+                        subprops.push({name : "What to Trace", type: "String", value: "(Select data to trace)", sub_properties: progaddress});
+                        subprops.push({name: "Location", type : "Location2", value : {address : addr1, page: 0}});
+                        subprops.push({name: "Match Context", type: "Boolean", value: false});
+                        subprops.push({name: "Match VM", type: "Boolean", value: false});
+                        this.sub_properties.push({name : "Actions", type: "String", value: "Start Trace", sub_properties: subprops});
+                        break;
+                    case "Stop":
+                        subprops.push({name : "What to Trace", type: "String", value: "(Select data to trace)", sub_properties: progaddress});
+                        subprops.push({name: "Location", type : "Location2", value : {address : addr1, page: 0}});
+                        subprops.push({name: "Match Context", type: "Boolean", value: false});
+                        subprops.push({name: "Match VM", type: "Boolean", value: false});
+                        this.sub_properties.push({name : "Actions", type: "String", value: "End Trace", sub_properties: subprops});
+                        break;
+                    default:
+                        subprops.push({name : "What to Trace", type: "String", value: "(Select data to trace)", sub_properties: progaddress});
+                        this.sub_properties.push({name : "Actions", type: "String", value: "Trace On"});
+                }
+                this.sub_properties.push({name : "Return Stack Tracing", type : "Boolean",  value : true});
+                this.sub_properties.push({name : "Context ID Tracing", type : "Boolean",  value : true});
+                this.sub_properties.push({name : "Virtual Machine ID Tracing", type : "Boolean", value : true});
+                var gts = options.find(el => el.code === "globalTimestamp");
+                if (gts !== undefined) {
+                    this.sub_properties.push({name : "Global Timestamp", type : "Boolean", value : gts.value});
+                }
+                */
+            },
+            ReceiverProperties : function (config)
+            {
+                this.name = "Receiver Settings";
+                this.sub_properties = [];
+                var subprops = [];
+                if (config.type === "Pro Trace") {
+                    subprops.push({name: "Pins",                    type: "String",  value: config.pins});
+                    subprops.push({name: "Buffer size",             type: "String",  value: config.size});
+                    subprops.push({name: "Trace Buffer Type",       type: "String",  value: config.circular ? "Circular" : "Stop-on-full"});
+                    subprops.push({name: "Synchronize with target", type: "Boolean", value: config.sync});
+                } else {
+                    subprops.push({name: "Connection Type",         type: "String",  value: "Auto"});
+                    subprops.push({name: "Buffer Type",             type: "String",  value : config.circular ? "Circular" : "Stop-on-full"});
+                    subprops.push({name: "Trigger Type",            type: "String",  value : "None"});
+                    subprops.push({name: "Synchronize with target", type: "Boolean", value : true});
+                }
+                this.sub_properties.push({name: "Receiver", type: "String", value: config.type, sub_properties: subprops});
+            }
+        });
+    </script>
+</dom-module>

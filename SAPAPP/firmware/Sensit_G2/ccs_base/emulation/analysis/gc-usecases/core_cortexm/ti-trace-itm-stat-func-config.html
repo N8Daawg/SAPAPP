@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="import" href="../components/polymer/polymer.html">
+<link rel="import" href="../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../components/ti-widget-common/ti-widget-droplist.html">
+<link rel="import" href="../components/paper-card/paper-card.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-model/ti-trace-model.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-progress.html">
+<link rel="import" href="../components-dbgtrc/ti-trace-common/ti-trace-common-style.html">
+</head>
+
+<body class="ti-theme" unresolved>
+    <dom-module id='ti-trace-itm-stat-func-config'>
+        <template>
+            <style include="ti-trace-common-style"> </style>
+            <style>
+                html {
+                    margin: 0px;
+                    padding: 0px;
+                }
+                body {
+                    padding: 0px;
+                    margin: 0;
+                    border: 0;
+                }
+
+                .align-content {
+                    text-align: left;
+                    padding: 1px;
+                    padding-left: 16px;
+                    font-size: 12px;
+                }
+                #ti-widget-droplist1 {
+                    font-size: 12px;
+                }
+            </style>
+
+            <paper-card heading="">
+                <div id="title" class="title">
+                    <paper-checkbox class="usecase" id="statFuncProfilingCheck" checked={{enableUsecase}} on-checked-changed="handleCheckEvent"></paper-checkbox>
+                    <paper-icon-button id="expandButton" slot="top" icon="expand-more" on-click="_toggle"></paper-icon-button>
+                    Statistical Function Profile
+                </div>
+                <iron-collapse id="collapse">
+                    <div id="desc" class="desc">
+                        Statistical Function profile counts the number of times a function is encontered by analyzing
+                        Program Counters sampled at fixed intervals. If the core enters sleep then the event is logged
+                        as a _core_is_in_sleep event.
+                    </div>
+                    <div id="params" class="params">
+                        <template is="dom-if" if="[[enableUsecase]]">
+                            <table>
+                                <tr>
+                                    <td class="align-content">
+                                        Sampling Interval:
+                                    </td>
+                                    <td class="align-content">
+                                        <ti-widget-droplist id="ti-widget-droplist1" labels="[[clockIntervalList]]" selected-text="{{clockInterval}}"></ti-widget-droplist>
+                                    </td>
+                                </tr>
+                            </table>
+                        </template>
+
+                    </div>
+                </iron-collapse>
+            </paper-card>
+
+        </template>
+
+        <script>
+            Polymer({
+                is : 'ti-trace-itm-stat-func-config',
+                properties : {
+                    config : {
+                        type: Array,
+                        value: (function(){
+                            return [
+                                {
+                                    name: "Type",
+                                    type: "String",
+                                    value: "Trace",
+                                    sub_properties: [
+                                        {
+                                            name: "Triggers",
+                                            type: "String",
+                                            value: "Trace DWT Event",
+                                            sub_properties: [
+                                                {
+                                                    name: "Clock or PC Sample",
+                                                    type: "String",
+                                                    value: "PC Sample",
+                                                    sub_properties: [
+                                                        {
+                                                            name: "Clock Interval",
+                                                            type: "String",
+                                                            value: "1024 Cycles",
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    name: "Timestamping",
+                                                    type: "String",
+                                                    value: "(open to select)",
+                                                    sub_properties: [
+                                                        {
+                                                            name: "Local Timestamp Enable",
+                                                            type: "Boolean",
+                                                            value: true,
+                                                            sub_properties: [
+                                                                {
+                                                                    name: "Local Timestamp Prescaler",
+                                                                    type: "String",
+                                                                    value: "Divide by 4",
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ];
+                        }),
+                    },
+
+                    enableUsecase: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    clockInterval : {
+                        type: String,
+                        value: "1024 Cycles",
+                        notify: true,
+                    },
+
+                    clockIntervalList: {
+                        notify: true,
+                        reflectToAttribute: true,
+                        type: Array,
+                        value: [
+                            "64 Cycles",
+                            "128 Cycles",
+                            "192 Cycles",
+                            "256 Cycles",
+                            "320 Cycles",
+                            "384 Cycles",
+                            "448 Cycles",
+                            "512 Cycles",
+                            "576 Cycles",
+                            "640 Cycles",
+                            "704 Cycles",
+                            "768 Cycles",
+                            "832 Cycles",
+                            "896 Cycles",
+                            "960 Cycles",
+                            "1024 Cycles",
+                            "2048 Cycles",
+                            "3072 Cycles",
+                            "4096 Cycles",
+                            "5120 Cycles",
+                            "6144 Cycles",
+                            "7168 Cycles",
+                            "8192 Cycles",
+                            "9216 Cycles",
+                            "10240 Cycles",
+                            "11264 Cycles",
+                            "12288 Cycles",
+                            "13312 Cycles",
+                            "14336 Cycles",
+                            "15360 Cycles",
+                            "16384 Cycles",
+                        ]
+                    },
+
+                    tsPrescaler : {
+                        type: String,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+                },
+
+                savedSettings : [],
+
+                _icon: function(expanded)
+                {
+                    return expanded ? 'expand-less' : 'expand-more';
+                },
+
+                _toggle: function(evt) {
+                    this.$.collapse.toggle();
+                    this.$.expandButton.setAttribute('aria-expanded', this.$.collapse.opened);
+                    this.$.expandButton.icon = this._icon(this.$.collapse.opened);
+                },
+
+                handleCheckEvent : function (evt) {
+                    this.$.collapse.opened = true;
+                    this.$.expandButton.setAttribute('aria-expanded', this.$.collapse.opened);
+                    this.$.expandButton.icon = this._icon(this.$.collapse.opened);
+                },
+
+                getConfig : function() {
+                    if (this.enableUsecase)
+                    {
+                        this.config[0].sub_properties[0].sub_properties[0].sub_properties[0].value = this.clockInterval;
+                        this.config[0].sub_properties[0].sub_properties[1].sub_properties[0].sub_properties[0].value = this.tsPrescaler;
+                        this._savesettings();
+
+                        return this.config;
+                    }
+
+                    return null;
+                },
+
+                _savesettings: function() {
+                    this.savedSettings = [];
+                    // push new settings
+                    this.savedSettings.push(this.clockInterval);
+                    this.savedSettings.push(this.enableUsecase);
+                },
+
+                _revertsettings: function() {
+                    if (this.savedSettings.length === 2)
+                    {
+                        this.clockInterval = this.savedSettings[0];
+                        this.enableUsecase = this.savedSettings[1];
+                    }
+                },
+
+                hasError: function() {
+                    return false;
+                },
+
+                ready : function () {
+                    this._savesettings();
+                }
+            });
+        </script>
+    </dom-module>
+</body>
+
+</html>
