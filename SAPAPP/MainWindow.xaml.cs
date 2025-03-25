@@ -23,13 +23,15 @@ namespace SAPAPP
     public partial class MainWindow : Window
     {
         //private GangScripts gs;
-        private FetScript fs;
+        private FetScript FetScript;
+        private MegaScript MegaScript;
 
         public MainWindow()
         {
             InitializeComponent();
             //gs = new GangScripts();
-            fs = new FetScript();
+            FetScript = new FetScript();
+            MegaScript = new MegaScript();
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -37,14 +39,21 @@ namespace SAPAPP
             progbar.IsIndeterminate = true;
             StatusMessageDisplay.Text = "Starting Download";
 
-            if (PCBPicker.SelectedIndex == 1)
+
+            if (ProductPicker.SelectedIndex == 1)
             {
-                if (ProductPicker.SelectedIndex == 1)
-                {
-                    fs.Download();
-                }
+                FetScript.Download();
             }
-            
+            else if (ProductPicker.SelectedIndex == 2)
+            {
+                MegaScript.Download();
+            }
+            else if (ProductPicker.SelectedIndex == 3)
+            {
+                
+            }
+
+
             //CLI_test();
 
         }

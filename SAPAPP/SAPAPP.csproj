@@ -19,4 +19,8 @@
     <Resource Include="st-hero-min-1024x667.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="firmware\STMPrograms\" />
+  </ItemGroup>
+
 </Project>
