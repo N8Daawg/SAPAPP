@@ -12,6 +12,8 @@ using System.Windows.Shapes;
 using Orientation = System.Windows.Controls.Orientation;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using SAPAPP.Scripts;
+using System.IO;
+using System.ComponentModel;
 
 
 
@@ -23,15 +25,23 @@ namespace SAPAPP
     public partial class MainWindow : Window
     {
         //private GangScripts gs;
+        private TestScript TestScript;
         private FetScript FetScript;
         private MegaScript MegaScript;
+
+
 
         public MainWindow()
         {
             InitializeComponent();
-            //gs = new GangScripts();
-            FetScript = new FetScript();
-            MegaScript = new MegaScript();
+            InitializeScripts();
+        }
+
+        private void InitializeScripts()
+        {
+            TestScript = new TestScript(StatusMessageDisplay);
+            FetScript = new FetScript(StatusMessageDisplay);
+            MegaScript = new MegaScript(StatusMessageDisplay);
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -39,8 +49,12 @@ namespace SAPAPP
             progbar.IsIndeterminate = true;
             StatusMessageDisplay.Text = "Starting Download";
 
+            if (ProductPicker.SelectedIndex == 0)
+            {
+                TestScript.Download();
 
-            if (ProductPicker.SelectedIndex == 1)
+            }
+            else if (ProductPicker.SelectedIndex == 1)
             {
                 FetScript.Download();
             }
@@ -54,41 +68,10 @@ namespace SAPAPP
             }
 
 
-            //CLI_test();
-
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            progbar.IsIndeterminate = false;
-            StatusMessageDisplay.Text = "Download Canceled";
-        }
-
-        private void CLI_test()
-        {
-            string strCmdText = "echo hello world";
-            
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-            processStartInfo.FileName = "cmd.exe";
-            processStartInfo.Arguments = "/c" + strCmdText;
-            processStartInfo.UseShellExecute = false;
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.RedirectStandardError = true;
-            processStartInfo.CreateNoWindow = true;
-
-            Process cmd = new Process();
-            cmd.StartInfo = processStartInfo;
-            cmd.Start();
-            cmd.WaitForExit();
-
-            Process_Feedback(cmd.StandardOutput.ReadToEnd());           
-        }
-
-
-        private void Process_Feedback(string feedback)
-        {
-            feedback = feedback.Trim();
-            StatusMessageDisplay.Text = feedback;
         }
 
         private void Window_ContentRendered(object sender, EventArgs e)

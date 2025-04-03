@@ -7,25 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace SAPAPP.Scripts
 {
-    internal class MegaScript(TextBlock fd) : Script(fd)
+    internal class TestScript(TextBlock fd) : Script(fd)
     {
 
-        private const string localInstallDir = @"\firmware\STMPrograms";
-        private const string testprogram = @"\STM32BIG\build\arduino.avr.megaADK";
-        private const string cliPath = "\"C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atbackend\\atprogram.exe\"";
-
-        private const string path = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
-
-
+        // This event handler is where the time-consuming work is done.
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            string strCmdText = cliPath + " -t avrispmk2 -i ISP -d atmega2560 program -f megaADK.ino.elf";
-            string firmwareDir = workingDirectory + localInstallDir + testprogram;
+            string strCmdText = "dir";
+            string firmwareDir = workingDirectory;
+
 
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = "cmd.exe";
@@ -40,8 +36,8 @@ namespace SAPAPP.Scripts
             Process cmd = new Process();
             cmd.StartInfo = processStartInfo;
             cmd.Start();
-            cmd.WaitForExit();
 
+            //List<string> list = new List<string>();
             string line = "";
             while (!cmd.StandardOutput.EndOfStream)
             {
