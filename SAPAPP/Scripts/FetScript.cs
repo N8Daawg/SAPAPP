@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
 {
-    internal class FetScript(TextBlock fd) : Script(fd)
+    internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
         private const string localBatInstallDir = @"\firmware\FetPrograms\Sensit_G2";
         private const string loadfile = "dslite.bat";

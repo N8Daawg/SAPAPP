@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace SAPAPP.Scripts
 {
-    internal class TestScript(TextBlock fd) : Script(fd)
+    internal class TestScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
 
         // This event handler is where the time-consuming work is done.

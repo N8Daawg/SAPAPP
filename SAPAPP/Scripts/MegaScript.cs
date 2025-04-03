@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
 {
-    internal class MegaScript(TextBlock fd) : Script(fd)
+    internal class MegaScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
 
         private const string localInstallDir = @"\firmware\STMPrograms";

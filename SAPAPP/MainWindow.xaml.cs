@@ -28,9 +28,9 @@ namespace SAPAPP
 
         private void InitializeScripts()
         {
-            TestScript = new TestScript(StatusMessageDisplay);
-            FetScript = new FetScript(StatusMessageDisplay);
-            MegaScript = new MegaScript(StatusMessageDisplay);
+            TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
+            FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
+            MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -106,6 +106,9 @@ namespace SAPAPP
             {
                 
             }
+
+            StatusMessageDisplay.Text = "Download Complete!";
+            StartButton.IsEnabled = true;
         }
         
         private void StopButton_Click(object sender, RoutedEventArgs e)
