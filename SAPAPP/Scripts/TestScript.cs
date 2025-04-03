@@ -7,25 +7,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace SAPAPP.Scripts
 {
-    internal class FetScript(TextBlock fd) : Script(fd)
+    internal class TestScript(TextBlock fd) : Script(fd)
     {
-        private const string localBatInstallDir = @"\firmware\FetPrograms\Sensit_G2";
-        private const string loadfile = "dslite.bat";
 
-
+        // This event handler is where the time-consuming work is done.
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            string strCmdText = loadfile;
-            string firmwareDir = workingDirectory + localBatInstallDir;
+            string strCmdText = "dir";
+            string firmwareDir = workingDirectory;
 
 
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = "cmd.exe";
+            processStartInfo.UseShellExecute = false;
             processStartInfo.Arguments = "/c" + strCmdText;
             processStartInfo.RedirectStandardOutput = true;
             processStartInfo.RedirectStandardError = true;
@@ -36,8 +36,8 @@ namespace SAPAPP.Scripts
             Process cmd = new Process();
             cmd.StartInfo = processStartInfo;
             cmd.Start();
-            cmd.WaitForExit();
 
+            //List<string> list = new List<string>();
             string line = "";
             while (!cmd.StandardOutput.EndOfStream)
             {

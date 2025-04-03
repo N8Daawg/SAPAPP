@@ -7,17 +7,30 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
 using SAPAPP.Scripts;
+using System.IO;
+using System.ComponentModel;
 
 namespace SAPAPP
 {
     public partial class MainWindow : Window
     {
-        private FetScript fs;
+
+        //private GangScripts gs;
+        private TestScript TestScript;
+        private FetScript FetScript;
+        private MegaScript MegaScript;
 
         public MainWindow()
         {
             InitializeComponent();
-            fs = new FetScript();
+            InitializeScripts();
+        }
+
+        private void InitializeScripts()
+        {
+            TestScript = new TestScript(StatusMessageDisplay);
+            FetScript = new FetScript(StatusMessageDisplay);
+            MegaScript = new MegaScript(StatusMessageDisplay);
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)
@@ -76,16 +89,25 @@ namespace SAPAPP
             progbar.Value = 0;
             StatusMessageDisplay.Text = "Starting Download";
 
-            if (PCBPicker.SelectedIndex == 1 && ProductPicker.SelectedIndex == 1)
+
+            if (ProductPicker.SelectedIndex == 0)
             {
-                fs.Download();
+                TestScript.Download();
             }
-
-            await UpdateProgressBar();
-            StatusMessageDisplay.Text = "Download Complete!";
-            StartButton.IsEnabled = true;
+            else if (ProductPicker.SelectedIndex == 1)
+            {
+                FetScript.Download();
+            }
+            else if (ProductPicker.SelectedIndex == 2)
+            {
+                MegaScript.Download();
+            }
+            else if (ProductPicker.SelectedIndex == 3)
+            {
+                
+            }
         }
-
+        
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             StartButton.Background = Brushes.White;
@@ -109,33 +131,6 @@ namespace SAPAPP
                 progressPercentage.Text = $"{i}%";
                 await Task.Delay(50);
             }
-        }
-
-        private void CLI_test()
-        {
-            string strCmdText = "echo hello world";
-
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = "/c " + strCmdText,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            Process cmd = new Process { StartInfo = processStartInfo };
-            cmd.Start();
-            cmd.WaitForExit();
-
-            Process_Feedback(cmd.StandardOutput.ReadToEnd());
-        }
-
-        private void Process_Feedback(string feedback)
-        {
-            feedback = feedback.Trim();
-            StatusMessageDisplay.Text = feedback;
         }
 
         private void Window_ContentRendered(object sender, EventArgs e)
