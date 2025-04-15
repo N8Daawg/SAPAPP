@@ -16,7 +16,7 @@ namespace SAPAPP.Scripts
 
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
-        protected const bool testing = true;
+        protected const bool testing = false;
         protected const int delay = 300; // delay time in milliseconds
 
         // Feedback Devices
@@ -66,7 +66,7 @@ namespace SAPAPP.Scripts
         // This event handler updates the progress.
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            FeedbackDisplay.Text = (e.ProgressPercentage.ToString() + "%");
+            //FeedbackDisplay.Text = (e.ProgressPercentage.ToString() + "%");
         }
 
         // This event handler deals with the results of the background operation.
