@@ -16,14 +16,19 @@ namespace SAPAPP.Scripts
 
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
-        protected const bool testing = true;
+        protected const bool testing = false;
         protected const int delay = 300; // delay time in milliseconds
+
+        // Feedback Devices
         protected TextBlock FeedbackDisplay;
+        protected TextBlock progressPercentage;
+        protected ProgressBar progbar;
 
-
-        public Script(TextBlock fd)
+        public Script(TextBlock fd, TextBlock pp, ProgressBar pb)
         {
             FeedbackDisplay = fd;
+            progressPercentage = pp;
+            progbar = pb;
             workingDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
             
             InitializeBackgroundWorker();
@@ -43,12 +48,14 @@ namespace SAPAPP.Scripts
                 new ProgressChangedEventHandler(backgroundWorker_ProgressChanged);
         }
 
-        public void Download()
+        public async void Download()
         {
             if(!backgroundWorker.IsBusy)
             {
                 backgroundWorker.RunWorkerAsync();
             }
+
+            await UpdateProgressBar();
         }
 
 
@@ -59,7 +66,7 @@ namespace SAPAPP.Scripts
         // This event handler updates the progress.
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            FeedbackDisplay.Text = (e.ProgressPercentage.ToString() + "%");
+            //FeedbackDisplay.Text = (e.ProgressPercentage.ToString() + "%");
         }
 
         // This event handler deals with the results of the background operation.
@@ -76,6 +83,17 @@ namespace SAPAPP.Scripts
             else
             {
                 FeedbackDisplay.Text = "Done!";
+            }
+        }
+
+
+        private async Task UpdateProgressBar()
+        {
+            for (int i = 0; i <= 100; i++)
+            {
+                progbar.Value = i;
+                progressPercentage.Text = $"{i}%";
+                await Task.Delay(50);
             }
         }
     }

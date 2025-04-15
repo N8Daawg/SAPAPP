@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 
 namespace SAPAPP.Scripts
 {
-    internal class TestScript(TextBlock fd) : Script(fd)
+    internal class TestScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
 
         // This event handler is where the time-consuming work is done.
@@ -37,7 +37,6 @@ namespace SAPAPP.Scripts
             cmd.StartInfo = processStartInfo;
             cmd.Start();
 
-            //List<string> list = new List<string>();
             string line = "";
             while (!cmd.StandardOutput.EndOfStream)
             {
@@ -54,7 +53,6 @@ namespace SAPAPP.Scripts
                         line.Trim();
                         if (line != "")
                         {
-
                             Application.Current.Dispatcher.Invoke(new Action(() =>
                             {
                                 FeedbackDisplay.Text = line;

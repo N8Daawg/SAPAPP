@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
 {
-    internal class MegaScript(TextBlock fd) : Script(fd)
+    internal class MegaScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
 
         private const string localInstallDir = @"\firmware\STMPrograms";
@@ -30,10 +30,23 @@ namespace SAPAPP.Scripts
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = "cmd.exe";
             processStartInfo.UseShellExecute = false;
-            processStartInfo.Arguments = "/c" + strCmdText;
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.RedirectStandardError = true;
-            processStartInfo.CreateNoWindow = true;
+
+            //MessageBox.Show(strCmdText);
+
+            if (testing)
+            {
+                processStartInfo.Arguments = "/k" + strCmdText;
+                processStartInfo.RedirectStandardOutput = false;
+                processStartInfo.RedirectStandardError = false;
+                processStartInfo.CreateNoWindow = false;
+            }
+            else
+            {
+                processStartInfo.Arguments = "/c" + strCmdText;
+                processStartInfo.RedirectStandardOutput = true;
+                processStartInfo.RedirectStandardError = true;
+                processStartInfo.CreateNoWindow = true;
+            }
             processStartInfo.WorkingDirectory = firmwareDir;
 
 
@@ -42,28 +55,48 @@ namespace SAPAPP.Scripts
             cmd.Start();
             cmd.WaitForExit();
 
-            string line = "";
-            while (!cmd.StandardOutput.EndOfStream)
-            {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    break;
-                }
-                else
-                {
-                    line = cmd.StandardOutput.ReadLine();
-                    if (line != null)
-                    {
-                        line.Trim();
-                        if (line != "")
-                        {
 
-                            Application.Current.Dispatcher.Invoke(new Action(() =>
+
+            if (!testing)
+            {
+                string line = "";
+                while (!cmd.StandardOutput.EndOfStream)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        break;
+                    }
+                    else
+                    {
+                        // read from standard Error to see if there was a mistake
+                        line = cmd.StandardError.ReadLine();
+                        if (line != null)
+                        {
+                            line.Trim();
+                            string message, header;
+                            
+                            message = line;
+                            header = "Error";
+                            
+                            MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
+                            worker.CancelAsync();
+                            break;
+                        }
+
+
+                        line = cmd.StandardOutput.ReadLine();
+                        if (line != null)
+                        {
+                            line.Trim();
+                            if (line != "")
                             {
-                                FeedbackDisplay.Text = line;
-                            }));
-                            System.Threading.Thread.Sleep(delay);
+                                Application.Current.Dispatcher.Invoke(new Action(() =>
+                                {
+                                    FeedbackDisplay.Text = line;
+                                }));
+                                System.Threading.Thread.Sleep(delay);
+                            }
                         }
                     }
                 }
