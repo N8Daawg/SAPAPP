@@ -9,4 +9,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="OIP-removebg-preview.png" />
+    <None Remove="st-hero-min-1024x667.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="OIP-removebg-preview.png" />
+    <Resource Include="st-hero-min-1024x667.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="firmware\STMPrograms\" />
+  </ItemGroup>
+
 </Project>

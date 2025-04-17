@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="import" href="../../components/polymer/polymer.html">
+    <script type='text/javascript' src="../../components/ti-core-assets/scripts/q.js"></script>
+    <link rel="import" href="../../components/ti-widget-menubar/ti-widget-menuaction.html">
+    <link rel="import" href="../../components/ti-widget-menubar/ti-widget-menubar.html">
+    <link rel="import" href="../../components/ti-widget-menubar/ti-widget-menuitem.html">
+    <link rel="import" href="../../components/ti-widget-common/ti-widget-label.html">
+    <link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../../components/iron-icons/iron-icons.html">
+    <link rel="import" href="../../components/iron-icons/av-icons.html">
+</head>
+
+<body>
+    <dom-module id="ti-trace-menubar">
+        <style>
+
+            #traceMenubar {
+              position:absolute;
+              width: 100%;
+              height: 30px;
+              background-color: white;
+              white-space: nowrap;
+              font-size: 12px;
+            }
+
+            #traceStartStop {
+              display:inline-flex;
+              width: 30px;
+              height: 30px;
+              padding: 5px;
+              color: #115566;
+            }
+
+            #message {
+              width: 80px;
+              height: 30px;
+              padding-right: 100px;
+            }
+
+            #settingsButton {
+                display:inline-flex;
+                width: 30px;
+                height: 30px;
+                padding: 5px;
+                color: #115566;
+            }
+
+            .traceStatus {
+                visibility: var(--show-status, visible);
+            }
+
+            .traceRecords {
+                visibility: var(--show-records, visible);
+            }
+
+            .traceGaps {
+                visibility: var(--show-gaps, visible);
+            }
+
+            #rightAlign {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+            }
+
+            #leftAlign {
+                z-index: 1;
+            }
+
+
+        </style>
+        <template>
+            <div id="traceMenubar" class="layout horizontal">
+                <div id="leftAlign">
+                    <paper-icon-button id="settingsButton" icon="settings" visible tooltip="configure settings" on-tap="_openSettings"></paper-icon-button>
+                    <ti-widget-label class="contextName" label=[[contextName]] font-style="italic"></ti-widget-label>
+                </div>
+                <div id="rightAlign">
+                    <ti-widget-label class="traceStatus" label="Status: " font-weight="bold"></ti-widget-label>
+                    <ti-widget-label class="traceStatus" id="message" label="[[statusMsg]]" font-weight="bold"></ti-widget-label>
+                    <ti-widget-label class="traceRecords" label="Records read:" font-weight="bold"></ti-widget-label>
+                    <ti-widget-label class="traceRecords" id="message" label="[[numRecords]]" font-weight="bold"></ti-widget-label>
+                    <ti-widget-label class="traceGaps" label="Gaps:" font-weight="bold"></ti-widget-label>
+                    <ti-widget-label class="traceGaps" id="message" label="[[numGaps]]" font-weight="bold"></ti-widget-label>
+                    <ti-widget-label id="startStopLabel" label="Start Capture" font-weight="bold"></ti-widget-label>
+                    <paper-icon-button id="traceStartStop" icon="av:fiber-manual-record" visible tooltip="start trace capture" on-tap="_startStopEvent"></paper-icon-button>
+                </div>
+            </div>
+        </template>
+        <script>
+            Polymer ({
+                is: "ti-trace-menubar",
+
+                properties : {
+                    statusMsg : {
+                        notify: true,
+                        type: String,
+                    },
+                    contextName : {
+                        notify: true,
+                        type: String,
+                        value: ""
+                    },
+                    numRecords : {
+                        notify: true,
+                        type: String,
+                    },
+                    numGaps : {
+                        notify: true,
+                        type: String,
+                    },
+                    hideStatus : {
+                        type: Boolean,
+                        value: false,
+                        observer: "_hideStatus",
+                    },
+                    hideRecords : {
+                        type: Boolean,
+                        value: false,
+                        observer: "_hideRecords",
+                    },
+                    hideGaps : {
+                        type: Boolean,
+                        value: false,
+                        observer: "_hideGaps",
+                    },
+                    openSettings : {
+                        notify: true,
+                        type: Object
+                    },
+                    startCallback : {
+                        notify: true,
+                        type: Object
+                    },
+                    stopCallback : {
+                        notify: true,
+                        type: Object
+                    },
+                },
+
+                _hideStatus : function(newValue, oldValue) {
+                    if (newValue)
+                    {
+                        this.customStyle['--show-status'] = 'hidden';
+                    }
+                    else {
+                        this.customStyle['--show-status'] = 'visible';
+                    }
+                },
+
+                _hideRecords : function(newValue, oldValue) {
+                    if (newValue)
+                    {
+                        this.customStyle['--show-records'] = 'hidden';
+                    }
+                    else {
+                        this.customStyle['--show-records'] = 'visible';
+                    }
+                },
+
+                _hideGaps : function(newValue, oldValue) {
+                    if (newValue)
+                    {
+                        this.customStyle['--show-gaps'] = 'hidden';
+                    }
+                    else {
+                        this.customStyle['--show-gaps'] = 'visible';
+                    }
+                },
+
+                _openSettings : function() {
+                    if (undefined !== this.openSettings)
+                    {
+                        this.openSettings();
+                    }
+                },
+
+                _startStopEvent : function(evt) {
+                    //console.log(evt);
+                    if ("av:fiber-manual-record" == evt.srcElement.icon)
+                    {
+                        this.setStopIcon();
+                        if (undefined !== this.startCallback)
+                        {
+                            this.startCallback();
+                        }
+                    }
+                    else {
+                        this.setStartIcon();
+                        if (undefined !== this.stopCallback)
+                        {
+                            this.stopCallback();
+                        }
+                    }
+                },
+
+                setStartIcon : function() {
+                    this.$.startStopLabel.label = "Start Capture";
+                    this.$.traceStartStop.icon = "av:fiber-manual-record";
+                },
+
+                setStopIcon : function() {
+                    this.$.startStopLabel.label = "Stop Capture";
+                    this.$.traceStartStop.icon = "av:stop";
+                },
+
+            });
+        </script>
+    </dom-module>
+
+
+</body>
+
+</html>
