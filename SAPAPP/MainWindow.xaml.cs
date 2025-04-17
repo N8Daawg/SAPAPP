@@ -7,15 +7,12 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
 using SAPAPP.Scripts;
-using System.IO;
 using System.ComponentModel;
 
 namespace SAPAPP
 {
     public partial class MainWindow : Window
     {
-
-        //private GangScripts gs;
         private TestScript TestScript;
         private FetScript FetScript;
         private MegaScript MegaScript;
@@ -37,14 +34,16 @@ namespace SAPAPP
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-            {
                 StatusMessageDisplay.Text = $"Opened: {openFileDialog.FileName}";
-            }
         }
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            StatusMessageDisplay.Text = "File Closed";
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to close?", "Confirm", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                StatusMessageDisplay.Text = "File Closed";
+            }
         }
 
         private void SaveFile_Click(object sender, RoutedEventArgs e)
@@ -52,21 +51,16 @@ namespace SAPAPP
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, "Sample content"); // Replace with actual file-saving logic
+                File.WriteAllText(saveFileDialog.FileName, "Sample content");
                 StatusMessageDisplay.Text = $"Saved: {saveFileDialog.FileName}";
             }
         }
 
-        private void ConfigurePaths_Click(object sender, RoutedEventArgs e)
-        {
-            StatusMessageDisplay.Text = "Configure File Paths option selected";
-        }
+        private void ConfigurePaths_Click(object sender, RoutedEventArgs e) => StatusMessageDisplay.Text = "Configure File Paths option selected";
 
-        // Wiki Click event handler
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
-            // Open the wiki URL in the default web browser
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            Process.Start(new ProcessStartInfo
             {
                 FileName = "https://github.com/SensitTechnologies/TestSuite/wiki",
                 UseShellExecute = true
@@ -76,51 +70,28 @@ namespace SAPAPP
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
             StartButton.IsEnabled = false;
-            StopButton.Background = Brushes.White;
-            StopButton.Foreground = Brushes.Black;
+            SetButtonAppearance(StartButton, Brushes.Green, Brushes.White);
+            SetButtonAppearance(StopButton, Brushes.White, Brushes.Black);
+            ResetProgressBar();
 
-            if (sender is Button button)
-            {
-                button.Background = Brushes.Green;
-                button.Foreground = Brushes.White;
-            }
-
-            progbar.IsIndeterminate = false;
-            progbar.Value = 0;
             StatusMessageDisplay.Text = "Starting Download";
 
-
-            if (ProductPicker.SelectedIndex == 0)
+            switch (ProductPicker.SelectedIndex)
             {
-                TestScript.Download();
-            }
-            else if (ProductPicker.SelectedIndex == 1)
-            {
-                FetScript.Download();
-            }
-            else if (ProductPicker.SelectedIndex == 2)
-            {
-                MegaScript.Download();
-            }
-            else if (ProductPicker.SelectedIndex == 3)
-            {
-                
+                case 0: TestScript.Download(); break;
+                case 1: FetScript.Download(); break;
+                case 2: MegaScript.Download(); break;
             }
 
+            await UpdateProgressBar();
             StatusMessageDisplay.Text = "Download Complete!";
             StartButton.IsEnabled = true;
         }
-        
+
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            StartButton.Background = Brushes.White;
-            StartButton.Foreground = Brushes.Black;
-
-            if (sender is Button button)
-            {
-                button.Background = Brushes.Red;
-                button.Foreground = Brushes.White;
-            }
+            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
+            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
 
             progbar.IsIndeterminate = false;
             StatusMessageDisplay.Text = "Download Canceled";
@@ -136,11 +107,95 @@ namespace SAPAPP
             }
         }
 
-        private void Window_ContentRendered(object sender, EventArgs e)
+        private void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
-            // Additional initialization logic if needed
+            button.Background = background;
+            button.Foreground = foreground;
         }
+
+        private void ResetProgressBar()
+        {
+            progbar.IsIndeterminate = false;
+            progbar.Value = 0;
+        }
+
+        // Dark Mode Toggle
+        private void ToggleDarkMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Background == Brushes.Black)
+            {
+                this.Background = Brushes.White;
+                SetLightModeColors();
+            }
+            else
+            {
+                this.Background = Brushes.Black;
+                SetDarkModeColors();
+            }
+        }
+
+        private void SetLightModeColors()
+        {
+            // Change UI elements for light mode
+            StatusMessageDisplay.Foreground = Brushes.Black;
+            progressPercentage.Foreground = Brushes.Black;
+            progbar.Foreground = Brushes.Black;
+            StartButton.Background = Brushes.LightGray;
+            StopButton.Background = Brushes.LightGray;
+        }
+
+        private void SetDarkModeColors()
+        {
+            // Change UI elements for dark mode
+            StatusMessageDisplay.Foreground = Brushes.White;
+            progressPercentage.Foreground = Brushes.White;
+            progbar.Foreground = Brushes.Green;
+            StartButton.Background = Brushes.Gray;
+            StopButton.Background = Brushes.Gray;
+        }
+
+        // Stay On Top Feature
+        private void ToggleStayOnTop_Click(object sender, RoutedEventArgs e)
+        {
+            this.Topmost = !this.Topmost;
+        }
+
+        // Font Size Adjustments
+        private void FontSizeSmall_Click(object sender, RoutedEventArgs e)
+        {
+            this.FontSize = 12; // Adjust as needed
+        }
+
+        private void FontSizeMedium_Click(object sender, RoutedEventArgs e)
+        {
+            this.FontSize = 16; // Adjust as needed
+        }
+
+        private void FontSizeLarge_Click(object sender, RoutedEventArgs e)
+        {
+            this.FontSize = 20; // Adjust as needed
+        }
+
+        // CLI Test Method
+        private void CLI_test()
+        {
+            string strCmdText = "echo hello world";
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c " + strCmdText,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+
+            using Process cmd = new Process { StartInfo = processStartInfo };
+            cmd.Start();
+            cmd.WaitForExit();
+
+            Process_Feedback(cmd.StandardOutput.ReadToEnd());
+        }
+
+        private void Process_Feedback(string feedback) => StatusMessageDisplay.Text = feedback.Trim();
     }
 }
-
-
