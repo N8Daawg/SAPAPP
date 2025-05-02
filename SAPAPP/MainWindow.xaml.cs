@@ -197,5 +197,15 @@ namespace SAPAPP
         }
 
         private void Process_Feedback(string feedback) => StatusMessageDisplay.Text = feedback.Trim();
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void PCBPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
