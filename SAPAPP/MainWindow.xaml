@@ -110,7 +110,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
 
                     <!-- Right Image -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <Image Source="C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\sensitlogo1.png" Width="176" Height="176" Margin="-75,0,10,0"/>
+                        <Image Source="./sensitlogo1.png" Width="176" Height="176" Margin="-75,0,10,0"/>
                         <TextBox Width="70" Height="20" Margin="-75,-15,10,0" Text="Our Purpose" HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
                             Background="Transparent" BorderBrush="Transparent" Foreground="White" TextChanged="TextBox_TextChanged"/>
                         <TextBox Width="240" Height="20" Margin="-75,0,10,0" Text="Protect Life, Property &amp; Our Environment" 

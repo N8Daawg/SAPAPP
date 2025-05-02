@@ -83,8 +83,8 @@ namespace SAPAPP
                 case 2: MegaScript.Download(); break;
             }
 
-            await UpdateProgressBar();
-            StatusMessageDisplay.Text = "Download Complete!";
+            //await UpdateProgressBar();
+            //StatusMessageDisplay.Text = "Download Complete!";
             StartButton.IsEnabled = true;
         }
 
@@ -95,16 +95,6 @@ namespace SAPAPP
 
             progbar.IsIndeterminate = false;
             StatusMessageDisplay.Text = "Download Canceled";
-        }
-
-        private async Task UpdateProgressBar()
-        {
-            for (int i = 0; i <= 100; i++)
-            {
-                progbar.Value = i;
-                progressPercentage.Text = $"{i}%";
-                await Task.Delay(50);
-            }
         }
 
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
@@ -175,28 +165,6 @@ namespace SAPAPP
         {
             this.FontSize = 20; // Adjust as needed
         }
-
-        // CLI Test Method
-        private void CLI_test()
-        {
-            string strCmdText = "echo hello world";
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = "/c " + strCmdText,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
-            };
-
-            using Process cmd = new Process { StartInfo = processStartInfo };
-            cmd.Start();
-            cmd.WaitForExit();
-
-            Process_Feedback(cmd.StandardOutput.ReadToEnd());
-        }
-
-        private void Process_Feedback(string feedback) => StatusMessageDisplay.Text = feedback.Trim();
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
