@@ -23,4 +23,8 @@
     <Folder Include="firmware\STMPrograms\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="9.0.5" />
+  </ItemGroup>
+
 </Project>

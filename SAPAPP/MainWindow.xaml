@@ -128,7 +128,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                 <StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="#EED202" Foreground="Black" Width="800">
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
-                            <ProgressBar x:Name="progbar" Width="225" Height="20" Minimum="0" Maximum="100" Value="0"/>
+                            <ProgressBar x:Name="progbar" Width="70" Height="20" Minimum="0" Maximum="100" Value="0"/>
                             <TextBlock x:Name="progressPercentage" Margin="5,0,0,0" VerticalAlignment="Center" Text="0%" />
                         </StackPanel>
                     </StatusBarItem>
