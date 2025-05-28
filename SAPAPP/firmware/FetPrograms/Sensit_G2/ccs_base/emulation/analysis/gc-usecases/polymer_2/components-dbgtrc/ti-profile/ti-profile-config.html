@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-button.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-label.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-container.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-icon/iron-icon.html">
+<link rel="import" href="../../components-dbgtrc/ti-profile/ti-profile-run-table.html">
+<link rel="import" href="../../components/paper-card/paper-card.html">
+<link rel="import" href="../../components-dbgtrc/ti-trace-config/ti-trace-config.html">
+<!--
+'ti-profile-config'
+
+Page that provide configuration for setting up ETM trace for profiling
+-->
+
+<dom-module id="ti-profile-config">
+    <template>
+        <style>
+            td {
+                width: 1px;
+                white-space: nowrap;
+                padding: 5px;
+            }
+            .col1 {
+                text-align: right;
+            }
+            .col2 {
+                min-width: 110px;
+            }
+            th {
+                text-align: center;
+                padding: 5px;
+            }
+            .page {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .top {
+                display: flex;
+                flex-direction: row;
+                overflow: auto;
+            }
+
+            paper-card {
+                margin: 5px;
+                width: calc(100% - 10px);
+                padding: 5px;
+            }
+
+            ti-widget-container {
+                font-size: 12px!important;
+            }
+
+            ti-widget-button {
+                font-size: 12px;
+                color:#115566;
+                font-weight: bold;
+            }
+
+            #heading {
+                font-size: 12px;
+                background-color:#115566;
+                margin: 0px;
+                font-weight: bold;
+                color: white;
+                height: 30px;
+            }
+
+        </style>
+            <!-- <div class="top">
+                <paper-icon-button id="openFile" icon="folder-open" noink on-tap="_openFile"></paper-icon-button>
+                <paper-tooltip for="openFile" position="right">Select out file (executable file)</paper-tooltip>
+            </div> -->
+            <div class="page">
+                <ti-profile-run-table id="profRuns" class="page" profile-runs="{{profileRuns}}" on-add-profile="_addProfile" on-delete-item-changed="_deleteItem">
+                    [[outFile]]
+                </ti-profile-run-table>
+            </div>
+
+            <ti-trace-config id="traceConfig" ta="[[ta]]" out-file="[[outFile]]" device-info="[[deviceInfo]]" core="[[activeCore]]"
+                            header-text="Profile Capture - [[activeCore]]" aet-property-trees="{{aetPropertyTrees}}" receiver-property-tree="{{receiverPropertyTree}}"
+                            trace-route="{{traceRoute}}" trace-routes="[[traceRoutes]]" settings-summary="{{_profileSettings}}">
+                <paper-card>
+                    <div class="card-content">
+                        <div class="title" style="font-weight:500;margin-bottom:5px;">Comments:</div>
+                        <div style="margin-top:5px">
+                            <input id="prof_comments" type="text" title class="_TI_" style="width:100%">
+                        </div>
+                    </div>
+                </paper-card>
+            </ti-trace-config>
+
+            <!-- No out file dialog -->
+
+            <paper-dialog id="diffOutFileDlg">
+                <div id="heading">Different Program Loaded</div>
+                <ti-widget-container id="diffOutFileContainer">
+                    <ti-widget-label label="The program loaded on the CPU is different from the one selected for profiles. Press 'Replace' to use the loaded program" id="diff_prog_dlg_label"></ti-widget-label>
+                </ti-widget-container>
+                <div id="diff_prog_dlg_btn_div" class="_TI_">
+                    <ti-widget-button label="Replace" id="diffOutFileReplace" class="_TI_" dialog-confirm raised></ti-widget-button>
+                    <ti-widget-button label="Cancel" id="diffOutFileCancel" class="_TI_" dialog-dismiss raised></ti-widget-button>
+                </div>
+            </paper-dialog>
+
+            <!-- No program loaded dialog -->
+
+            <paper-dialog id="noOutFileDlg">
+                <div id="heading">No program loaded</div>
+                <ti-widget-container id="noOutFileContainer">
+                    <ti-widget-label label="A program must be loaded on the selected core before a profile can be collected" id="no_out_dlg_label"></ti-widget-label>
+                </ti-widget-container>
+                <div id="no_out_dlg_btn_div" class="_TI_">
+                    <ti-widget-button label="Dismiss" id="outFileDismiss" class="_TI_" dialog-dismiss raised></ti-widget-button>
+                </div>
+            </paper-dialog>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-profile-config',
+            properties: {
+                activeCore : {
+                    type: String,
+                    value: "",
+                    reflectToAttribute: true,
+                    notify: true,
+                    observer: '_activeCoreChanged',
+                },
+                deviceInfo: {
+                    type: Object,
+                    value: undefined,
+                },
+                activeOutFile : {
+                    type: String,
+                    value: "",
+                    observer: '_activeOutFileChanged'
+                },
+                ta : {
+                    type: Object,
+                    value: undefined
+                },
+                aetPropertyTrees : {
+                    type: Array,
+                    value: undefined
+                },
+                receiverPropertyTree : {
+                    type: Object,
+                    value: undefined,
+                },
+                _profileSettings : {
+                    type: Array,
+                    value: undefined
+                },
+                profileRuns : {
+                    notify: true,
+                    reflectToAttribute: true,
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                },
+                executableId : {
+                    type: Number,
+                    value: undefined,
+                    reflectToAttribute: true,
+                    notify: true,
+                },
+                traceRoute: {
+                    type: Object,
+                    value: undefined,
+                },
+                traceRoutes : {
+                    type: Array,
+                    reflectToAttribute: true,
+                    notify: true,
+                    value: function() {
+                        return [];
+                    }
+                },
+                outFile : {
+                    type : String,
+                    value: "",
+                    notify: true,
+                    reflectToAttribute: true,
+                }
+             },
+             observers: ['_aetPropertiesChanged(aetPropertyTrees.splices)'],
+             clearSelection : undefined,
+             _clearSelection : function ()
+             {
+                this.$.profRuns.clearSelection();
+             },
+             _openFile: function()
+             {
+                if (this.ta !== undefined) {
+                    var _self = this;
+                    var params = {style : "open", filters: ["*.out", "*.*"], names: ["Out files", "All files"]};
+                    params.title = "Select out file to open";
+                    this.ta.cloudTrace.fileDialog(params).then(function (ret) {
+                        if ((ret.filename !== null) && (ret.filename !== "")) {
+                            _self.outFile = ret.filename;
+                        }
+                    });
+                }
+             },
+             _deleteItem: function (evt)
+             {
+                if ((evt.detail !== undefined) && (evt.detail.value !== undefined)) {
+                    var value = evt.detail.value;
+                    if (value.hasOwnProperty("index") && value.hasOwnProperty("item")) {
+                        console.log("delete row "+value.index+" run id: "+value.item.id);
+                        this.splice('profileRuns',value.index,1);
+                        this.$.profRuns.deleteItem = undefined;
+                    }
+                }
+             },
+             _addProfile: function()
+             {
+                if ((this.activeOutFile === undefined) || (this.activeOutFile === "")) {
+                    this.$.noOutFileDlg.toggle();
+                } else if ((this.outFile !== undefined) && (this.outFile !== "") && (this.outFile !== this.activeOutFile)) {
+                    this.$.diffOutFileDlg.toggle();
+                } else {
+                    this.$.traceConfig.toggle();
+                }
+             },
+             _aetPropertiesChanged : function ()
+             {
+                 if ((this.aetPropertyTrees !== undefined) && (this.aetPropertyTrees.length > 0)) {
+                     this.fire('submit',{comment: this.$.prof_comments.value,
+                                         trace_route: this.traceRoute,
+                                         aet_property_trees: this.aetPropertyTrees,
+                                         receiver_property_tree: this.receiverPropertyTree,
+                                         synchronizeWithTarget: this.$.traceConfig.synchronizeWithTarget,
+                                         settings: this._profileSettings});
+                 }
+             },
+             _replaceOutFile: function()
+             {
+                 this.outFile = this.activeOutFile;
+                 this.$.profileDlg.toggle();
+             },
+            _createNameMap : function (kids) {
+                var nameMap = {};
+                var _self = this;
+                kids.forEach(function (el) {
+                    var indx = el.name.lastIndexOf('/');
+                    if (indx > 0) {
+                        nameMap[el.local_name] = el.name;
+                    }
+                    if (el.children && el.children.length > 0) {
+                        Object.assign(nameMap,_self._createNameMap(el.children));
+                    }
+                });
+                return nameMap;
+            },
+            _createTypeMap: function (kids) {
+                var typeMap = {};
+                var _self = this;
+                kids.forEach (function (el) {
+                    var indx = el.name.lastIndexOf('/');
+                    if (indx > 0) {
+                        typeMap[el.name] = el.type;
+                    }
+                    if (el.children && el.children.length > 0) {
+                        Object.assign(typeMap, _self._createTypeMap(el.children));
+                    }
+                });
+                return typeMap;
+            },
+            _activeCoreChanged : function (val)
+            {
+                if (val === undefined || val === "") {
+                    if (this.traceRoutes !== undefined)
+                    {
+                        this.splice('traceRoutes',0,this.traceRoutes.length);
+                    }
+                } else {
+                    var probe = this.deviceInfo.name;
+                    var source = this.deviceInfo.name + "/" + val;
+                    // NOTE: PRO receiver is not supported in this release
+                    var traceRoutes = this.deviceInfo.trace_routes.filter(
+                        route => (route.source === source) &&
+                                 ((route.receiver !== "Pro Trace") || probe.includes("XDSPRO"))
+                    );
+                    this.splice('traceRoutes',0,0, ...traceRoutes);
+                }
+            },
+            _activeOutFileChanged: function ()
+            {
+                if ((this.outFile !== undefined) && (this.outFile !== "") &&
+                    (this.activeOutFile !== undefined) && (this.activeOutFile !== "") &&
+                    (this.activeOutFile !== this.outFile)) {
+                    this.$.diffOutFileDlg.toggle();
+                } else {
+                    this.outFile = this.activeOutFile;
+                }
+            },
+            ready: function() {
+                this.clearSelection = this._clearSelection.bind(this);
+                this.$.diffOutFileReplace.addEventListener('tap',this._replaceOutFile.bind(this));
+            }
+        });
+    </script>
+</dom-module>

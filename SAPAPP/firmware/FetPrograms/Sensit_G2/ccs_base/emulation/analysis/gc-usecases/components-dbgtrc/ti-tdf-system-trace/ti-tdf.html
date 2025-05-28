@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2019, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names oflink
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../components/paper-card/paper-card.html">
+<link rel="import" href="../../components/web-animations-js/web-animations.min.js">
+<link rel="import" href="../../components/neon-animation/web-animations.html">
+<link rel="import" href="../../components/vaadin-grid/theme/material/vaadin-grid.html">
+<link rel="import" href="../ti-trace-model/ti-trace-model.html">
+<dom-module id="ti-tdf">
+    <template>
+        <style>
+            vaadin-grid#urlTable {
+                display: flex;
+                height: auto;
+                width: 100%;
+                white-space: normal;
+                --vaadin-grid-body-cell: {
+                    padding: 3px 0 3px 5px;
+                    white-space: nowrap;
+                }
+            }
+            .urls {
+                font-size: 12px;
+            }
+            .urls.floated-label-placeholder {
+                font-size: 10px;
+                line-height: 16px;
+            }
+            .tdf {
+                position: fixed;
+                overflow-x: hidden;
+                overflow-y: auto;
+                top: 1%;
+                left: 1%;
+                right: 1%;
+                padding: 0px;
+            }
+            paper-dialog {
+                --paper-dialog: {
+                    margin: 0px;
+                }
+            }
+            paper-dialog  {
+                --paper-dialog-title: {
+                    background-color: #115566;
+                    /* background-color: #cc0000; */
+                    color: #fff;
+                    text-shadow: 1px 1px rgba(0,0,0,0.48);
+                    overflow-y: visible;
+                    margin-top: 0px;
+                }
+            }
+            paper-dialog-scrollable {
+              --paper-dialog-scrollable: {
+                padding: 5px;
+              }
+            }
+            paper-card {
+                width: 100%
+            }
+            </style>
+        <ti-trace-model id="tm" trace-agent="{{ta}}"></ti-trace-model>
+        <paper-dialog class="tdf" id="tdfDlg" modal>
+            <h2 id="heading" class="headerText">Open Trace Data File</h2>
+            <paper-dialog-scrollable>
+                <paper-card>
+                    <vaadin-grid id="urlTable" class="urls tdf-dialog" items="[[_urls]]" height-by-rows="true" active-item={{_activeEntry}}>
+                        <vaadin-grid-column id="usecase">
+                            <template class="header">Use Case</template>
+                            <template>[[item.title]]</template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column id="core">
+                            <template class="header">Core Name</template>
+                            <template>[[item.core]]</template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column id="url" hidden>
+                            <template>[[item.url]]</template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+                </paper-card>
+            </paper-dialog-scrollable>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: 'ti-tdf',
+            properties: {
+                _urls: {
+                    type: Array,
+                    value: function() {return [];},
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                ta : {
+                    notify: true,
+                    type: Object,
+                    reflectToAttribute: true,
+                    value: undefined,
+                    observer: "_ta_changed"
+                },
+                _activeEntry : {
+                    type: Object,
+                    value: undefined,
+                    observer: "_activeEntryChanged"
+                }
+            },
+            ready: function()
+            {
+                var params = location.search.substr(1).split("&").map(p => {
+                    var tmp = p.split("=");
+                    return {name : tmp[0], value: tmp[1]};
+                });
+
+                var categoryNameParam = params.find(x => x.name === "category");
+
+                this.category = (categoryNameParam !== undefined) ? categoryNameParam.value : undefined;
+            },
+            _activeEntryChanged : function (newval)
+            {
+                if ((newval !== undefined) && (newval != null)) {
+                    window.open(newval.url, "_self", [], true)
+                }
+            },
+            _findCoreInfo: function (device, core)
+            {
+                if ((device === undefined) || (device.length == 0)) {
+                    return undefined;
+                }
+                var value = device.find(x => x.local_name === core);
+
+                if (value !== undefined) {
+                    return value;
+                }
+
+                for (var i in device) {
+                    value = this._findCoreInfo(device[i].children, core);
+                    if (value !== undefined) {
+                        return value;
+                    }
+                }
+
+                return undefined;
+            },
+            _ta_changed: function (val)
+            {
+                if (val !== undefined) {
+                    var _self = this;
+                    var params = {};
+                    var info = {};
+                    params.title = "Load TDF";
+                    params.extensions = ["*.tdf"]
+                    params.names = ["Trace Data File (.tdf)"];
+                    params.style = "open";
+                    this.ta.cloudTrace.fileDialog(params).then(function (ret) {
+                        var filename = ret.filename;
+                        if (filename !== "") {
+                            _self.ta.cloudTrace.getTdfUseCaseInfo(filename).then(function (ret) {
+                                info = ret.sectionInfo;
+                                _self.saveInfo = info;
+                                info.topLevel = decodeURIComponent(_self.category);
+                                var promises = [];
+                                promises.push(_self.ta.cloudTrace.getDevices({live: false, tdf: filename}));
+                                //promises.push(_self.ta.cloudTrace.getUseCaseUrls(info));
+                                return Q.all(promises);
+                            }).then(function (ret) {
+                                var devInfo = ret[0].devices[0];
+                                
+                                if (_self.saveInfo.useCases[0] == "stm_trace") {
+                                    urlInfo = [];
+                                    var obj = {
+                                        title: 'Software Messaging',
+                                        url: '/dbgtrc/system_trace/stm_trace_2.html'
+                                    }
+                                    urlInfo.push(obj);
+                                }
+                                else if (_self.saveInfo.useCases[0] == "cpt2_trace") {
+                                    urlInfo = [];
+                                    var obj = {
+                                        title: 'Traffic Profiling',
+                                        url: '/dbgtrc/system_trace/cptracer2_2.html'
+                                    }
+                                    urlInfo.push(obj);
+                                }
+                                
+                                
+                                urlInfo.forEach(function (el) {
+                                    var prefix = "?";
+                                    if ((info.coreName !== undefined) && (info.coreName !== "")) {
+                                        var coreInfo = _self._findCoreInfo(devInfo.device_info.children, info.coreName);
+                                        el.core = coreInfo.name.split('/')[1];
+                                        el.url += prefix + "coreName=" + info.coreName;
+                                        prefix = "&";
+                                    }
+                                    if ((info.coreType != undefined) && (info.coreType !== "")) {
+                                        el.url += prefix + "coreType=" + info.coreType;
+                                        prefix = "&";
+                                    }
+                                    el.url += prefix + "tdf=" + encodeURIComponent(filename);
+                                });
+                                
+
+                                _self.splice('_urls',0,0,...urlInfo);
+                                //_self.$.tdfDlg.open();
+                                window.open(urlInfo[0].url, "_self", [], true);
+                            });
+                        }
+                    }).catch(function (err) {
+                        console.log("failure: " + JSON.stringify(err));
+                    });
+                }
+            }
+        });
+    </script>
+</dom-module>

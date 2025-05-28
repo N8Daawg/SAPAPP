@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018-2020, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
+<link rel="import" href="../../components/iron-icon/iron-icon.html">
+<link rel="import" href="../../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../ti-trace-config/ti-trace-mtb-receiver.html">
+<link rel="import" href="../ti-trace-config/ti-dbgtrc-config-dialog.html">
+
+<!--
+'ti-profile-config'
+
+Page that provide configuration for setting up ETM trace for profiling
+-->
+
+<dom-module id="ti-trace-config-mtb">
+    <template>
+        <ti-dbgtrc-config-dialog id="configDlg" header-text="[[headerText]]" on-opened-changed="_openedChanged" no-cancel>
+            <slot name="above"></slot>
+            <ti-trace-mtb-receiver active-core="[[core]]" circular-buffer="{{_circularBuffer}}" halt-on-full="{{_haltOnFull}}" sync-cpu="{{synchronizeWithTarget}}"></ti-trace-mtb-receiver>
+            <slot></slot>
+        </ti-dbgtrc-config-dialog>
+    </template>
+    <script>
+        /* eslint "no-console" : "off" */
+        Polymer({
+            is: 'ti-trace-config-mtb',
+            properties: {
+                headerText : {
+                    type: String,
+                    value: "MTB Trace:",
+                },
+                ta : {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: undefined
+                },
+                core : {
+                    type: String,
+                    value: "",
+                    observer: "_coreChanged"
+                },
+                _circularBuffer : {
+                    type: Boolean,
+                    value: undefined
+                },
+                _haltOnFull : {
+                    type: Boolean,
+                    value: undefined,
+                },
+                _bufferType : {
+                    type: String,
+                    value: undefined,
+                },
+                synchronizeWithTarget : {
+                    type: Boolean,
+                    value: undefined,
+                    reflectToAttribute: true
+                },
+                receiverPropertyTree: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    reflectToAttribute: true,
+                    notify: true,
+                },
+            },
+            ready: function()
+            {
+                var indx = window.location.href.indexOf('?');
+                if (indx >= 0) {
+                    var params = window.location.href.substr(indx+1).split('&').map(p => {
+                        var tmp = p.split("=");
+                        return {name : tmp[0], value: tmp[1]};
+                    });
+
+                    var coreNameParam = params.find(x => x.name === "coreName");
+
+                    this.coreName = (coreNameParam !== undefined) ? coreNameParam.value : undefined;
+
+                    var coreTypeParam = params.find(x => x.name === "coreType");
+
+                    this.coreType = (coreTypeParam !== undefined) ? coreTypeParam.value : undefined;
+
+                    var bufferSizeParam = params.find(x => x.name === "bufferSize");
+
+                    this.bufferSize = (bufferSizeParam !== undefined) ? bufferSizeParam.value : undefined;
+                }
+            },
+            _coreChanged : function (val)
+            {
+                this.headerText = "MTB Trace: " + val;
+            },
+            open : function()
+            {
+                this.$.configDlg.open();
+            },
+            close : function ()
+            {
+                this.$.configDlg.close();
+            },
+            toggle : function ()
+            {
+                this.$.configDlg.toggle();
+            },
+            _openedChanged: function()
+            {
+                if (!this.$.configDlg.opened) {
+                    if (this.$.configDlg.closingReason === "confirmed") {
+                        var config = {}
+                        config.bufferType = this._circularBuffer ? "Circular" : "One Shot";
+                        config.stopOnFull = !this._circularBuffer;
+                        config.haltOnFull = !this._circularBuffer && this._haltOnFull;
+                        config.synchronizeWithTarget = this.synchronizeWithTarget;
+                        if (this.bufferSize) {
+                            config.bufferSize = this.bufferSize + " Bytes";
+                        } else {
+                            config.bufferSize = "1024 Bytes";
+                        }
+                        this.receiverPropertyTree = new this.MtbReceiverProperties(config);
+                    }
+                }
+            },
+            MtbReceiverProperties : function(config)
+            {
+                this.name = "Receiver Settings";
+                var subProperties = [] 
+                subProperties.push({name: "Trace Buffer Type", type : "String", value : config.bufferType});
+                subProperties.push({name : "Trace On", type : "Boolean", value: true});
+                subProperties.push({name : "Start triggers", type: "Boolean", value: false});
+                subProperties.push({name : "Stop triggers", type : "Boolean", value: false});
+                subProperties.push({name : "Buffer Size", type : "String", value : config.bufferSize});
+                subProperties.push({name : "Watermark level", type : "Number", value: 0});
+                subProperties.push({name : "Stop at watermark", type : "Boolean", value : config.stopOnFull});
+                subProperties.push({name : "Halt at watermark", type : "Boolean", value : config.haltOnFull});
+                subProperties.push({name : "Synchronize with target", type : "Boolean", value : config.synchronizeWithTarget});
+                subProperties.push({name : "Hierarchical Decode", type : "Boolean", value : true});
+                this.sub_properties = [{name : "Receiver", type : "String", value : "MTB", sub_properties : subProperties}];
+            }
+        });
+    </script>
+</dom-module>

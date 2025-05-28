@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2018, Texas Instruments Incorporated
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    *   Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    *   Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+    WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+    OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<link rel="import" href="../../components/polymer/polymer.html">
+<script src="../../components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../../components/ti-core-stylesheets/ti-core-stylesheets.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-button.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-radio-group.html">
+<link rel="import" href="../../components/ti-widget-common/ti-widget-radio-button.html">
+<link rel="import" href="../../components/paper-button/paper-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../components/paper-item/paper-item.html">
+<link rel="import" href="../../components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../components/vaadin-grid/theme/material/vaadin-grid.html">
+<dom-module id="ti-trace-search-dialog">
+    <template>
+        <style>
+        .input {
+            display: flex;
+            flex-direction: row;
+            align-self: flex-end;
+            justify-content: flex-start;
+            width: 100%;
+        }
+        paper-item {
+            padding: 0px 10px;
+            white-space: nowrap;
+            font-size: 12px;
+            min-height: 20px;
+        }
+        paper-dialog  {
+            font-size: 12px;
+            --paper-dialog: {
+                margin: 0px;
+            }
+            --paper-dialog-title: {
+                background-color: #115566;
+                /* background-color: #cc0000; */
+                color: #fff;
+                text-shadow: 1px 1px rgba(0,0,0,0.48);
+                overflow-y: visible;
+                margin-top: 0px;
+            }
+        }
+        paper-input {
+            --paper-input-container-label: {
+                font-size: 12px;
+            };
+            --paper-input-container-input:  {
+                font-size: 12px;
+            };
+        }
+        paper-dialog-scrollable {
+          --paper-dialog-scrollable: {
+            padding: 5px;
+          }
+        }
+        .selector {
+            padding: 4px 4px;
+        }
+
+        paper-toggle-button {
+            padding: 8px;
+        }
+
+        .termEntry {
+            padding: 5px;
+        }
+        .terms {
+            font-size: 12px;
+        }
+        .andors {
+            --paper-radio-button-size: 12px;
+            font-size: 12px;
+            --paper-radio-group-item-padding: 12px 0px;
+        }
+        </style>
+        <paper-dialog class="search" id="searchDlg" on-opened-changed="_openedChanged">
+            <h2 id="heading" class="headerText">[[headerText]]</h2>
+            <div>
+                <div class="input termEntry">
+                    <paper-menu-button class="input" id="fieldList" dynamic-align on-paper-dropdown-close="_columnSelected">
+                        <paper-button class="selector" id="fieldButton" slot="dropdown-trigger" raised>[[_fieldName]]</paper-button>
+                        <paper-listbox id="fieldBox" selected="{{_field}}" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[_traceColumnNames]]" as="col">
+                                <paper-item>[[col]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-menu-button>
+                    <paper-tooltip for="fieldList">Select column name</paper-tooltip>
+                    <paper-menu-button class="input" id="operatorList" dynamic-align on-paper-dropdown-close="_operatorSelected">
+                        <paper-button class="selector" id="operatorButton" slot="dropdown-trigger" raised>[[_operatorName]]</paper-button>
+                        <paper-listbox id="operatorBox" selected="{{_operator}}" slot="dropdown-content">
+                            <template is="dom-repeat" items="[[_operatorNames]]" as="col">
+                                <paper-item>[[col]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-menu-button> 
+                    <paper-tooltip for="operatorList">
+                        <table>
+                            <template is="dom-repeat" items="[[_operatorHelp]]">
+                                <tr>
+                                    <td>[[item]]</td>
+                                </tr>
+                            </template>
+                        </table>
+                    </paper-tooltip>
+                    <paper-input class="input" id="inputField" label="value" required auto-validate prevent-invalid-input pattern="[[_inputPattern]]"" 
+                        allowed-pattern="[[_inputAllowedPattern]]" no-label-float disabled="[[_inputDisabled]]" on-value-changed="_inputChanged">
+                    </paper-input>
+                    <paper-toggle-button class="input" id="nullToggle" class="input" on-checked-changed="_nullChanged" disabled="[[_nullDisabled]]"">NULL</paper-toggle-button>
+                    <span style="padding:8px">
+                        <paper-button id="addButton" class="selector" raised disabled="[[_addDisabled]]" on-tap="_addTerm">ADD</paper-button>
+                    </span>
+                </div>
+                <vaadin-grid id="termTable" items="[[_searchTerms]]" class="terms search-dialog" height-by-rows="true">
+                    <vaadin-grid-column flex-grow="0" width="10em">
+                        <template>
+                            <template is="dom-if" if="[[index]]">
+                                <ti-widget-radio-group id="andors-[[index]]" allow-empty-selection="false" selected-text="AND" on-changed="_andorChanged">
+                                    <ti-widget-radio-button class="andors" id="and-[[index]]" label="AND"></ti-widget-radio-button>
+                                    <ti-widget-radio-button class="andors" id="or-[[index]]" label="OR"></ti-widget-radio-button>
+                                </ti-widget-radio-group>
+                            </template>
+                        </template>
+                    </vaadin-grid-column> 
+                    <vaadin-grid-column>
+                        <template>
+                            <span>[[item.column]] [[item.operator]] [[item.value]]</span>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="0" width="5em">
+                        <template>
+                            <paper-icon-button id="deleteBtn-[[index]]" icon="delete-forever" on-tap="_removeTerm"></paper-icon-button>
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
+            </div>
+            <div class="buttons _TI_" id="dlg_btn_div">
+                <ti-widget-button label="OK" id="ok_btn" class="_TI_" on-tap="_ok_pressed" disabled="[[_okDisabled]]" autofocus raised dialog-confirm></ti-widget-button>
+                <ti-widget-button label="Cancel" id="cancel_btn" class="_TI_" on-tap="_cancel_pressed" dialog-dismiss></ti-widget-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        Polymer({
+            is: "ti-trace-search-dialog",
+            properties : {
+                headerText : {
+                    type: String,
+                    value: ""
+                },
+                query: {
+                    type: Object,
+                    value: function () {return {};},
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _nullDisabled : {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _inputAllowedPattern: {
+                    type: String,
+                    value: "",
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _inputPattern: {
+                    type: String,
+                    value: "",
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _inputDisabled: {
+                    type: Boolean,
+                    value: true,
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _isNull: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _isNumeric: {
+                    type: Boolean,
+                    value: false,
+                },
+                _operator : {
+                    type: Number,
+                    value: undefined,
+                },
+                _operatorName : {
+                    type: String,
+                    value: "Operator",
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _operatorHelp: {
+                    type: Array,
+                    value: function() {return ["Select comparison operator"]},
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _operatorNames : {
+                    type: Array,
+                    value: function () {return [];},
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _fieldName : {
+                    type: String,
+                    value: "Field",
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _field : {
+                    type: Number,
+                    value: undefined
+                },
+                _addDisabled : {
+                    type: Boolean,
+                    value: true,
+                    notify: true,
+                    relfectToAttribute:true,
+                },
+                _searchTerms: {
+                    type: Array,
+                    value: function() {return [];}, 
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                _shadowValue : {
+                    type: String,
+                    value: undefined
+                },
+                _traceColumnNames : {
+                    type: Array,
+                    value: function () {return [];},
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                traceColumns : {
+                    type: Array,
+                    value: undefined,
+                },
+                _okDisabled:{
+                    type: Boolean,
+                    value: true,
+                },
+                noCancel : {
+                    type : Boolean,
+                    value: false
+                },
+                opened : {
+                    type : Boolean,
+                    value: undefined,
+                    notify: true,
+                    reflectToAttribute: true,
+                },
+                closingReason : {
+                    type : String,
+                    value: "",
+                }
+            },
+            observers: ["_computeTraceColumnNames(traceColumns.splices)"],
+            ready: function ()
+            {
+                this.numberOperators = ["==", "!=", ">", ">=", "<", "<="];
+                this.stringOperators = ["is", "is not", "glob", "not glob"];
+                this.numberAllowedPattern = "[-\\d\\.]";
+                this.numberPattern = "\\d+"; //"^-?\\d+(\\.\\d+)?$"
+                this.hexAllowedPattern = "[0-9A-Fa-fxX]";
+                this.hexPattern = "^(0[xX][0-9A-Fa-f]+)|([0-9]|([1-9][0-9]+))$";
+                this.textAllowedPattern = undefined;
+                this.textPattern = undefined;
+            },
+            _computeTraceColumnNames: function ()
+            {
+                if (this.traceColumns.length > 0) { 
+                    var tmp = this.traceColumns.map(x => x.name);
+                    this.splice('_traceColumnNames',0,this._traceColumnNames.length, ...tmp);
+                    this._fieldName = "";
+                    this._operatorName = undefined;
+                    this._valueName = undefined;
+                    this.$.operatorList.disabled = false;
+                    this.$.fieldList.disabled = false;
+                } else {
+                    this.$.operatorList.disabled = true;
+                    this.$.fieldList.disabled = true;
+                }
+            },
+            _columnSelected: function (evt)
+            {
+                var col = this.traceColumns[this.$.fieldBox.selected];
+                switch (col.datatype) {
+                    case "Number":
+                        this.splice('_operatorNames',0,this._operatorNames.length, ...this.numberOperators);
+                        if (col.format === "hex") {
+                            this._inputAllowedPattern = this.hexAllowedPattern;
+                            this._inputPattern = this.hexPattern;
+                        } else {
+                            this._inputAllowedPattern = this.numberAllowedPattern;
+                            this._inputPattern = this.numberPattern;
+                        }
+                        this.splice("_operatorHelp",0, this._operatorHelp.length,"Select comparison operator");
+                        this._isNumeric = true;
+                        break;
+                    case "String":
+                        this.splice('_operatorNames', 0, this._operatorNames.length, ...this.stringOperators);
+                        this._inputAllowedPattern = this.textAllowedPattern;
+                        this._inputPattern = this.textPattern;
+                        this.splice("_operatorHelp",0, this._operatorHelp.length,
+                            "Select comparison operator",
+                            "is/is not compares equality",
+                            "glob/not glob compares against UNIX style glob pattern");
+                        this._isNumeric = false;
+                        break;
+                    default:
+                        this.splice('_operatorNames',0,this._operatorNames.length);
+                        this._inputAllowedPattern = this.textAllowedPattern;
+                        this._inputPattern = this.textPattern;
+                        this.splice("_operatorHelp",0, this._operatorHelp.length,"Select comparison operator");
+                        this._isNumeric = false;
+                        break;
+                }
+                this._fieldName = col.name;
+                this._addDisabled = !this._isValidClause();
+            },
+            _operatorSelected: function (evt)
+            {
+                if (this.$.operatorBox.selected !== undefined) {
+                    this._operatorName = this._operatorNames[this.$.operatorBox.selected];
+                    switch (this._operatorName) {
+                        case "not glob":
+                        case "glob":
+                        case ">":
+                        case ">=":
+                        case "<": 
+                        case "<=": 
+                            this._nullDisabled = true;
+                            this._isNull = false;
+                            break;
+                        default:
+                            this._nullDisabled = false;
+                            break;
+                    }
+                }
+                this._addDisabled = !this._isValidClause();
+            },
+            _inputChanged: function(evt)
+            {
+                this._addDisabled = !this._isValidClause();
+            },
+            _nullChanged: function (evt)
+            {
+                this._inputDisabled = this.$.nullToggle.checked;
+                if (this._inputDisabled) {
+                    this._shadowValue = this.$.inputField.value;
+                    this.$.inputField.value = "NULL";
+                } else {
+                    this.$.inputField.value = this._shadowValue;
+                }
+                this._addDisabled = !this._isValidClause();
+            },
+            _andorChanged: function(evt)
+            {
+                if (evt.target.id !== evt.currentTarget.id) return;
+                var target = parseInt(evt.currentTarget.id.slice(evt.currentTarget.id.lastIndexOf("-")+1));
+                this._searchTerms[target].andor = evt.currentTarget.selectedText;
+            },
+            _addTerm: function ()
+            {
+                this.push("_searchTerms",{
+                    andor: "",
+                    column: this._fieldName,
+                    operator: this._operatorName,
+                    value: this.$$("#inputField").value,
+                    isNull: this._inputDisabled,
+                    isNumeric: this._isNumeric
+                });
+                this.$.termTable.notifyResize();
+                this._okDisabled = this._searchTerms.length == 0;
+                this._resetButtons();
+            },
+            _removeTerm: function(evt)
+            {
+                console.log("_removeTerm");
+                var target = parseInt(evt.target.id.slice(evt.target.id.lastIndexOf("-")+1));
+                this.splice("_searchTerms",target,1);
+                this.$.termTable.notifyResize();
+                this._okDisabled = this._searchTerms.length == 0;
+            },
+            _resetButtons: function()
+            {
+                this._fieldName = "Field";
+                this._operatorName = "Operator";
+                this._shadowValue = undefined;
+                this.$.nullToggle.checked = false;
+                this._inputDisabled = false;
+                this.$.inputField.value = "";
+                this._addDisabled = true;
+            },
+            _openedChanged: function (evt)
+            {
+                this.opened = evt.detail.value;
+                if (this.opened)
+                {
+                    this._resetButtons();
+                    this.splice("_searchTerms", 0, this._searchTerms.length);
+                    this.splice("_operatorHelp",0, this._operatorHelp.length,"Select comparison operator");
+                }
+            },
+            _isValidClause: function ()
+            {
+                if ((this._fieldName === undefined) || (this._fieldName === "Field")) return false;
+                if ((this._operatorName === undefined) || (this._operatorName === "Operator")) return false;
+
+                if (!this._inputDisabled) {
+                    if (this.$$("#inputField").invalid) return false;
+                    if (this.$$("#inputField").value === undefined || this.$$("#inputField").value === "") return false;
+                }
+
+                return true;
+            },
+            _formatTerm: function (entry)
+            {
+                var term = {};
+                term.column = entry.column;
+                if (entry.operator === "is") {
+                    term.operator = "==";
+                } else if (entry.operator === "is not") {
+                    term.operator = "!=";
+                } else {
+                    term.operator = entry.operator;
+                }
+                if (entry.isNull) {
+                    term.value = "NULL";
+                } else if (entry.isNumeric) {
+                    term.value = entry.value;
+                } else {
+                    term.value = '"' + entry.value + '"';
+                }
+                return term;
+            },
+            _computeQuery: function ()
+            {
+                var andLists = [{start: 0, end: 0}];
+                var andIndx = 0;
+                for (var i = 1; i < this._searchTerms.length; i++) {
+                    if (this._searchTerms[i].andor === "AND") {
+                        andLists[andIndx].end = i;
+                    } else if (this._searchTerms[i].andor === "OR") {
+                        andIndx++;
+                        andLists.push({start: i, end: i});
+                    }
+                }
+                console.log(JSON.stringify(andLists));
+                var queryTerms = [];
+                for (var i = 0; i < andLists.length; i++) {
+                    if (andLists[i].start === andLists[i].end) {
+                        queryTerms.push({term: this._formatTerm(this._searchTerms[andLists[i].start])});
+                    } else {
+                        var andTerms = {'and': []};
+                        for (var j = andLists[i].start; j <= andLists[i].end; j++) {
+                            andTerms['and'].push({term: this._formatTerm(this._searchTerms[j])});
+                        }
+                        queryTerms.push(andTerms);
+                    }
+                }
+                if (queryTerms.length > 1) {
+                    this.query = {'or' : queryTerms};
+                } else {
+                    this.query = queryTerms[0];
+                }
+                console.log(JSON.stringify(this.query));
+            },
+            _ok_pressed: function()
+            {
+                this.closingReason = "confirmed";
+                this._computeQuery();
+                this.$.searchDlg.close();
+            },
+            _cancel_pressed: function()
+            {
+                this.closingReason = "canceled";
+                this.query = {};
+                this.$.searchDlg.close();
+            },
+            open: function()
+            {
+                this.$.searchDlg.fitInto = document.body;
+                this.$.searchDlg.positionTarget = document.getElementById("active");
+                this.$.searchDlg.open();
+                this.query = [];
+            },
+            close: function()
+            {
+                this.$.searchDlg.close();
+            },
+            toggle: function()
+            {
+                if (this.opened) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            }
+        });
+    </script>
+</dom-module>

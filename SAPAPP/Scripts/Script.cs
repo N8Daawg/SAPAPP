@@ -55,7 +55,7 @@ namespace SAPAPP.Scripts
                 backgroundWorker.RunWorkerAsync();
             }
 
-            //await UpdateProgressBar();
+            await UpdateProgressBar();
         }
 
 
