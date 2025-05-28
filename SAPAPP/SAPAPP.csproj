@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="OIP-removebg-preview.png" />
+    <None Remove="st-hero-min-1024x667.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="DropDown.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="OIP-removebg-preview.png" />
+    <Resource Include="st-hero-min-1024x667.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="firmware\STMPrograms\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="9.0.5" />
+  </ItemGroup>
+
+</Project>
