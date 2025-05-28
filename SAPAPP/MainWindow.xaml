@@ -142,10 +142,14 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
 <<<<<<< HEAD
+<<<<<<< HEAD
                             <ProgressBar x:Name="progbar" Width="225" Height="20" Minimum="0" Maximum="100" Value="0"/>
 =======
                             <ProgressBar x:Name="progbar" Width="70" Height="20" Minimum="0" Maximum="100" Value="0"/>
 >>>>>>> parent of 2914f35 (Reincorportated .xaml and .cs files, added wiki, preferences settings, and other gui changes.)
+=======
+                            <ProgressBar x:Name="progbar" Width="225" Height="20" Minimum="0" Maximum="100" Value="0"/>
+>>>>>>> parent of b9a64b2 (Started Implementation of Test Files For TI Fuel Gauge Programmer)
                             <TextBlock x:Name="progressPercentage" Margin="5,0,0,0" VerticalAlignment="Center" Text="0%" />
                         </StackPanel>
                     </StatusBarItem>
