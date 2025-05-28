@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SAPAPP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0752753fbf1db493e53bb6524f2ed00ded317e26")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+166083cb58169d2e3275dff8693f100184ba2b08")]
 [assembly: System.Reflection.AssemblyProductAttribute("SAPAPP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SAPAPP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
