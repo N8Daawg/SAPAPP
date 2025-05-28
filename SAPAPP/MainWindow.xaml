@@ -107,6 +107,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             </Button>
                         </DockPanel>
                     </StackPanel>
+<<<<<<< HEAD
 
                     <!-- Right Image -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
@@ -117,6 +118,22 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             HorizontalAlignment="Center" FontSize="11" FontWeight="Bold" 
                             Background="Transparent" BorderBrush="Transparent" Foreground="White" 
                             TextChanged="TextBox_TextChanged"/>
+=======
+                    
+                    <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
+                        <Image Source="C:\Users\avazquez\Source\Repos\SAPAPP1\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
+                        <TextBox Width="70" Height="20" Margin="-75,-15,10,0" 
+                        Text="Our Mission"
+                        HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
+                        Background="Transparent" BorderBrush="Transparent" Foreground="White"
+                        IsReadOnly="True"/>
+
+                        <TextBox Width="240" Height="67" Margin="-75,0,10,0"
+                        Text="Delivering Innovative, Life-Protecting Products and Best-In-Class Service To Our Clients While Keeping Our Family Atmosphere and Values."
+                        HorizontalAlignment="Center" TextAlignment="Center" FontSize="11" FontWeight="Bold"
+                        Background="Transparent" BorderBrush="Transparent" Foreground="White"
+                        TextWrapping="Wrap" IsReadOnly="True"/>
+>>>>>>> parent of 2914f35 (Reincorportated .xaml and .cs files, added wiki, preferences settings, and other gui changes.)
                     </StackPanel>
                 </Grid>
 
@@ -124,7 +141,11 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                 <StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="#EED202" Foreground="Black" Width="800">
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
+<<<<<<< HEAD
                             <ProgressBar x:Name="progbar" Width="225" Height="20" Minimum="0" Maximum="100" Value="0"/>
+=======
+                            <ProgressBar x:Name="progbar" Width="70" Height="20" Minimum="0" Maximum="100" Value="0"/>
+>>>>>>> parent of 2914f35 (Reincorportated .xaml and .cs files, added wiki, preferences settings, and other gui changes.)
                             <TextBlock x:Name="progressPercentage" Margin="5,0,0,0" VerticalAlignment="Center" Text="0%" />
                         </StackPanel>
                     </StatusBarItem>
