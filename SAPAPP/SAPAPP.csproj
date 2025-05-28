@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="DropDown.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="OIP-removebg-preview.png" />
     <Resource Include="st-hero-min-1024x667.png" />
   </ItemGroup>
