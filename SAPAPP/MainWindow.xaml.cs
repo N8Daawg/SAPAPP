@@ -43,14 +43,14 @@ namespace SAPAPP
                 try
                 {
                     FirmwareConfigs firmwareConfigs = Settings.Settings.Load<FirmwareConfigs>(filename);
-
                     foreach (PCB pcb in firmwareConfigs.PCBs)
                     {
-                        MessageBox.Show(pcb.PCBName);
+                        //MessageBox.Show(pcb.PCBName);
+                        
 
                         foreach (ProductSettings product in pcb.Products)
                         {
-                            MessageBox.Show(product.ProductName + "\n" + product.FirmwareFolderPath);
+                            //MessageBox.Show(product.ProductName + "\n" + product.FirmwareFolderPath);
                         }
                     }
                 }
