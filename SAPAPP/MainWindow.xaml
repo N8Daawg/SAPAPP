@@ -27,12 +27,10 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
             <DockPanel Height="380" Width="720">
                 <Menu DockPanel.Dock="Top" Height="18" Background="#EED202" Foreground="Black">
                     <MenuItem Header="_File">
-                        <MenuItem Header="_Open" Click="OpenFile_Click" Style="{StaticResource SubMenuItemStyle}"/>
                         <MenuItem Header="_Close" Click="CloseFile_Click" Style="{StaticResource SubMenuItemStyle}"/>
-                        <MenuItem Header="_Save" Click="SaveFile_Click" Style="{StaticResource SubMenuItemStyle}"/>
                     </MenuItem>
                     <MenuItem Header="_Settings">
-                        <MenuItem Header="_Configure File Paths" Click="ConfigurePaths_Click" Style="{StaticResource SubMenuItemStyle}"/>
+                        <MenuItem Header="Preferences" Click="Preferences_Click" Style="{StaticResource SubMenuItemStyle}"/>
                     </MenuItem>
                     <MenuItem Header="_Help">
                         <MenuItem Header="Wiki" Click="Wiki_Click" Style="{StaticResource SubMenuItemStyle}"/>
@@ -46,20 +44,34 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     </Grid.ColumnDefinitions>
 
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
-                        <!-- Product Picker -->
+                        <!-- PCB Picker -->
                         <DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
-                            <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
-                            <ComboBox x:Name="ProductPicker" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Height="24"
-                                  ItemsSource="{StaticResource ProductsList}" IsSynchronizedWithCurrentItem="True" SelectedIndex="0"
-                                  Background="LightGray" Foreground="black" BorderBrush="Black" BorderThickness="1" Cursor="Hand"/>
+                            <Label Content="PCB" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
+                            <ComboBox x:Name="PCBPicker"
+                            DockPanel.Dock="Top"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            Width="360" Height="24"
+                            ItemsSource="{Binding ProductsList}"
+                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                            Background="LightGray" Foreground="Black"
+                            BorderBrush="Black" BorderThickness="1"
+                            Cursor="Hand"/>
                         </DockPanel>
 
-                        <!-- PCB Picker -->
+                        <!-- Product Picker -->
                         <DockPanel Margin="40,36,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
-                            <Label Content="PCB" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="White"/>
-                            <ComboBox x:Name="PCBPicker" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Height="24"
-                                  ItemsSource="{StaticResource PCBList}" SelectedIndex="0" IsSynchronizedWithCurrentItem="True"
-                                  Background="LightGray" Foreground="black" BorderBrush="Black" BorderThickness="1" Cursor="Hand" SelectionChanged="PCBPicker_SelectionChanged"/>
+                            <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                            <ComboBox x:Name="ProductPicker"
+                            DockPanel.Dock="Top"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            Width="360" Height="24"
+                            ItemsSource="{Binding PCBList}"
+                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
+                            Background="LightGray" Foreground="Black"
+                            BorderBrush="Black" BorderThickness="1"
+                            Cursor="Hand"/>
                         </DockPanel>
 
                         <!-- Start and Stop Buttons (swapped) -->
@@ -107,16 +119,20 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             </Button>
                         </DockPanel>
                     </StackPanel>
-
-                    <!-- Right Image -->
+                    
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <Image Source="C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\sensitlogo1.png" Width="176" Height="176" Margin="-75,0,10,0"/>
-                        <TextBox Width="70" Height="20" Margin="-75,-15,10,0" Text="Our Purpose" HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
-                            Background="Transparent" BorderBrush="Transparent" Foreground="White" TextChanged="TextBox_TextChanged"/>
-                        <TextBox Width="240" Height="20" Margin="-75,0,10,0" Text="Protect Life, Property &amp; Our Environment" 
-                            HorizontalAlignment="Center" FontSize="11" FontWeight="Bold" 
-                            Background="Transparent" BorderBrush="Transparent" Foreground="White" 
-                            TextChanged="TextBox_TextChanged"/>
+                        <Image Source="C:\Users\avazquez\Source\Repos\SAPAPP1\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
+                        <TextBox Width="70" Height="20" Margin="-50,-15,10,0" 
+                        Text="Mission"
+                        HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
+                        Background="Transparent" BorderBrush="Transparent" Foreground="White"
+                        IsReadOnly="True"/>
+
+                        <TextBox Width="240" Height="67" Margin="-75,0,10,0"
+                        Text="Through continually learning and honest and open communication, we make a line of great quality products in a great work atmosphere."
+                        HorizontalAlignment="Center" TextAlignment="Center" FontSize="11" FontWeight="Bold"
+                        Background="Transparent" BorderBrush="Transparent" Foreground="White"
+                        TextWrapping="Wrap" IsReadOnly="True"/>
                     </StackPanel>
                 </Grid>
 
@@ -124,7 +140,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                 <StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="#EED202" Foreground="Black" Width="800">
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
-                            <ProgressBar x:Name="progbar" Width="225" Height="20" Minimum="0" Maximum="100" Value="0"/>
+                            <ProgressBar x:Name="progbar" Width="60" Height="20" Minimum="0" Maximum="100" Value="0"/>
                             <TextBlock x:Name="progressPercentage" Margin="5,0,0,0" VerticalAlignment="Center" Text="0%" />
                         </StackPanel>
                     </StatusBarItem>

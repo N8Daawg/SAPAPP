@@ -20,6 +20,7 @@ namespace SAPAPP
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new SelectionViewModel();
             InitializeScripts();
         }
 
@@ -30,41 +31,30 @@ namespace SAPAPP
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
         }
 
-        private void OpenFile_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-                StatusMessageDisplay.Text = $"Opened: {openFileDialog.FileName}";
-        }
-
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to close?", "Confirm", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to close?",
+                                                      "Confirm", MessageBoxButton.YesNo,
+                                                      MessageBoxImage.Warning);
+
             if (result == MessageBoxResult.Yes)
             {
-                StatusMessageDisplay.Text = "File Closed";
+                Application.Current.Shutdown(); // Closes the entire application
             }
         }
 
-        private void SaveFile_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                File.WriteAllText(saveFileDialog.FileName, "Sample content");
-                StatusMessageDisplay.Text = $"Saved: {saveFileDialog.FileName}";
-            }
-        }
+        private void Preferences_Click(object sender, RoutedEventArgs e)
+{
+        StatusMessageDisplay.Text = "Preferences option selected";
 
-        private void ConfigurePaths_Click(object sender, RoutedEventArgs e) => StatusMessageDisplay.Text = "Configure File Paths option selected";
+        PreferencesDialog preferencesDialog = new PreferencesDialog();
+        preferencesDialog.ShowDialog();
+}
 
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://github.com/SensitTechnologies/TestSuite/wiki",
-                UseShellExecute = true
-            });
+            WikiDialog wikiDialog = new WikiDialog();
+            wikiDialog.ShowDialog();
         }
 
         private async void StartButton_Click(object sender, RoutedEventArgs e)
@@ -83,8 +73,8 @@ namespace SAPAPP
                 case 2: MegaScript.Download(); break;
             }
 
-            await UpdateProgressBar();
-            StatusMessageDisplay.Text = "Download Complete!";
+            //await UpdateProgressBar();
+            //StatusMessageDisplay.Text = "Download Complete!";
             StartButton.IsEnabled = true;
         }
 
@@ -95,16 +85,6 @@ namespace SAPAPP
 
             progbar.IsIndeterminate = false;
             StatusMessageDisplay.Text = "Download Canceled";
-        }
-
-        private async Task UpdateProgressBar()
-        {
-            for (int i = 0; i <= 100; i++)
-            {
-                progbar.Value = i;
-                progressPercentage.Text = $"{i}%";
-                await Task.Delay(50);
-            }
         }
 
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
@@ -175,28 +155,6 @@ namespace SAPAPP
         {
             this.FontSize = 20; // Adjust as needed
         }
-
-        // CLI Test Method
-        private void CLI_test()
-        {
-            string strCmdText = "echo hello world";
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = "/c " + strCmdText,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
-            };
-
-            using Process cmd = new Process { StartInfo = processStartInfo };
-            cmd.Start();
-            cmd.WaitForExit();
-
-            Process_Feedback(cmd.StandardOutput.ReadToEnd());
-        }
-
-        private void Process_Feedback(string feedback) => StatusMessageDisplay.Text = feedback.Trim();
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
