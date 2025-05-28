@@ -6,6 +6,7 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 mc:Ignorable="d"
 Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center"
 WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithGrip">
+    
     <Window.Resources>
         <!-- Style for sub menu items -->
         <Style TargetType="MenuItem" x:Key="SubMenuItemStyle">
