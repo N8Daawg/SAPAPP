@@ -1,0 +1,19 @@
+﻿Firmware Configuraetions
+
+tmeplate:
+PCB
+
+product 1
+filepath
+
+product 2
+filepath
+
+
+PCB: MSP430
+
+Sensit G2
+C:\Users\nbeal\Downloads\DOWNLOAD INSTRUCTIONS.txt
+
+Sensit G2
+C:\Users\nbeal\Downloads\DOWNLOAD INSTRUCTIONS.txt

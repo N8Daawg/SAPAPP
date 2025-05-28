@@ -16,6 +16,7 @@ namespace SAPAPP.Scripts
 
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
+        protected string currentFilePath;
         protected const bool testing = false;
         protected const int delay = 300; // delay time in milliseconds
 

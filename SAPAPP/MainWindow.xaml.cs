@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
 using SAPAPP.Scripts;
-using System.ComponentModel;
+using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -22,6 +21,7 @@ namespace SAPAPP
             InitializeComponent();
             DataContext = new SelectionViewModel();
             InitializeScripts();
+
         }
 
         private void InitializeScripts()
@@ -29,6 +29,7 @@ namespace SAPAPP
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
+
         }
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
@@ -50,6 +51,58 @@ namespace SAPAPP
         PreferencesDialog preferencesDialog = new PreferencesDialog();
         preferencesDialog.ShowDialog();
 }
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, "Sample content");
+                StatusMessageDisplay.Text = $"Saved: {saveFileDialog.FileName}";
+            }
+        }
+
+        private void openConfigs(string filename)
+        {
+            if (!string.IsNullOrEmpty(filename)) {
+                try
+                {
+                    FirmwareConfigs firmwareConfigs = Settings.Settings.Load<FirmwareConfigs>(filename);
+
+
+                    foreach (PCB pcb in firmwareConfigs.PCBs)
+                    {
+                        MessageBox.Show(pcb.PCBName);
+
+                        foreach (ProductSettings product in pcb.Products)
+                        {
+                            MessageBox.Show(product.ProductName + "\n" + product.FirmwareFolderPath);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private string getSelectedFile()
+        {
+            string result="";
+
+            string docPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "FirmwareConfig.txt");
+            string line;
+            using (StreamReader sr  = new StreamReader(docPath))
+            {
+                string target = ProductPicker.Text;
+                MessageBox.Show(target);
+
+                line = sr.ReadToEnd();
+                MessageBox.Show(line);
+            }
+
+            return result;
+        }
 
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
@@ -66,11 +119,11 @@ namespace SAPAPP
 
             StatusMessageDisplay.Text = "Starting Download";
 
-            switch (ProductPicker.SelectedIndex)
+            switch (PCBPicker.SelectedIndex)
             {
-                case 0: TestScript.Download(); break;
+                case 0: openConfigs(@"C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\Configs\XMLFile1.xml"); break;
                 case 1: FetScript.Download(); break;
-                case 2: MegaScript.Download(); break;
+                //case 2: MegaScript.Download(); break;
             }
 
             //await UpdateProgressBar();
