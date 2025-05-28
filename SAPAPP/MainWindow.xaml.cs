@@ -21,10 +21,10 @@ namespace SAPAPP
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new SelectionViewModel();
             InitializeScripts();
 
-            openConfigs(@"C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\Configs\XMLFile1.xml");
+            FirmwareConfigs configs = Settings.Settings.openConfigs(@"C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\Configs\Config.xml");
+            DataContext = new SelectionViewModel(configs);
 
         }
 
@@ -35,31 +35,6 @@ namespace SAPAPP
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
         }
 
-
-        private void openConfigs(string filename)
-        {
-            if (!string.IsNullOrEmpty(filename))
-            {
-                try
-                {
-                    FirmwareConfigs firmwareConfigs = Settings.Settings.Load<FirmwareConfigs>(filename);
-                    foreach (PCB pcb in firmwareConfigs.PCBs)
-                    {
-                        //MessageBox.Show(pcb.PCBName);
-                        
-
-                        foreach (ProductSettings product in pcb.Products)
-                        {
-                            //MessageBox.Show(product.ProductName + "\n" + product.FirmwareFolderPath);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
@@ -77,7 +52,7 @@ namespace SAPAPP
         {
             StatusMessageDisplay.Text = "Preferences option selected";
 
-            PreferencesDialog preferencesDialog = new PreferencesDialog();
+            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
             preferencesDialog.ShowDialog();
         }
 

@@ -4,21 +4,50 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SAPAPP.Configs;
+using System.Windows;
 
 namespace SAPAPP.Settings
 {
+
     /// <summary>
     /// Class to allow editing of settings objects by user
     /// </summary>
 	public static class Settings
     {
+        private static string permenantFilePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"\Configs\Config.xml";
+
+        public static FirmwareConfigs openConfigs(string filename)
+        {
+            FirmwareConfigs configs = new FirmwareConfigs();
+            if (!string.IsNullOrEmpty(filename))
+            {
+                try
+                {
+                    configs = Load<FirmwareConfigs>(filename);
+
+                    if (filename != permenantFilePath)
+                    {
+                        Save<FirmwareConfigs>(configs, permenantFilePath);
+                    }
+                    return configs;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            return configs;
+        }
+
+
         /// <summary>
         /// Retrieve an object of the specified type from the specified settings file
         /// </summary>
         /// <typeparam name="T">the type the settings object</typeparam>
         /// <param name="filepath">path to XML file where settings are stored</param>
         /// <returns>an object containing settings from the file</returns>
-        public static T Load<T>(string filepath)
+        private static T Load<T>(string filepath)
         {
             // Start with a null settings class.
             T settings = default;

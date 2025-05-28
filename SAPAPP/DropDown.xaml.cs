@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
+using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -39,14 +40,36 @@ namespace SAPAPP
             }
         }
 
-        public SelectionViewModel()
+        public SelectionViewModel(FirmwareConfigs config)
         {
+
+            PCBList = new ObservableCollection<string>();
+            ProductsList = new ObservableCollection<string>();
+            ProductPCBMap = new Dictionary<string, List<string>>();
+
+
+            foreach (PCB pcb in config.PCBs)
+            {
+                PCBList.Add(pcb.PCBName);
+                List<string> ProductNames = new List<string>();
+                foreach (ProductSettings product in pcb.Products)
+                {
+                    ProductNames.Add(product.ProductName);
+                }
+
+                ProductPCBMap.Add(pcb.PCBName, ProductNames);
+
+            }
+
+            /*
             // Initialize lists
             PCBList = new ObservableCollection<string>
             {
                 "---", "Texas Instruments MSP430", "Microchip ATmega", "STMicroelectronics STM32",
                 "Ezurio BL654 Bluetooth/NFC Module", "Texas Instruments Battery Fuel Gauges"
             };
+
+  
 
             ProductsList = new ObservableCollection<string>();
 
@@ -60,6 +83,9 @@ namespace SAPAPP
                 { "Texas Instruments Battery Fuel Gauges", new List<string> { "Arduino UART programming" } }
             };
 
+            */
+
+            SelectedPCB = "---";
             LoadSelection();
         }
 
@@ -75,7 +101,6 @@ namespace SAPAPP
                     ProductsList.Add(product);
                 }
             }
-
             SelectedProduct = "---"; // Reset PCB selection when product changes
         }
 

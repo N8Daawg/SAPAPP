@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FirmwareConfigs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<PCBs>
+		<PCB><PCBName>---</PCBName><Products></Products></PCB>
+		<PCB>
+			<PCBName>MSP430</PCBName>
+			<Products>
+				<ProductSettings>
+					<ProductName>Sensit G2</ProductName>
+					<FirmwareFolderPath>Path to Firmware</FirmwareFolderPath>
+				</ProductSettings>
+			</Products>
+		</PCB>
+	</PCBs>
+</FirmwareConfigs>
