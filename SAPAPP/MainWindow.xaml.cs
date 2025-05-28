@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using SAPAPP.Scripts;
 using System.ComponentModel;
+using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -22,6 +23,9 @@ namespace SAPAPP
             InitializeComponent();
             DataContext = new SelectionViewModel();
             InitializeScripts();
+
+            openConfigs(@"C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\Configs\XMLFile1.xml");
+
         }
 
         private void InitializeScripts()
@@ -29,6 +33,32 @@ namespace SAPAPP
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
+        }
+
+
+        private void openConfigs(string filename)
+        {
+            if (!string.IsNullOrEmpty(filename))
+            {
+                try
+                {
+                    FirmwareConfigs firmwareConfigs = Settings.Settings.Load<FirmwareConfigs>(filename);
+
+                    foreach (PCB pcb in firmwareConfigs.PCBs)
+                    {
+                        MessageBox.Show(pcb.PCBName);
+
+                        foreach (ProductSettings product in pcb.Products)
+                        {
+                            MessageBox.Show(product.ProductName + "\n" + product.FirmwareFolderPath);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
@@ -56,6 +86,9 @@ namespace SAPAPP
             WikiDialog wikiDialog = new WikiDialog();
             wikiDialog.ShowDialog();
         }
+
+
+        
 
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
