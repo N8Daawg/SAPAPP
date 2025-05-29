@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 namespace SAPAPP.Configs
 {
     [Serializable]
-    public class ProductSettings
+    public class ProductConfig
     {
         public string ProductName { get; set; } = "";
         public string FirmwareFolderPath { get; set; } = "";
     }
 
     [Serializable]
-    public class TiProductSettings : ProductSettings
+    public class TiProductConfig : ProductConfig
     {
         public string ProductName { get; set; } = "";
         public string FirmwareFolderPath { get; set; } = "";
     }
 
     [Serializable]
-    public class ATMegaProductSettings : ProductSettings
+    public class ATMegaProductConfig : ProductConfig
     {
         public string FirmwareFilePath { get; set; } = "";
         public string Processor { get; set; } = "";
@@ -31,7 +31,7 @@ namespace SAPAPP.Configs
     public class PCB
     {
         public string PCBName { get; set; }
-        public List<ProductSettings> Products { get; } = new List<ProductSettings>();
+        public List<ProductConfig> Products { get; } = new List<ProductConfig>();
     }
 
     [Serializable]

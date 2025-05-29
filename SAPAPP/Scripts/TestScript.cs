@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPAPP.Configs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,6 +14,10 @@ namespace SAPAPP.Scripts
 {
     internal class TestScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
+        public override void Download(ProductConfig product)
+        {
+            throw new NotImplementedException();
+        }
 
         // This event handler is where the time-consuming work is done.
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)

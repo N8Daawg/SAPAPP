@@ -52,7 +52,7 @@ namespace SAPAPP
             {
                 PCBList.Add(pcb.PCBName);
                 List<string> ProductNames = new List<string>();
-                foreach (ProductSettings product in pcb.Products)
+                foreach (ProductConfig product in pcb.Products)
                 {
                     ProductNames.Add(product.ProductName);
                 }

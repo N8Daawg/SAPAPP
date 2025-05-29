@@ -18,12 +18,15 @@ namespace SAPAPP
         private FetScript FetScript;
         private MegaScript MegaScript;
 
+        private FirmwareConfigs configs;
+        private static string configFile = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"\Configs\Config.xml";
+
         public MainWindow()
         {
             InitializeComponent();
             InitializeScripts();
 
-            FirmwareConfigs configs = Settings.Settings.openConfigs(@"C:\Users\nbeal\source\repos\SAPAPP\SAPAPP\Configs\Config.xml");
+            configs = Settings.Settings.openConfigs(configFile);
             DataContext = new SelectionViewModel(configs);
 
         }
@@ -62,8 +65,14 @@ namespace SAPAPP
             wikiDialog.ShowDialog();
         }
 
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
+            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
 
-        
+            progbar.IsIndeterminate = false;
+            StatusMessageDisplay.Text = "Download Canceled";
+        }
 
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -74,25 +83,37 @@ namespace SAPAPP
 
             StatusMessageDisplay.Text = "Starting Download";
 
-            switch (ProductPicker.SelectedIndex)
+            PCB currentPCB = new();
+            foreach (PCB pcb in configs.PCBs)
             {
-                case 0: TestScript.Download(); break;
-                case 1: FetScript.Download(); break;
-                case 2: MegaScript.Download(); break;
+                if (pcb.PCBName == PCBPicker.Text)
+                {
+                    currentPCB = pcb;
+                    break;
+                }
+            }
+
+            switch (PCBPicker.SelectedIndex)
+            {
+                //case 0: TestScript.Download(); break;
+                case 1: uniflashDownload(currentPCB); break;
+                //case 2: MegaScript.Download(); break;
             }
 
             StartButton.IsEnabled = true;
         }
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
+        private void uniflashDownload(PCB msp)
         {
-            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
-            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
 
-            progbar.IsIndeterminate = false;
-            StatusMessageDisplay.Text = "Download Canceled";
+            foreach (ProductConfig product in msp.Products)
+            {
+                if (product.ProductName == ProductPicker.Text)
+                {
+                    FetScript.Download(product);
+                }
+            }
         }
-
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;
