@@ -1730,23 +1730,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\nbeal\\.nuget\\packages\\": {},
+    "C:\\Users\\nbealsla\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nbeal\\source\\repos\\SAPAPP\\SAPAPP\\SAPAPP.csproj",
+      "projectUniqueName": "C:\\Users\\nbealsla\\source\\repos\\SensitTechnologies\\SAPAPP\\SAPAPP\\SAPAPP.csproj",
       "projectName": "SAPAPP",
-      "projectPath": "C:\\Users\\nbeal\\source\\repos\\SAPAPP\\SAPAPP\\SAPAPP.csproj",
-      "packagesPath": "C:\\Users\\nbeal\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nbeal\\source\\repos\\SAPAPP\\SAPAPP\\obj\\",
+      "projectPath": "C:\\Users\\nbealsla\\source\\repos\\SensitTechnologies\\SAPAPP\\SAPAPP\\SAPAPP.csproj",
+      "packagesPath": "C:\\Users\\nbealsla\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nbealsla\\source\\repos\\SensitTechnologies\\SAPAPP\\SAPAPP\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\nbeal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\nbealsla\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1774,7 +1774,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0-windows7.0": {
@@ -1804,7 +1804,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPAPP.Configs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,8 +18,10 @@ namespace SAPAPP.Scripts
         private const string testprogram = @"\STM32BIG\build\arduino.avr.megaADK";
         private const string cliPath = "\"C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atbackend\\atprogram.exe\"";
 
-        private const string path = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
-
+        public override void Download(ProductConfig product)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {

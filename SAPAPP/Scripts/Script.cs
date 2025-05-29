@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPAPP.Configs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ namespace SAPAPP.Scripts
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
         protected const bool testing = false;
-        protected const int delay = 300; // delay time in milliseconds
+        protected const int delay = 100; // delay time in milliseconds
 
         // Feedback Devices
         protected TextBlock FeedbackDisplay;
@@ -48,15 +49,7 @@ namespace SAPAPP.Scripts
                 new ProgressChangedEventHandler(backgroundWorker_ProgressChanged);
         }
 
-        public async void Download()
-        {
-            if(!backgroundWorker.IsBusy)
-            {
-                backgroundWorker.RunWorkerAsync();
-            }
-
-            //await UpdateProgressBar();
-        }
+        public abstract void Download(ProductConfig product);
 
 
         // This event handler is where the time-consuming work is done.
@@ -87,7 +80,7 @@ namespace SAPAPP.Scripts
         }
 
 
-        private async Task UpdateProgressBar()
+        protected async Task UpdateProgressBar()
         {
             for (int i = 0; i <= 100; i++)
             {
