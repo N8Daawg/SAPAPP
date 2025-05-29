@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAPAPP.Configs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,13 +16,26 @@ namespace SAPAPP.Scripts
         private const string localBatInstallDir = @"\firmware\FetPrograms\Sensit_G2";
         private const string loadfile = "dslite.bat";
 
+        private ProductConfig currentDownload = new();
+
+        public override async void Download(ProductConfig product) 
+        {
+            if(!backgroundWorker.IsBusy)
+            {
+                currentDownload = product;
+                backgroundWorker.RunWorkerAsync();
+            }
+            //await UpdateProgressBar();
+        }
 
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
             string strCmdText = loadfile;
-            string firmwareDir = workingDirectory + localBatInstallDir;
+            //string firmwareDir = workingDirectory + localBatInstallDir;
+            string firmwareDir = currentDownload.FirmwareFolderPath;
+
 
 
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
@@ -45,68 +59,76 @@ namespace SAPAPP.Scripts
             processStartInfo.WorkingDirectory = firmwareDir;
 
 
-            Process cmd = new Process();
-            cmd.StartInfo = processStartInfo;
-            cmd.Start();
-            cmd.WaitForExit();
-
-            if (!testing)
+            try
             {
-                string line = "";
-                while (!cmd.StandardOutput.EndOfStream)
-                {
-                    if (worker.CancellationPending)
-                    {
-                        e.Cancel = true;
-                        break;
-                    }
-                    else
-                    {
-                        // read from standard Error to see if there was a mistake
-                        line = cmd.StandardError.ReadLine();
-                        if (line != null)
-                        {
-                            line.Trim();
-                            string message, header;
-                            if (line.ToLower().Contains("system cannot find the path specified")) // package needs to be recompiled
-                            {
-                                message = line + "\nRecompile Package and try again.";
-                                header = "Package Error";
-                            }
-                            else if (line.ToLower().Contains("no usb fet"))
-                            {
-                                message = line;
-                                header = "Connection Error";
-                            }
-                            else
-                            {
-                                message = line;
-                                header = "Error";
-                            }
 
-                            MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-                            worker.CancelAsync();
+                Process cmd = new Process();
+                cmd.StartInfo = processStartInfo;
+                cmd.Start();
+                cmd.WaitForExit();
+
+                if (!testing)
+                {
+                    string line = "";
+                    while (!cmd.StandardOutput.EndOfStream)
+                    {
+                        if (worker.CancellationPending)
+                        {
+                            e.Cancel = true;
                             break;
                         }
-
-
-                        line = cmd.StandardOutput.ReadLine();
-                        if (line != null)
+                        else
                         {
-                            line.Trim();
-                            if (line != "")
+                            // read from standard Error to see if there was a mistake
+                            line = cmd.StandardError.ReadLine();
+                            if (line != null)
                             {
-                                Application.Current.Dispatcher.Invoke(new Action(() =>
+                                line.Trim();
+                                string message, header;
+                                if (line.ToLower().Contains("system cannot find the path specified")) // package needs to be recompiled
                                 {
-                                    FeedbackDisplay.Text = line;
-                                }));
-                                System.Threading.Thread.Sleep(delay);
+                                    message = line + "\nRecompile Package and try again.";
+                                    header = "Package Error";
+                                }
+                                else if (line.ToLower().Contains("no usb fet"))
+                                {
+                                    message = line;
+                                    header = "Connection Error";
+                                }
+                                else
+                                {
+                                    message = line;
+                                    header = "Error";
+                                }
+
+                                MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
+                                worker.CancelAsync();
+                                break;
+                            }
+
+
+                            line = cmd.StandardOutput.ReadLine();
+                            if (line != null)
+                            {
+                                line.Trim();
+                                if (line != "")
+                                {
+                                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                                    {
+                                        FeedbackDisplay.Text = line;
+                                    }));
+                                    System.Threading.Thread.Sleep(delay);
+                                }
                             }
                         }
                     }
                 }
+                cmd.Close();
             }
-            cmd.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

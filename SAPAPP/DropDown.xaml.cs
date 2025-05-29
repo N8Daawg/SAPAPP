@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
+using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -22,7 +23,6 @@ namespace SAPAPP
             {
                 _selectedProduct = value;
                 OnPropertyChanged(nameof(SelectedProduct));
-                UpdatePCBOptions();
                 SaveSelection();
             }
         }
@@ -35,22 +35,45 @@ namespace SAPAPP
             {
                 _selectedPCB = value;
                 OnPropertyChanged(nameof(SelectedPCB));
+                UpdateProductOptions();
                 SaveSelection();
             }
         }
 
-        public SelectionViewModel()
+        public SelectionViewModel(FirmwareConfigs config)
         {
+
+            PCBList = new ObservableCollection<string>();
+            ProductsList = new ObservableCollection<string>();
+            ProductPCBMap = new Dictionary<string, List<string>>();
+
+
+            foreach (PCB pcb in config.PCBs)
+            {
+                PCBList.Add(pcb.PCBName);
+                List<string> ProductNames = new List<string>();
+                foreach (ProductConfig product in pcb.Products)
+                {
+                    ProductNames.Add(product.ProductName);
+                }
+
+                ProductPCBMap.Add(pcb.PCBName, ProductNames);
+
+            }
+
+            /*
             // Initialize lists
-            ProductsList = new ObservableCollection<string>
+            PCBList = new ObservableCollection<string>
             {
                 "---", "Texas Instruments MSP430", "Microchip ATmega", "STMicroelectronics STM32",
                 "Ezurio BL654 Bluetooth/NFC Module", "Texas Instruments Battery Fuel Gauges"
             };
 
-            PCBList = new ObservableCollection<string>();
+  
 
-            // Define relationships with multiple PCBs per product
+            ProductsList = new ObservableCollection<string>();
+
+            // Define relationships with multiple products per PCB
             ProductPCBMap = new Dictionary<string, List<string>>
             {
                 { "Texas Instruments MSP430", new List<string> { "MSP-FET", "MSP-GANG" } },
@@ -60,28 +83,30 @@ namespace SAPAPP
                 { "Texas Instruments Battery Fuel Gauges", new List<string> { "Arduino UART programming" } }
             };
 
+            */
+
+            SelectedPCB = "---";
             LoadSelection();
         }
 
-        private void UpdatePCBOptions()
+        private void UpdateProductOptions()
         {
-            PCBList.Clear();
-            PCBList.Add("---");
+            ProductsList.Clear();
+            ProductsList.Add("---");
 
-            if (!string.IsNullOrEmpty(SelectedProduct) && ProductPCBMap.ContainsKey(SelectedProduct))
+            if (!string.IsNullOrEmpty(SelectedPCB) && ProductPCBMap.ContainsKey(SelectedPCB))
             {
-                foreach (var pcb in ProductPCBMap[SelectedProduct])
+                foreach (var product in ProductPCBMap[SelectedPCB])
                 {
-                    PCBList.Add(pcb);
+                    ProductsList.Add(product);
                 }
             }
-
-            SelectedPCB = "---"; // Reset PCB selection when product changes
+            SelectedProduct = "---"; // Reset PCB selection when product changes
         }
 
         private void SaveSelection()
         {
-            var selection = new { Product = SelectedProduct, PCB = SelectedPCB };
+            var selection = new { PCB = SelectedPCB, Product = SelectedProduct };
             File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
         }
 
@@ -94,7 +119,7 @@ namespace SAPAPP
                 {
                     SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";
                     SelectedPCB = selection.ContainsKey("PCB") ? selection["PCB"] : "---";
-                    UpdatePCBOptions();
+                    UpdateProductOptions();
                 }
             }
         }
