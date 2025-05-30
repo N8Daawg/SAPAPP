@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Win32;
-using SAPAPP.Configs;
-using SAPAPP.Settings;
 
 namespace SAPAPP
 {
     public partial class PreferencesDialog : Window
     {
-        Window parentWindow;
-        public PreferencesDialog(Window parentWindow)
+        public PreferencesDialog()
         {
             InitializeComponent();
-            this.parentWindow = parentWindow;
         }
 
         private void BrowseLog_Click(object sender, RoutedEventArgs e)
@@ -31,8 +27,7 @@ namespace SAPAPP
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Config Files (XML-File)|*.xml",
-                Title = "Open Config Settings",
+                Filter = "Config Files (*.txt;*.json;*.html)|*.txt;*.json;*.html"
             };
             if (openFileDialog.ShowDialog() == true)
             {
@@ -40,13 +35,39 @@ namespace SAPAPP
             }
         }
 
+        private void BrowseATmega_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select ATmega Programmer (atprogram.exe)",
+                Filter = "Executable Files (*.exe)|*.exe",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                ATmegaPathTextBox.Text = openFileDialog.FileName;
+            }
+        }
+
+        private void BrowseSTM32_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select STM32 Programmer (STM32_Programmer_CLI.exe)",
+                Filter = "Executable Files (*.exe)|*.exe",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                STM32PathTextBox.Text = openFileDialog.FileName;
+            }
+        }
+
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
-
-            FirmwareConfigs configs = Settings.Settings.openConfigs(ConfigTextBox.Text);
-            parentWindow.DataContext = new SelectionViewModel(configs);
-            
             this.Close();
         }
 

@@ -127,5 +127,10 @@ namespace SAPAPP.Scripts
                 MessageBox.Show(ex.Message);
             }
         }
+
+        internal void Download()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

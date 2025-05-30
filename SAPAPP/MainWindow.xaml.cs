@@ -10,6 +10,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Microsoft.Win32;
+using SAPAPP.Scripts;
+using System.ComponentModel;
+
 
 namespace SAPAPP
 {
@@ -24,6 +28,7 @@ namespace SAPAPP
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new SelectionViewModel();
             InitializeScripts();
 
             configs = Settings.Settings.openConfigs(Settings.Settings.configFile);
@@ -37,7 +42,6 @@ namespace SAPAPP
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
         }
-
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
@@ -55,7 +59,7 @@ namespace SAPAPP
         {
             StatusMessageDisplay.Text = "Preferences option selected";
 
-            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
+            PreferencesDialog preferencesDialog = new PreferencesDialog();
             preferencesDialog.ShowDialog();
         }
 
@@ -126,10 +130,12 @@ namespace SAPAPP
                 case "MSP430":  FetScript.Download(Get_Current_Product(currentPCB)); break;
                 case "ATmega":  MegaScript.Download(Get_Current_Product(currentPCB)); break;
                 default: break;
+
             }
 
             StartButton.IsEnabled = true;
         }
+
 
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
