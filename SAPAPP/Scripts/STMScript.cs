@@ -11,7 +11,7 @@ namespace SAPAPP.Scripts
 {
     internal class STMScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
-
+        private const string testprogram = @"\STM32BIG\build\arduino.avr.megaADK";
         private const string path = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
 
         public override void Download(ProductConfig product)

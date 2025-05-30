@@ -10,21 +10,7 @@ namespace SAPAPP.Configs
     public class ProductConfig
     {
         public string ProductName { get; set; } = "";
-        public string FirmwareFolderPath { get; set; } = "";
-    }
-
-    [Serializable]
-    public class TiProductConfig : ProductConfig
-    {
-        public string ProductName { get; set; } = "";
-        public string FirmwareFolderPath { get; set; } = "";
-    }
-
-    [Serializable]
-    public class ATMegaProductConfig : ProductConfig
-    {
-        public string FirmwareFilePath { get; set; } = "";
-        public string Processor { get; set; } = "";
+        public string FirmwarePath { get; set; } = "";
     }
 
     [Serializable]

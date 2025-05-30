@@ -16,7 +16,11 @@ namespace SAPAPP.Scripts
     {
         public override void Download(ProductConfig product)
         {
-            throw new NotImplementedException();
+            if (!backgroundWorker.IsBusy)
+            {
+                currentDownload = product;
+                backgroundWorker.RunWorkerAsync();
+            }
         }
 
         // This event handler is where the time-consuming work is done.
@@ -48,6 +52,11 @@ namespace SAPAPP.Scripts
                 if (worker.CancellationPending)
                 {
                     e.Cancel = true;
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        FeedbackDisplay.Text = "Canceled!";
+                    }));
+                    System.Threading.Thread.Sleep(delay);
                     break;
                 }
                 else

@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using SAPAPP.Configs;
+using SAPAPP.Scripts;
+using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
-using Microsoft.Win32;
-using SAPAPP.Scripts;
-using System.ComponentModel;
-using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -19,14 +20,13 @@ namespace SAPAPP
         private MegaScript MegaScript;
 
         private FirmwareConfigs configs;
-        private static string configFile = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"\Configs\Config.xml";
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeScripts();
 
-            configs = Settings.Settings.openConfigs(configFile);
+            configs = Settings.Settings.openConfigs(Settings.Settings.configFile);
             DataContext = new SelectionViewModel(configs);
 
         }
@@ -65,12 +65,48 @@ namespace SAPAPP
             wikiDialog.ShowDialog();
         }
 
+        private PCB Get_Current_PCB()
+        {
+            PCB currentPCB = new();
+            foreach (PCB pcb in configs.PCBs)
+            {
+                if (pcb.PCBName == PCBPicker.Text)
+                {
+                    currentPCB = pcb;
+                    break;
+                }
+            }
+            return currentPCB;
+        }
+
+        private ProductConfig Get_Current_Product(PCB pcb)
+        {
+            ProductConfig currentProduct = new ProductConfig();
+            foreach (ProductConfig product in pcb.Products)
+            {
+                if (product.ProductName == ProductPicker.Text)
+                {
+                    currentProduct = product;
+                }
+            }
+            return currentProduct;
+        }
+
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
             SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
 
-            progbar.IsIndeterminate = false;
+
+            PCB currentPCB = Get_Current_PCB();
+            switch (currentPCB.PCBName)
+            {
+                case "---": TestScript.Cancel(); break;
+                case "MSP430": FetScript.Cancel(); break;
+                //case 2: MegaScript.Download(); break;
+                default: break;
+            }
+
             StatusMessageDisplay.Text = "Download Canceled";
         }
 
@@ -83,37 +119,18 @@ namespace SAPAPP
 
             StatusMessageDisplay.Text = "Starting Download";
 
-            PCB currentPCB = new();
-            foreach (PCB pcb in configs.PCBs)
+            PCB currentPCB = Get_Current_PCB();
+            switch (currentPCB.PCBName)
             {
-                if (pcb.PCBName == PCBPicker.Text)
-                {
-                    currentPCB = pcb;
-                    break;
-                }
-            }
-
-            switch (PCBPicker.SelectedIndex)
-            {
-                //case 0: TestScript.Download(); break;
-                case 1: uniflashDownload(currentPCB); break;
-                //case 2: MegaScript.Download(); break;
+                case "---":     TestScript.Download(Get_Current_Product(currentPCB)); break;
+                case "MSP430":  FetScript.Download(Get_Current_Product(currentPCB)); break;
+                case "ATmega":  MegaScript.Download(Get_Current_Product(currentPCB)); break;
+                default: break;
             }
 
             StartButton.IsEnabled = true;
         }
 
-        private void uniflashDownload(PCB msp)
-        {
-
-            foreach (ProductConfig product in msp.Products)
-            {
-                if (product.ProductName == ProductPicker.Text)
-                {
-                    FetScript.Download(product);
-                }
-            }
-        }
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;

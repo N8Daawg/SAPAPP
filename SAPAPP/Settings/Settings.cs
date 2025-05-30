@@ -15,7 +15,7 @@ namespace SAPAPP.Settings
     /// </summary>
 	public static class Settings
     {
-        private static string permenantFilePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"\Configs\Config.xml";
+        public static string configFile = "FirmwareConfigurations.xml";
 
         public static FirmwareConfigs openConfigs(string filename)
         {
@@ -25,10 +25,9 @@ namespace SAPAPP.Settings
                 try
                 {
                     configs = Load<FirmwareConfigs>(filename);
-
-                    if (filename != permenantFilePath)
+                    if (filename != configFile)
                     {
-                        Save<FirmwareConfigs>(configs, permenantFilePath);
+                        Save<FirmwareConfigs>(configs, configFile);
                     }
                     return configs;
                 }
@@ -64,6 +63,7 @@ namespace SAPAPP.Settings
             if (settings == null)
             {
                 settings = Activator.CreateInstance<T>();
+                Save<T>(settings, filepath);
             }
 
             return settings;
@@ -75,7 +75,7 @@ namespace SAPAPP.Settings
         /// <typeparam name="T">the type the settings object</typeparam>
         /// <param name="settings">Object to be serialized to XML</param>
         /// <param name="filepath">path to XML file where settings are stored</param>
-        public static void Save<T>(T settings, string filepath)
+        private static void Save<T>(T settings, string filepath)
         {
             // Save the settings as an XML file.
             Serializer.SerializeXML(settings, filepath);

@@ -16,8 +16,6 @@ namespace SAPAPP.Scripts
         private const string localBatInstallDir = @"\firmware\FetPrograms\Sensit_G2";
         private const string loadfile = "dslite.bat";
 
-        private ProductConfig currentDownload = new();
-
         public override async void Download(ProductConfig product) 
         {
             if(!backgroundWorker.IsBusy)
@@ -34,7 +32,7 @@ namespace SAPAPP.Scripts
 
             string strCmdText = loadfile;
             //string firmwareDir = workingDirectory + localBatInstallDir;
-            string firmwareDir = currentDownload.FirmwareFolderPath;
+            string firmwareDir = currentDownload.FirmwarePath;
 
 
 
