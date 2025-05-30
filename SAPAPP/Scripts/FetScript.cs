@@ -13,7 +13,6 @@ namespace SAPAPP.Scripts
 {
     internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
-        private const string localBatInstallDir = @"\firmware\FetPrograms\Sensit_G2";
         private const string loadfile = "dslite.bat";
 
         public override async void Download(ProductConfig product) 
@@ -100,7 +99,7 @@ namespace SAPAPP.Scripts
                                 }
 
                                 MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-                                worker.CancelAsync();
+                                Cancel();
                                 break;
                             }
 
