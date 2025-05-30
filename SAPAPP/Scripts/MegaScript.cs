@@ -16,11 +16,16 @@ namespace SAPAPP.Scripts
 
         private const string localInstallDir = @"\firmware\STMPrograms";
         private const string testprogram = @"\STM32BIG\build\arduino.avr.megaADK";
-        private const string cliPath = "\"C:\\Program Files (x86)\\Atmel\\Studio\\7.0\\atbackend\\atprogram.exe\"";
+        private const string cliPath = @"C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\atprogram.exe";
 
         public override void Download(ProductConfig product)
         {
-            throw new NotImplementedException();
+            if (!backgroundWorker.IsBusy)
+            {
+                currentDownload = product;
+                backgroundWorker.RunWorkerAsync();
+            }
+            //await UpdateProgressBar();
         }
 
         protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -28,7 +33,7 @@ namespace SAPAPP.Scripts
             BackgroundWorker worker = sender as BackgroundWorker;
 
             string strCmdText = cliPath + " -t avrispmk2 -i ISP -d atmega2560 program -f megaADK.ino.elf";
-            string firmwareDir = workingDirectory + localInstallDir + testprogram;
+            string firmwareDir = workingDirectory;
 
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = "cmd.exe";

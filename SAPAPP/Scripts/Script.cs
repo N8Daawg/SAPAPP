@@ -20,6 +20,8 @@ namespace SAPAPP.Scripts
         protected const bool testing = false;
         protected const int delay = 100; // delay time in milliseconds
 
+        protected ProductConfig currentDownload = new();
+
         // Feedback Devices
         protected TextBlock FeedbackDisplay;
         protected TextBlock progressPercentage;
@@ -50,6 +52,14 @@ namespace SAPAPP.Scripts
         }
 
         public abstract void Download(ProductConfig product);
+
+        public void Cancel()
+        {
+            if (backgroundWorker.IsBusy)
+            {
+                backgroundWorker.CancelAsync();
+            }
+        }
 
 
         // This event handler is where the time-consuming work is done.
