@@ -1,12 +1,6 @@
 ﻿using SAPAPP.Configs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,22 +27,26 @@ namespace SAPAPP.Scripts
             progressPercentage = pp;
             progbar = pb;
             workingDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-            
-            InitializeBackgroundWorker();
+
+            backgroundWorker = InitializeBackgroundWorker();
         }
 
-        private void InitializeBackgroundWorker()
+        private BackgroundWorker InitializeBackgroundWorker()
         {
-            backgroundWorker = new BackgroundWorker();
-            backgroundWorker.WorkerReportsProgress = true;
-            backgroundWorker.WorkerSupportsCancellation = true;
+            BackgroundWorker worker = new()
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true,
+            };
 
-            backgroundWorker.DoWork +=
-                new DoWorkEventHandler(backgroundWorker_DoWork);
-            backgroundWorker.RunWorkerCompleted +=
-                new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
-            backgroundWorker.ProgressChanged +=
-                new ProgressChangedEventHandler(backgroundWorker_ProgressChanged);
+            worker.DoWork +=
+                new DoWorkEventHandler(BackgroundWorker_DoWork);
+            worker.RunWorkerCompleted +=
+                new RunWorkerCompletedEventHandler(BackgroundWorker_RunWorkerCompleted);
+            worker.ProgressChanged +=
+                new ProgressChangedEventHandler(BackgroundWorker_ProgressChanged);
+
+            return worker;
         }
 
         public abstract void Download(ProductConfig product);
@@ -63,17 +61,17 @@ namespace SAPAPP.Scripts
 
 
         // This event handler is where the time-consuming work is done.
-        protected abstract void backgroundWorker_DoWork(object sender, DoWorkEventArgs e);
+        protected abstract void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e);
 
 
         // This event handler updates the progress.
-        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //FeedbackDisplay.Text = (e.ProgressPercentage.ToString() + "%");
         }
 
         // This event handler deals with the results of the background operation.
-        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
             {
@@ -89,6 +87,7 @@ namespace SAPAPP.Scripts
             }
         }
 
+        protected abstract void HandleError(BackgroundWorker worker, string line);
 
         protected async Task UpdateProgressBar()
         {

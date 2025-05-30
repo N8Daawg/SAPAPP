@@ -19,7 +19,12 @@ namespace SAPAPP.Scripts
             throw new NotImplementedException();
         }
 
-        protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void HandleError(BackgroundWorker worker, string line)
         {
             throw new NotImplementedException();
         }

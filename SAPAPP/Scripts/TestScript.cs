@@ -1,14 +1,8 @@
 ﻿using SAPAPP.Configs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shapes;
 
 namespace SAPAPP.Scripts
 {
@@ -24,7 +18,7 @@ namespace SAPAPP.Scripts
         }
 
         // This event handler is where the time-consuming work is done.
-        protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -79,7 +73,7 @@ namespace SAPAPP.Scripts
             cmd.Close();
         }
 
-        internal void Download()
+        protected override void HandleError(BackgroundWorker worker, string line)
         {
             throw new NotImplementedException();
         }
