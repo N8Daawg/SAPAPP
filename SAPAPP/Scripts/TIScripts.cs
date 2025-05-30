@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 
-namespace SAPAPP
+namespace SAPAPP.TI
 {
     // Configuration Class
     public class ProductConfig

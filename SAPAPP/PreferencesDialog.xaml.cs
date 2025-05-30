@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using SAPAPP.Configs;
+using System;
 using System.Windows;
-using Microsoft.Win32;
 
 namespace SAPAPP
 {
     public partial class PreferencesDialog : Window
     {
-        public PreferencesDialog()
+        Window parentWindow;
+        public PreferencesDialog(Window parentWindow)
         {
             InitializeComponent();
+            this.parentWindow = parentWindow;
         }
 
         private void BrowseLog_Click(object sender, RoutedEventArgs e)
@@ -22,12 +25,12 @@ namespace SAPAPP
                 LogTextBox.Text = openFileDialog.FileName;
             }
         }
-
         private void BrowseConfig_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = "Config Files (*.txt;*.json;*.html)|*.txt;*.json;*.html"
+                Filter = "Config Files (XML-File)|*.xml",
+                Title = "Open Config Settings",
             };
             if (openFileDialog.ShowDialog() == true)
             {
@@ -68,6 +71,10 @@ namespace SAPAPP
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
+
+            FirmwareConfigs configs = Settings.Settings.openConfigs(ConfigTextBox.Text);
+            parentWindow.DataContext = new SelectionViewModel(configs);
+
             this.Close();
         }
 

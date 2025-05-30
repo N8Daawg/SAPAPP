@@ -40,7 +40,7 @@ namespace SAPAPP
             }
         }
 
-        /* public SelectionViewModel(FirmwareConfigs config)
+        public SelectionViewModel(FirmwareConfigs config)
         {
 
             PCBList = new ObservableCollection<string>();
@@ -59,39 +59,8 @@ namespace SAPAPP
 
                 ProductPCBMap.Add(pcb.PCBName, ProductNames);
 
-            } 
-
-            /*
-            // Initialize lists
-            PCBList = new ObservableCollection<string>
-            {
-                "---", "Texas Instruments MSP430", "Microchip ATmega", "STMicroelectronics STM32",
-                "Ezurio BL654 Bluetooth/NFC Module", "Texas Instruments Battery Fuel Gauges"
-            };
-
-  
-
-            ProductsList = new ObservableCollection<string>();
-
-            // Define relationships with multiple products per PCB
-            ProductPCBMap = new Dictionary<string, List<string>>
-            {
-                { "Texas Instruments MSP430", new List<string> { "MSP-FET", "MSP-GANG" } },
-                { "Microchip Atmega", new List<string> { "MPLAB PICkit 5", "MPLAB ICE 4", "MPLAB ICD 5" } },
-                { "STMicroelectronics STM32", new List<string> { "STLINK-V3MINIE", "STLINK-V3SET" } },
-                { "Ezurio BL654 Bluetooth/NFC Module", new List<string> { "UwTerminalX utility" } },
-                { "Texas Instruments Battery Fuel Gauges", new List<string> { "Arduino UART programming" } }
-            };
-
-            */
-
-            /*SelectedPCB = "---";
-            LoadSelection();
+            }
         }
-
-        public SelectionViewModel()
-        {
-        } */
 
         private void UpdateProductOptions()
         {

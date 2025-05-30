@@ -1,18 +1,8 @@
-﻿using Microsoft.Win32;
-using SAPAPP.Configs;
+﻿using SAPAPP.Configs;
 using SAPAPP.Scripts;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media;
-using Microsoft.Win32;
-using SAPAPP.Scripts;
-using System.ComponentModel;
 
 
 namespace SAPAPP
@@ -28,7 +18,7 @@ namespace SAPAPP
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new SelectionViewModel();
+            //DataContext = new SelectionViewModel();
             InitializeScripts();
 
             configs = Settings.Settings.openConfigs(Settings.Settings.configFile);
@@ -59,7 +49,7 @@ namespace SAPAPP
         {
             StatusMessageDisplay.Text = "Preferences option selected";
 
-            PreferencesDialog preferencesDialog = new PreferencesDialog();
+            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
             preferencesDialog.ShowDialog();
         }
 
@@ -85,7 +75,7 @@ namespace SAPAPP
 
         private ProductConfig Get_Current_Product(PCB pcb)
         {
-            ProductConfig currentProduct = new ProductConfig();
+            ProductConfig currentProduct = new();
             foreach (ProductConfig product in pcb.Products)
             {
                 if (product.ProductName == ProductPicker.Text)

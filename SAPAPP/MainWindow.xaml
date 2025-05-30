@@ -52,8 +52,8 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding ProductsList}"
-                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                            ItemsSource="{Binding PCBList}"
+                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>
@@ -67,8 +67,8 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding PCBList}"
-                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
+                            ItemsSource="{Binding ProductsList}"
+                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>
