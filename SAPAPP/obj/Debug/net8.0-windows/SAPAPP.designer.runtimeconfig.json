@@ -12,8 +12,8 @@
       }
     ],
     "additionalProbingPaths": [
-      "C:\\Users\\nbealsla\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\nbealsla\\.nuget\\packages",
+      "C:\\Users\\lego1\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\lego1\\.nuget\\packages",
       "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
     ],
     "configProperties": {

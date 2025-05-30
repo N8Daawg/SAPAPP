@@ -8,7 +8,6 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using SAPAPP.Scripts;
 using System.ComponentModel;
-using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -18,17 +17,11 @@ namespace SAPAPP
         private FetScript FetScript;
         private MegaScript MegaScript;
 
-        private FirmwareConfigs configs;
-        private static string configFile = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + @"\Configs\Config.xml";
-
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new SelectionViewModel();
             InitializeScripts();
-
-            configs = Settings.Settings.openConfigs(configFile);
-            DataContext = new SelectionViewModel(configs);
-
         }
 
         private void InitializeScripts()
@@ -37,7 +30,6 @@ namespace SAPAPP
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
         }
-
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
@@ -55,7 +47,7 @@ namespace SAPAPP
         {
             StatusMessageDisplay.Text = "Preferences option selected";
 
-            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
+            PreferencesDialog preferencesDialog = new PreferencesDialog();
             preferencesDialog.ShowDialog();
         }
 
@@ -65,14 +57,6 @@ namespace SAPAPP
             wikiDialog.ShowDialog();
         }
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
-            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
-
-            progbar.IsIndeterminate = false;
-            StatusMessageDisplay.Text = "Download Canceled";
-        }
 
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -83,37 +67,28 @@ namespace SAPAPP
 
             StatusMessageDisplay.Text = "Starting Download";
 
-            PCB currentPCB = new();
-            foreach (PCB pcb in configs.PCBs)
+            switch (ProductPicker.SelectedIndex)
             {
-                if (pcb.PCBName == PCBPicker.Text)
-                {
-                    currentPCB = pcb;
-                    break;
-                }
-            }
-
-            switch (PCBPicker.SelectedIndex)
-            {
-                //case 0: TestScript.Download(); break;
-                case 1: uniflashDownload(currentPCB); break;
-                //case 2: MegaScript.Download(); break;
+                case 0: TestScript.Download(); break;
+                case 1: FetScript.Download(); break;
+                case 2: MegaScript.Download(); break;
             }
 
             StartButton.IsEnabled = true;
         }
 
-        private void uniflashDownload(PCB msp)
+        private void StopButton_Click(object sender, RoutedEventArgs e)
         {
+            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
+            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
+            ResetProgressBar();
 
-            foreach (ProductConfig product in msp.Products)
-            {
-                if (product.ProductName == ProductPicker.Text)
-                {
-                    FetScript.Download(product);
-                }
-            }
+            progbar.IsIndeterminate = false;
+            StatusMessageDisplay.Text = "Download Canceled";
+
+            StopButton.IsEnabled = false;
         }
+
         private void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;

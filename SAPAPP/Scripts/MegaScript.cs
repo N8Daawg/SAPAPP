@@ -106,5 +106,10 @@ namespace SAPAPP.Scripts
             }
             cmd.Close();
         }
+
+        internal void Download()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -52,8 +52,8 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding PCBList}"
-                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
+                            ItemsSource="{Binding ProductsList}"
+                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>
@@ -67,8 +67,8 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding ProductsList}"
-                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                            ItemsSource="{Binding PCBList}"
+                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>
@@ -119,20 +119,19 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                             </Button>
                         </DockPanel>
                     </StackPanel>
-                    
+
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <Image Source="C:\Users\avazquez\Source\Repos\SAPAPP1\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
-                        <TextBox Width="70" Height="20" Margin="-50,-15,10,0" 
+                        <Image Source="C:\Users\lego1\Source\Repos\SAPAPP4\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
+                        <TextBlock Width="70" Height="20" Margin="-50,-15,10,0"
                         Text="Mission"
                         HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
-                        Background="Transparent" BorderBrush="Transparent" Foreground="#EED202"
-                        IsReadOnly="True"/>
+                        Background="Transparent" Foreground="#EED202"/>
 
-                        <TextBox Width="240" Height="67" Margin="-75,0,10,0"
+                        <TextBlock Width="240" Height="67" Margin="-75,0,10,0"
                         Text="Through continually learning and honest and open communication, we make a line of great quality products in a great work atmosphere."
                         HorizontalAlignment="Center" TextAlignment="Center" FontSize="11" FontWeight="Bold"
-                        Background="Transparent" BorderBrush="Transparent" Foreground="White"
-                        TextWrapping="Wrap" IsReadOnly="True"/>
+                        Background="Transparent" Foreground="White"
+                        TextWrapping="Wrap"/>
                     </StackPanel>
                 </Grid>
 

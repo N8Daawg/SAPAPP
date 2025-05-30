@@ -40,7 +40,7 @@ namespace SAPAPP
             }
         }
 
-        public SelectionViewModel(FirmwareConfigs config)
+        /* public SelectionViewModel(FirmwareConfigs config)
         {
 
             PCBList = new ObservableCollection<string>();
@@ -59,7 +59,7 @@ namespace SAPAPP
 
                 ProductPCBMap.Add(pcb.PCBName, ProductNames);
 
-            }
+            } 
 
             /*
             // Initialize lists
@@ -85,9 +85,13 @@ namespace SAPAPP
 
             */
 
-            SelectedPCB = "---";
+            /*SelectedPCB = "---";
             LoadSelection();
         }
+
+        public SelectionViewModel()
+        {
+        } */
 
         private void UpdateProductOptions()
         {
