@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using SAPAPP.Configs;
-using System;
 using System.Windows;
 
 namespace SAPAPP
@@ -72,7 +71,7 @@ namespace SAPAPP
         {
             this.DialogResult = true;
 
-            FirmwareConfigs configs = Settings.Settings.openConfigs(ConfigTextBox.Text);
+            FirmwareConfigs configs = Settings.Settings.OpenConfigs(ConfigTextBox.Text);
             parentWindow.DataContext = new SelectionViewModel(configs);
 
             this.Close();

@@ -13,15 +13,15 @@ namespace SAPAPP
         private FetScript FetScript;
         private MegaScript MegaScript;
 
-        private FirmwareConfigs configs;
+        private readonly FirmwareConfigs configs;
 
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = new SelectionViewModel();
             InitializeScripts();
 
-            configs = Settings.Settings.openConfigs(Settings.Settings.configFile);
+            configs = Settings.Settings.OpenConfigs(Settings.Settings.configFile);
+            configs.Sort();
             DataContext = new SelectionViewModel(configs);
 
         }
@@ -49,13 +49,13 @@ namespace SAPAPP
         {
             StatusMessageDisplay.Text = "Preferences option selected";
 
-            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
+            PreferencesDialog preferencesDialog = new(this);
             preferencesDialog.ShowDialog();
         }
 
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
-            WikiDialog wikiDialog = new WikiDialog();
+            WikiDialog wikiDialog = new();
             wikiDialog.ShowDialog();
         }
 
@@ -116,9 +116,9 @@ namespace SAPAPP
             PCB currentPCB = Get_Current_PCB();
             switch (currentPCB.PCBName)
             {
-                case "---":     TestScript.Download(Get_Current_Product(currentPCB)); break;
-                case "MSP430":  FetScript.Download(Get_Current_Product(currentPCB)); break;
-                case "ATmega":  MegaScript.Download(Get_Current_Product(currentPCB)); break;
+                case "---": TestScript.Download(Get_Current_Product(currentPCB)); break;
+                case "MSP430": FetScript.Download(Get_Current_Product(currentPCB)); break;
+                case "ATmega": MegaScript.Download(Get_Current_Product(currentPCB)); break;
                 default: break;
 
             }
@@ -127,7 +127,7 @@ namespace SAPAPP
         }
 
 
-        private void SetButtonAppearance(Button button, Brush background, Brush foreground)
+        private static void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;
             button.Foreground = foreground;
@@ -205,7 +205,7 @@ namespace SAPAPP
         [STAThread]
         public static void Main()
         {
-            Application app = new Application();
+            Application app = new();
             app.Run(new MainWindow());
         }
     }

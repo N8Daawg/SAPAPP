@@ -1,11 +1,9 @@
-﻿using System;
+﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Ports;
 using System.Windows;
 using System.Windows.Controls;
-using SAPAPP.Configs;
 
 namespace SAPAPP.Scripts
 {
@@ -133,18 +131,9 @@ namespace SAPAPP.Scripts
             worker.CancelAsync();
         }
 
-    }
-
-
-
-    namespace SAPAPP.TI
-    {
-        // Configuration Class
-        public class ProductConfig
+        protected override void UpdateProgress(string line)
         {
-            public string LoadFile { get; set; } = "default.bat";
-            public string FirmwareFolderPath { get; set; } = @"C:\DefaultPath";
+            throw new NotImplementedException();
         }
-
     }
 }

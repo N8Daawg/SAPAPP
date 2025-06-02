@@ -1,10 +1,6 @@
 ﻿using SAPAPP.Configs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,10 +10,12 @@ namespace SAPAPP.Scripts
     internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
         private const string loadfile = "dslite.bat";
+        private static readonly List<string> value = ["Connecting...", "loading...", "verifying..."];
+        private readonly List<string> Milestones = value;
 
-        public override async void Download(ProductConfig product) 
+        public override async void Download(ProductConfig product)
         {
-            if(!backgroundWorker.IsBusy)
+            if (!backgroundWorker.IsBusy)
             {
                 currentDownload = product;
                 backgroundWorker.RunWorkerAsync();
@@ -57,9 +55,11 @@ namespace SAPAPP.Scripts
 
                 if (!testing)
                 {
+
                     string line = "";
                     while (!cmd.StandardOutput.EndOfStream)
                     {
+
                         if (worker.CancellationPending)
                         {
                             e.Cancel = true;
@@ -82,8 +82,7 @@ namespace SAPAPP.Scripts
                                 line = line.Trim();
                                 if (line != "")
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
-                                    System.Threading.Thread.Sleep(delay);
+                                    UpdateProgress(line);
                                 }
                             }
                         }
@@ -119,6 +118,49 @@ namespace SAPAPP.Scripts
 
             MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
             Cancel();
+        }
+
+        protected override void UpdateProgress(string line)
+        {
+
+            string[] words = line.Split(' ');
+
+            string news = "";
+            int i = 0;
+            foreach (string word in words)
+            {
+                news += i + " " + word + "\n";
+                i++;
+            }
+            if (line.Contains('%'))
+            {
+                words[^1] = words[^1].Trim('%');
+                //MessageBox.Show(words[words.Length-1]);
+
+                UpdateProgressBar(int.Parse(words[^1]));
+            }
+
+
+
+            string display = "";
+            if (line.Contains("Connecting"))
+            {
+                display = Milestones[0];
+            }
+            else if (line.Contains("Loading"))
+            {
+                display = Milestones[1];
+            }
+            else if (line.Contains("Verifying"))
+            {
+                display = Milestones[2];
+            }
+
+            if (display != "")
+            {
+                Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = display; });
+                System.Threading.Thread.Sleep(delay);
+            }
         }
     }
 }

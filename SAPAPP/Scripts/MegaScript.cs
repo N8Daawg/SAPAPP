@@ -1,11 +1,6 @@
 ﻿using SAPAPP.Configs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -35,29 +30,22 @@ namespace SAPAPP.Scripts
             string strCmdText = cliPath + " -t avrispmk2 -i ISP -d atmega2560 program -f megaADK.ino.elf";
             string firmwareDir = workingDirectory;
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-            processStartInfo.FileName = "cmd.exe";
-            processStartInfo.UseShellExecute = false;
-
-            if (testing)
+            ProcessStartInfo processStartInfo = new()
             {
-                processStartInfo.Arguments = "/k" + strCmdText;
-                processStartInfo.RedirectStandardOutput = false;
-                processStartInfo.RedirectStandardError = false;
-                processStartInfo.CreateNoWindow = false;
-            }
-            else
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
+                RedirectStandardOutput = !testing,
+                RedirectStandardError = !testing,
+                CreateNoWindow = !testing,
+                WorkingDirectory = firmwareDir
+            };
+
+
+            Process cmd = new()
             {
-                processStartInfo.Arguments = "/c" + strCmdText;
-                processStartInfo.RedirectStandardOutput = true;
-                processStartInfo.RedirectStandardError = true;
-                processStartInfo.CreateNoWindow = true;
-            }
-            processStartInfo.WorkingDirectory = firmwareDir;
-
-
-            Process cmd = new Process();
-            cmd.StartInfo = processStartInfo;
+                StartInfo = processStartInfo
+            };
             cmd.Start();
             cmd.WaitForExit();
 
@@ -79,14 +67,8 @@ namespace SAPAPP.Scripts
                         line = cmd.StandardError.ReadLine();
                         if (line != null)
                         {
-                            line.Trim();
-                            string message, header;
-                            
-                            message = line;
-                            header = "Error";
-                            
-                            MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-                            worker.CancelAsync();
+                            line = line.Trim();
+                            HandleError(worker, line);
                             break;
                         }
 
@@ -94,7 +76,7 @@ namespace SAPAPP.Scripts
                         line = cmd.StandardOutput.ReadLine();
                         if (line != null)
                         {
-                            line.Trim();
+                            line = line.Trim();
                             if (line != "")
                             {
                                 Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -111,6 +93,17 @@ namespace SAPAPP.Scripts
         }
 
         protected override void HandleError(BackgroundWorker worker, string line)
+        {
+            string message, header;
+
+            message = line;
+            header = "Error";
+
+            MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
+            worker.CancelAsync();
+        }
+
+        protected override void UpdateProgress(string line)
         {
             throw new NotImplementedException();
         }

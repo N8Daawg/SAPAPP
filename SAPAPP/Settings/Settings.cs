@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SAPAPP.Configs;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SAPAPP.Configs;
 using System.Windows;
 
 namespace SAPAPP.Settings
@@ -17,9 +12,9 @@ namespace SAPAPP.Settings
     {
         public static string configFile = "FirmwareConfigurations.xml";
 
-        public static FirmwareConfigs openConfigs(string filename)
+        public static FirmwareConfigs OpenConfigs(string filename)
         {
-            FirmwareConfigs configs = new FirmwareConfigs();
+            FirmwareConfigs configs = new();
             if (!string.IsNullOrEmpty(filename))
             {
                 try
@@ -36,6 +31,8 @@ namespace SAPAPP.Settings
                     MessageBox.Show(ex.Message);
                 }
             }
+
+            configs.Sort();
             return configs;
         }
 
