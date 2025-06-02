@@ -1,41 +1,22 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using SAPAPP.Configs;
 
-namespace SAPAPP.TI
+namespace SAPAPP.Scripts
 {
-    // Configuration Class
-    public class ProductConfig
+    internal class TIScript : Script
     {
-        public string LoadFile { get; set; } = "default.bat";
-        public string FirmwareFolderPath { get; set; } = @"C:\DefaultPath";
-    }
-
-    // Fuel Gauge Programming Script
-    class TIScripts
-    {
-        private SerialPort serialPort;
+        private readonly SerialPort serialPort;
         private const int BaudRate = 115200;
-        private BackgroundWorker backgroundWorker;
-        private bool testing;
-        private int delay = 500;
-        private string logFilePath = "fuel_gauge_log.txt";
-        private ProductConfig currentDownload;
 
-        public TIScripts(string portName, ProductConfig product, bool testMode)
+        public TIScript(TextBlock fd, TextBlock pp, ProgressBar pb, string portName) : base(fd, pp, pb)
         {
             serialPort = new SerialPort(portName, BaudRate);
-            testing = testMode;
-            currentDownload = product;
-
-            backgroundWorker = new BackgroundWorker();
-            backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            backgroundWorker.RunWorkerCompleted += BackgroundWorker_Completed;
-
             serialPort.DataReceived += SerialPort_DataReceived;
         }
 
@@ -44,12 +25,11 @@ namespace SAPAPP.TI
             try
             {
                 serialPort.Open();
-                LogMessage("Serial port opened successfully.");
-                Console.WriteLine("Press 'f' to program fuel gauge...");
+                //LogMessage("Serial port opened successfully.");
             }
             catch (Exception ex)
             {
-                LogMessage($"Error opening serial port: {ex.Message}");
+                //LogMessage($"Error opening serial port: {ex.Message}");
                 Console.WriteLine($"Failed to open serial port: {ex.Message}");
             }
         }
@@ -59,18 +39,29 @@ namespace SAPAPP.TI
             char inByte = (char)serialPort.ReadByte();
             if (inByte == 'f')
             {
-                LogMessage("Firmware programming initiated.");
+                //LogMessage("Firmware programming initiated.");
                 backgroundWorker.RunWorkerAsync();
             }
         }
 
-        protected void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        public override void Download(ProductConfig product)
+        {
+            Initialize();
+
+            if (!backgroundWorker.IsBusy)
+            {
+                backgroundWorker.RunWorkerAsync();
+            }
+        }
+
+        protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            string firmwareDir = currentDownload.FirmwareFolderPath;
-            string strCmdText = currentDownload.LoadFile;
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            string strCmdText = "";
+            string firmwareDir = currentDownload.FirmwarePath;
+
+            ProcessStartInfo processStartInfo = new()
             {
                 FileName = "cmd.exe",
                 UseShellExecute = false,
@@ -83,7 +74,7 @@ namespace SAPAPP.TI
 
             try
             {
-                Process cmd = new Process { StartInfo = processStartInfo };
+                Process cmd = new() { StartInfo = processStartInfo };
                 cmd.Start();
                 cmd.WaitForExit();
 
@@ -122,31 +113,12 @@ namespace SAPAPP.TI
             }
         }
 
-        private void BackgroundWorker_Completed(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                LogMessage("Firmware programming cancelled.");
-                Console.WriteLine("Firmware programming cancelled.");
-            }
-            else if (e.Error != null)
-            {
-                LogMessage($"Error during programming: {e.Error.Message}");
-                Console.WriteLine($"Error during programming: {e.Error.Message}");
-            }
-            else
-            {
-                LogMessage("Programming PASSED.");
-                Console.WriteLine("Programming PASSED.");
-            }
-        }
-
-        private void HandleError(BackgroundWorker worker, string line)
+        protected override void HandleError(BackgroundWorker worker, string line)
         {
             string message, header;
             line = line.Trim();
 
-            if (line.ToLower().Contains("system cannot find the path specified"))
+            if (line.Contains("system cannot find the path specified", StringComparison.CurrentCultureIgnoreCase))
             {
                 message = line + "\nFirmware file missing or incorrectly named.";
                 header = "Firmware File Error";
@@ -161,12 +133,18 @@ namespace SAPAPP.TI
             worker.CancelAsync();
         }
 
-        private void LogMessage(string message)
+    }
+
+
+
+    namespace SAPAPP.TI
+    {
+        // Configuration Class
+        public class ProductConfig
         {
-            using (StreamWriter writer = new StreamWriter(logFilePath, true))
-            {
-                writer.WriteLine($"{DateTime.Now}: {message}");
-            }
+            public string LoadFile { get; set; } = "default.bat";
+            public string FirmwareFolderPath { get; set; } = @"C:\DefaultPath";
         }
+
     }
 }

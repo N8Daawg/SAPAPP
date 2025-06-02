@@ -28,7 +28,7 @@ namespace SAPAPP.Scripts
             //await UpdateProgressBar();
         }
 
-        protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -38,8 +38,6 @@ namespace SAPAPP.Scripts
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
             processStartInfo.FileName = "cmd.exe";
             processStartInfo.UseShellExecute = false;
-
-            //MessageBox.Show(strCmdText);
 
             if (testing)
             {
@@ -112,7 +110,7 @@ namespace SAPAPP.Scripts
             cmd.Close();
         }
 
-        internal void Download()
+        protected override void HandleError(BackgroundWorker worker, string line)
         {
             throw new NotImplementedException();
         }
