@@ -78,7 +78,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                         <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left" Width="360" Margin="40,20,0,0">
                             <!-- Green Start Button -->
                             <Button x:Name="StartButton" Width="150" Height="45" FontSize="16" FontWeight="Bold"
-                                Background="LightGray" Foreground="white" BorderBrush="#666" BorderThickness="1" Cursor="Hand"
+                                Background="LightGray" Foreground="white" Cursor="Hand"
                                 Margin="0,0,20,0" Click="StartButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
@@ -99,7 +99,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
 
                             <!-- Red Stop Button -->
                             <Button x:Name="StopButton" Width="150" Height="45" FontSize="16" FontWeight="Bold"
-                                Background="LightGray" Foreground="white" BorderBrush="#666" BorderThickness="1" Cursor="Hand"
+                                Background="LightGray" Foreground="white" Cursor="Hand"
                                 Margin="20,0,0,0" Click="StopButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
