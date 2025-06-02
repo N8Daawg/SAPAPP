@@ -25,42 +25,33 @@ namespace SAPAPP.Scripts
             //await UpdateProgressBar();
         }
 
-        protected override void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            BackgroundWorker? worker = sender as BackgroundWorker;
 
             string strCmdText = loadfile;
             //string firmwareDir = workingDirectory + localBatInstallDir;
             string firmwareDir = currentDownload.FirmwarePath;
 
 
-
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-            processStartInfo.FileName = "cmd.exe";
-            processStartInfo.UseShellExecute = false;
-
-            if (testing)
+            ProcessStartInfo processStartInfo = new()
             {
-                processStartInfo.Arguments = "/k" + strCmdText;
-                processStartInfo.RedirectStandardOutput = false;
-                processStartInfo.RedirectStandardError = false;
-                processStartInfo.CreateNoWindow = false;
-            }
-            else
-            {
-                processStartInfo.Arguments = "/c" + strCmdText;
-                processStartInfo.RedirectStandardOutput = true;
-                processStartInfo.RedirectStandardError = true;
-                processStartInfo.CreateNoWindow = true;
-            }
-            processStartInfo.WorkingDirectory = firmwareDir;
-
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
+                RedirectStandardOutput = !testing,
+                RedirectStandardError = !testing,
+                CreateNoWindow = !testing,
+                WorkingDirectory = firmwareDir,
+            };
 
             try
             {
 
-                Process cmd = new Process();
-                cmd.StartInfo = processStartInfo;
+                Process cmd = new()
+                {
+                    StartInfo = processStartInfo
+                };
                 cmd.Start();
                 cmd.WaitForExit();
 
@@ -80,26 +71,7 @@ namespace SAPAPP.Scripts
                             line = cmd.StandardError.ReadLine();
                             if (line != null)
                             {
-                                line.Trim();
-                                string message, header;
-                                if (line.ToLower().Contains("system cannot find the path specified")) // package needs to be recompiled
-                                {
-                                    message = line + "\nRecompile Package and try again.";
-                                    header = "Package Error";
-                                }
-                                else if (line.ToLower().Contains("no usb fet"))
-                                {
-                                    message = line;
-                                    header = "Connection Error";
-                                }
-                                else
-                                {
-                                    message = line;
-                                    header = "Error";
-                                }
-
-                                MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-                                Cancel();
+                                HandleError(worker, line);
                                 break;
                             }
 
@@ -107,13 +79,10 @@ namespace SAPAPP.Scripts
                             line = cmd.StandardOutput.ReadLine();
                             if (line != null)
                             {
-                                line.Trim();
+                                line = line.Trim();
                                 if (line != "")
                                 {
-                                    Application.Current.Dispatcher.Invoke(new Action(() =>
-                                    {
-                                        FeedbackDisplay.Text = line;
-                                    }));
+                                    Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
                                     System.Threading.Thread.Sleep(delay);
                                 }
                             }
@@ -128,9 +97,28 @@ namespace SAPAPP.Scripts
             }
         }
 
-        internal void Download()
+        protected override void HandleError(BackgroundWorker worker, string line)
         {
-            throw new NotImplementedException();
+            line = line.Trim();
+            string message, header;
+            if (line.Contains("system cannot find the path specified", StringComparison.CurrentCultureIgnoreCase)) // package needs to be recompiled
+            {
+                message = line + "\nRecompile Package and try again.";
+                header = "Package Error";
+            }
+            else if (line.Contains("no usb fet", StringComparison.CurrentCultureIgnoreCase))
+            {
+                message = line;
+                header = "Connection Error";
+            }
+            else
+            {
+                message = line;
+                header = "Error";
+            }
+
+            MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
+            Cancel();
         }
     }
 }

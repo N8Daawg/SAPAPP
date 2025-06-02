@@ -47,6 +47,13 @@ namespace SAPAPP
             ProductsList = new ObservableCollection<string>();
             ProductPCBMap = new Dictionary<string, List<string>>();
 
+            
+            PCB defaultView = new();
+            defaultView.Products.Add(new ProductConfig());
+            List<string> products = [defaultView.Products[0].ProductName];
+            PCBList.Add(defaultView.PCBName);
+            ProductPCBMap.Add(defaultView.PCBName, products);
+
 
             foreach (PCB pcb in config.PCBs)
             {
@@ -57,15 +64,18 @@ namespace SAPAPP
                     ProductNames.Add(product.ProductName);
                 }
 
+        
                 ProductPCBMap.Add(pcb.PCBName, ProductNames);
 
             }
+
+            LoadSelection();
         }
 
         private void UpdateProductOptions()
         {
             ProductsList.Clear();
-            ProductsList.Add("---");
+            //ProductsList.Add("---");
 
             if (!string.IsNullOrEmpty(SelectedPCB) && ProductPCBMap.ContainsKey(SelectedPCB))
             {
