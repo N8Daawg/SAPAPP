@@ -78,7 +78,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                         <DockPanel VerticalAlignment="Center" HorizontalAlignment="Left" Width="360" Margin="40,20,0,0">
                             <!-- Green Start Button -->
                             <Button x:Name="StartButton" Width="150" Height="45" FontSize="16" FontWeight="Bold"
-                                Background="LightGray" Foreground="white" BorderBrush="#666" BorderThickness="1" Cursor="Hand"
+                                Background="LightGray" Foreground="white" Cursor="Hand"
                                 Margin="0,0,20,0" Click="StartButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
@@ -99,7 +99,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
 
                             <!-- Red Stop Button -->
                             <Button x:Name="StopButton" Width="150" Height="45" FontSize="16" FontWeight="Bold"
-                                Background="LightGray" Foreground="white" BorderBrush="#666" BorderThickness="1" Cursor="Hand"
+                                Background="LightGray" Foreground="white" Cursor="Hand"
                                 Margin="20,0,0,0" Click="StopButton_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
@@ -121,7 +121,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <Image Source="C:\Users\lego1\Source\Repos\SAPAPP4\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
+                        <Image Source="C:\Users\avazquez\Source\Repos\SAPAPP3\SAPAPP\Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
                         <TextBlock Width="70" Height="20" Margin="-50,-15,10,0"
                         Text="Mission"
                         HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
