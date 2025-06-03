@@ -1,10 +1,5 @@
 ﻿using SAPAPP.Configs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
@@ -25,6 +20,11 @@ namespace SAPAPP.Scripts
         }
 
         protected override void HandleError(BackgroundWorker worker, string line)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void UpdateProgress(string line)
         {
             throw new NotImplementedException();
         }

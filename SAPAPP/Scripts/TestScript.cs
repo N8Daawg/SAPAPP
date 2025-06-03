@@ -26,56 +26,79 @@ namespace SAPAPP.Scripts
             string firmwareDir = workingDirectory;
 
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo();
-            processStartInfo.FileName = "cmd.exe";
-            processStartInfo.UseShellExecute = false;
-            processStartInfo.Arguments = "/c" + strCmdText;
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.RedirectStandardError = true;
-            processStartInfo.CreateNoWindow = true;
-            processStartInfo.WorkingDirectory = firmwareDir;
-
-
-            Process cmd = new Process();
-            cmd.StartInfo = processStartInfo;
-            cmd.Start();
-
-            string line = "";
-            while (!cmd.StandardOutput.EndOfStream)
+            ProcessStartInfo processStartInfo = new()
             {
-                if (worker.CancellationPending)
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                Arguments = "/c" + strCmdText,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                WorkingDirectory = firmwareDir,
+            };
+
+
+            try
+            {
+                Process cmd = new()
                 {
-                    e.Cancel = true;
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
-                    {
-                        FeedbackDisplay.Text = "Canceled!";
-                    }));
-                    System.Threading.Thread.Sleep(delay);
-                    break;
-                }
-                else
+                    StartInfo = processStartInfo
+                };
+                cmd.Start();
+
+                string line = "";
+                while (!cmd.StandardOutput.EndOfStream)
                 {
-                    line = cmd.StandardOutput.ReadLine();
-                    if (line != null)
+                    if (worker.CancellationPending)
                     {
-                        line.Trim();
-                        if (line != "")
+                        e.Cancel = true;
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
-                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            FeedbackDisplay.Text = "Canceled!";
+                        }));
+                        System.Threading.Thread.Sleep(delay);
+                        break;
+                    }
+                    else
+                    {
+                        line = cmd.StandardOutput.ReadLine();
+                        if (line != null)
+                        {
+                            line = line.Trim();
+                            if (line != "")
                             {
-                                FeedbackDisplay.Text = line;
-                            }));
-                            System.Threading.Thread.Sleep(delay);
+                                UpdateProgress(line);
+                            }
                         }
                     }
                 }
+                cmd.Close();
             }
-            cmd.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         protected override void HandleError(BackgroundWorker worker, string line)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void UpdateProgress(string line)
+        {
+            string[] words = line.Split(' ');
+
+            string news = "";
+            int i = 0;
+            foreach (string word in words)
+            {
+                news += i + " " + word + "\n";
+                i++;
+            }
+            //MessageBox.Show(news);
+            Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
+            System.Threading.Thread.Sleep(delay);
         }
     }
 }

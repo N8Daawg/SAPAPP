@@ -12,7 +12,7 @@ namespace SAPAPP.Scripts
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
         protected const bool testing = false;
-        protected const int delay = 100; // delay time in milliseconds
+        protected const int delay = 300; // delay time in milliseconds
 
         protected ProductConfig currentDownload = new();
 
@@ -89,14 +89,12 @@ namespace SAPAPP.Scripts
 
         protected abstract void HandleError(BackgroundWorker worker, string line);
 
-        protected async Task UpdateProgressBar()
+        protected abstract void UpdateProgress(string line);
+        protected void UpdateProgressBar(int progress)
         {
-            for (int i = 0; i <= 100; i++)
-            {
-                progbar.Value = i;
-                progressPercentage.Text = $"{i}%";
-                await Task.Delay(50);
-            }
+
+            Application.Current.Dispatcher.Invoke(() => { progbar.Value = progress; });
+
         }
     }
 }

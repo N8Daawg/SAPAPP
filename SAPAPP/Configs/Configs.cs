@@ -52,6 +52,20 @@ namespace SAPAPP.Configs
     {
         public List<PCB> PCBs { get; } = [];
 
+        public void Sort()
+        {
+            foreach (PCB board in PCBs)
+            {
+                board.Products.Sort(delegate(ProductConfig x, ProductConfig y)
+                {
+                    if (x.ProductName == null && y.ProductName == null) return 0;
+                    else if (x.ProductName == null) return -1;
+                    else if (y.ProductName == null) return 1;
+                    else return x.ProductName.CompareTo(y.ProductName);
+                });
+            }
+        }
+
         public new string ToString()
         {
             StringBuilder sb = new();

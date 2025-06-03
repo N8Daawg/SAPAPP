@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SAPAPP.Configs;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
-using SAPAPP.Configs;
 
 namespace SAPAPP
 {
@@ -47,7 +45,7 @@ namespace SAPAPP
             ProductsList = new ObservableCollection<string>();
             ProductPCBMap = new Dictionary<string, List<string>>();
 
-            
+
             PCB defaultView = new();
             defaultView.Products.Add(new ProductConfig());
             List<string> products = [defaultView.Products[0].ProductName];
@@ -64,9 +62,7 @@ namespace SAPAPP
                     ProductNames.Add(product.ProductName);
                 }
 
-        
                 ProductPCBMap.Add(pcb.PCBName, ProductNames);
-
             }
 
             LoadSelection();
@@ -75,7 +71,7 @@ namespace SAPAPP
         private void UpdateProductOptions()
         {
             ProductsList.Clear();
-            //ProductsList.Add("---");
+            ProductsList.Add("---");
 
             if (!string.IsNullOrEmpty(SelectedPCB) && ProductPCBMap.ContainsKey(SelectedPCB))
             {
