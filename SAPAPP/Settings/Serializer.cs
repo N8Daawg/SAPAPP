@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -14,6 +15,24 @@ namespace SAPAPP.Settings
     /// </remarks>
     public static class Serializer
     {
+
+        public static void SerializeJson<T>(T myObject, string filename)
+        {
+            File.WriteAllText(filename, JsonSerializer.Serialize(myObject));
+        }
+
+        public static T DeserializeJson<T>(string filename)
+        {
+            T data = default;
+
+            if (File.Exists(filename))
+            {
+                data = JsonSerializer.Deserialize<T>(File.ReadAllText(filename));
+            }
+
+            return data;
+        }
+
         /// <summary>
         /// Save a serializable object to an XML file.
         /// </summary>

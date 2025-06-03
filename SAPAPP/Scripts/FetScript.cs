@@ -1,7 +1,6 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,7 +8,6 @@ namespace SAPAPP.Scripts
 {
     internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
-        private const string loadfile = "dslite.bat";
         private static readonly List<string> value = ["Connecting...", "loading...", "verifying..."];
         private readonly List<string> Milestones = value;
 
@@ -20,15 +18,13 @@ namespace SAPAPP.Scripts
                 currentDownload = product;
                 backgroundWorker.RunWorkerAsync();
             }
-            //await UpdateProgressBar();
         }
 
         protected override void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker? worker = sender as BackgroundWorker;
 
-            string strCmdText = loadfile;
-            //string firmwareDir = workingDirectory + localBatInstallDir;
+            string strCmdText = currentDownload.Executable;
             string firmwareDir = currentDownload.FirmwarePath;
 
 
@@ -80,7 +76,7 @@ namespace SAPAPP.Scripts
                             if (line != null)
                             {
                                 line = line.Trim();
-                                if (line != "")
+                                if (line.Length > 0)
                                 {
                                     UpdateProgress(line);
                                 }

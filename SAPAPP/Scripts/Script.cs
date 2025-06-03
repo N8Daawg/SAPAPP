@@ -9,10 +9,13 @@ namespace SAPAPP.Scripts
     internal abstract class Script
     {
 
+        protected const string STM32_Programmer_CLI = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+
+
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
         protected const bool testing = false;
-        protected const int delay = 300; // delay time in milliseconds
+        protected const int delay = 100; // delay time in milliseconds
 
         protected ProductConfig currentDownload = new();
 
