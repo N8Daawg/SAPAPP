@@ -61,7 +61,6 @@ namespace SAPAPP
                 {
                     ProductNames.Add(product.ProductName);
                 }
-                //ProductNames.Sort();
 
                 ProductPCBMap.Add(pcb.PCBName, ProductNames);
             }
@@ -72,7 +71,7 @@ namespace SAPAPP
         private void UpdateProductOptions()
         {
             ProductsList.Clear();
-            //ProductsList.Add("---");
+            ProductsList.Add("---");
 
             if (!string.IsNullOrEmpty(SelectedPCB) && ProductPCBMap.ContainsKey(SelectedPCB))
             {

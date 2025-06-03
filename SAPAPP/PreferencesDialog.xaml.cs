@@ -72,6 +72,7 @@ namespace SAPAPP
             this.DialogResult = true;
 
             FirmwareConfigs configs = Settings.Settings.OpenConfigs(ConfigTextBox.Text);
+            configs.Sort();
             parentWindow.DataContext = new SelectionViewModel(configs);
 
             this.Close();
