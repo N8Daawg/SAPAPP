@@ -64,7 +64,9 @@ namespace SAPAPP.Configs
                 });
             }
 
+
             PCBs.Sort(delegate(PCB x, PCB y)
+
             {
                 if (x.PCBName == null && y.PCBName == null) return 0;
                 else if (x.PCBName == null) return -1;

@@ -234,22 +234,22 @@
       <dsig:DigestValue>O+FMS12gcJ6+3/lRcnEIN90+eLA3fQ71OUvc9Lfpeko=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="SAPAPP.dll" size="1096704">
+  <file name="SAPAPP.dll" size="1097728">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>uhuKshNtE36uDGi/W3K8/PdtQXFMoL3foM5pC7VxjBY=</dsig:DigestValue>
+      <dsig:DigestValue>3ITnqBiitd4V5IWxIdUKYmuS7EV+SmwDcFpAOgBCT5I=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="SAPAPP.exe" size="163840">
+  <file name="SAPAPP.exe" size="164352">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>gv5H/q4cBXvAL3XatCipwRoM3X8Ui5cMvYAH+kq3Kik=</dsig:DigestValue>
+      <dsig:DigestValue>UO6xQvcy/UTge+niokWa5kV8a2zu0rc5I3r00ugg0M0=</dsig:DigestValue>
     </hash>
   </file>
   <file name="SAPAPP.runtimeconfig.json" size="515">
