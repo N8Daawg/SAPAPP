@@ -8,11 +8,10 @@ namespace SAPAPP.Scripts
 {
     internal abstract class Script
     {
-
         protected BackgroundWorker backgroundWorker;
         protected string workingDirectory;
         protected const bool testing = false;
-        protected const int delay = 300; // delay time in milliseconds
+        protected const int delay = 100; // delay time in milliseconds
 
         protected ProductConfig currentDownload = new();
 

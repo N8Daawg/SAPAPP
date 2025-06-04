@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Text.Json;
 
 namespace SAPAPP
 {
@@ -86,19 +85,22 @@ namespace SAPAPP
         private void SaveSelection()
         {
             var selection = new { PCB = SelectedPCB, Product = SelectedProduct };
-            File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
+            Settings.Serializer.SerializeJson(selection, SaveFilePath);
+            //File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
         }
 
         private void LoadSelection()
         {
             if (File.Exists(SaveFilePath))
             {
-                var selection = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(SaveFilePath));
+                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(SaveFilePath);
+                //var selection = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(SaveFilePath));
                 if (selection != null)
                 {
-                    SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";
                     SelectedPCB = selection.ContainsKey("PCB") ? selection["PCB"] : "---";
                     UpdateProductOptions();
+                    SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";
+
                 }
             }
         }

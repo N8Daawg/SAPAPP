@@ -1,16 +1,16 @@
 ﻿using Microsoft.Win32;
-using SAPAPP.Configs;
 using System.Windows;
 
 namespace SAPAPP
 {
     public partial class PreferencesDialog : Window
     {
-        Window parentWindow;
-        public PreferencesDialog(Window parentWindow)
+        MainWindow parentWindow;
+        public PreferencesDialog(MainWindow parentWindow)
         {
             InitializeComponent();
             this.parentWindow = parentWindow;
+            
         }
 
         private void BrowseLog_Click(object sender, RoutedEventArgs e)
@@ -71,10 +71,22 @@ namespace SAPAPP
         {
             this.DialogResult = true;
 
-            FirmwareConfigs configs = Settings.Settings.OpenConfigs(ConfigTextBox.Text);
-            configs.Sort();
-            parentWindow.DataContext = new SelectionViewModel(configs);
+            if (ConfigTextBox.Text != "")
+            {
+                parentWindow.Load_Product_Configurations(ConfigTextBox.Text);
+            }
 
+            if (ATmegaPathTextBox.Text != "")
+            {
+                parentWindow.AVRDUDE_CLI = ATmegaPathTextBox.Text;
+            }
+
+            if (STM32PathTextBox.Text != "")
+            {
+                parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
+            }
+
+            
             this.Close();
         }
 

@@ -1,5 +1,6 @@
 ﻿using SAPAPP.Configs;
 using SAPAPP.Scripts;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,25 +13,57 @@ namespace SAPAPP
         private TestScript TestScript;
         private FetScript FetScript;
         private MegaScript MegaScript;
+        private STMScript STMScript;
 
-        private readonly FirmwareConfigs configs;
+        private FirmwareConfigs configs;
+
+        private const string CLI_config_path = "CLI_configs.json";
+
+
+        private string _AVRDUDE_CLI;
+        public string AVRDUDE_CLI
+        {
+            get => _AVRDUDE_CLI;
+            set
+            {
+                _AVRDUDE_CLI = value;
+                Save_CLIs();
+            }
+        }
+
+        //private string STM32_Programmer_CLI = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+        private string _STM32_Programmer_CLI;
+        public string STM32_Programmer_CLI
+        {
+            get => _STM32_Programmer_CLI;
+            set
+            {
+                _STM32_Programmer_CLI = value;
+                Save_CLIs();
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Load_CLIs(CLI_config_path);
             InitializeScripts();
-
-            configs = Settings.Settings.OpenConfigs(Settings.Settings.configFile);
-            configs.Sort();
-            DataContext = new SelectionViewModel(configs);
-
+            Load_Product_Configurations(Settings.Settings.configFile);
         }
 
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
-            MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
+            MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
+            STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
+        }
+
+        public void Load_Product_Configurations(string filename)
+        {
+            configs = Settings.Settings.OpenConfigs(filename);
+            DataContext = new SelectionViewModel(configs);
         }
 
         private void CloseFile_Click(object sender, RoutedEventArgs e)
@@ -59,8 +92,32 @@ namespace SAPAPP
             wikiDialog.ShowDialog();
         }
 
+        public void Load_CLIs(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(filename);
+                if (selection != null)
+                {
+                    STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+                    AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
+                }
+            }
+            
+            Save_CLIs();
+
+        }
+        
+        public void Save_CLIs()
+        {
+            var selection = new { STM32=STM32_Programmer_CLI, AVRDUDE=AVRDUDE_CLI };
+            Settings.Serializer.SerializeJson(selection, CLI_config_path);
+            InitializeScripts();
+        }
+
         private PCB Get_Current_PCB()
         {
+
             PCB currentPCB = new();
             foreach (PCB pcb in configs.PCBs)
             {
@@ -104,7 +161,7 @@ namespace SAPAPP
             StatusMessageDisplay.Text = "Download Canceled";
         }
 
-        private async void StartButton_Click(object sender, RoutedEventArgs e)
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             StartButton.IsEnabled = false;
             SetButtonAppearance(StartButton, Brushes.Green, Brushes.White);
@@ -119,13 +176,13 @@ namespace SAPAPP
                 case "---": TestScript.Download(Get_Current_Product(currentPCB)); break;
                 case "MSP430": FetScript.Download(Get_Current_Product(currentPCB)); break;
                 case "ATmega": MegaScript.Download(Get_Current_Product(currentPCB)); break;
+                case "STM32": STMScript.Download(Get_Current_Product(currentPCB)); break;
                 default: break;
 
             }
 
             StartButton.IsEnabled = true;
         }
-
 
         private static void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {

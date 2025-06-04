@@ -13,16 +13,15 @@ namespace SAPAPP.Configs
         public string Executable { get; set; } = "---";
         public string FirmwarePath { get; set; } = "---";
 
-        public new string ToString
+        public new string ToString()
         {
-            get
-            {
-                StringBuilder sb = new();
-                sb.Append(ProductName);
-                sb.Append(" at ");
-                sb.Append(FirmwarePath);
-                return sb.ToString();
-            }
+            
+            StringBuilder sb = new();
+            sb.Append(ProductName);
+            sb.Append(" at ");
+            sb.Append(FirmwarePath);
+            return sb.ToString();
+            
         }
     }
 
@@ -30,7 +29,7 @@ namespace SAPAPP.Configs
     public class PCB
     {
         public string PCBName { get; set; } = "---";
-        public List<ProductConfig> Products { get; } = new List<ProductConfig>();
+        public List<ProductConfig> Products { get; } = [];
 
         public new string ToString()
         {
@@ -39,7 +38,7 @@ namespace SAPAPP.Configs
             sb.Append(": ");
             foreach (ProductConfig p in Products)
             {
-                sb.Append(p.ToString);
+                sb.Append(p.ToString());
                 sb.Append(",  ");
             }
 
@@ -66,7 +65,8 @@ namespace SAPAPP.Configs
             }
 
 
-            PCBs.Sort(delegate (PCB x, PCB y)
+            PCBs.Sort(delegate(PCB x, PCB y)
+
             {
                 if (x.PCBName == null && y.PCBName == null) return 0;
                 else if (x.PCBName == null) return -1;
