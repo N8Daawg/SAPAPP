@@ -123,11 +123,11 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
                         <!-- <Image Source="/Resources/SENSIT-LOGO-Options_WhiteYellow-Logo.png" 
-         Width="176" Height="176" Margin="-75,0,10,0"/> -->
-                        <TextBlock Width="70" Height="20" Margin="-50,150,10,0"
-               Text="Mission"
-               HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
-               Background="Transparent" Foreground="#EED202"/>
+                        Width="176" Height="176" Margin="-75,0,10,0"/> -->
+                        <TextBlock Width="70" Height="20" Margin="-50,160,10,0"
+                        Text="Mission"
+                        HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
+                        Background="Transparent" Foreground="#EED202"/>
 
 
                         <TextBlock Width="240" Height="67" Margin="-75,10,10,0"
