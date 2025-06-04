@@ -54,6 +54,7 @@ namespace SAPAPP
 
             foreach (PCB pcb in config.PCBs)
             {
+
                 PCBList.Add(pcb.PCBName);
                 List<string> ProductNames = new List<string>();
                 foreach (ProductConfig product in pcb.Products)
@@ -61,7 +62,17 @@ namespace SAPAPP
                     ProductNames.Add(product.ProductName);
                 }
 
-                ProductPCBMap.Add(pcb.PCBName, ProductNames);
+                if (ProductPCBMap.ContainsKey(pcb.PCBName))
+                {
+                    List<string> existingPCBProducts = ProductPCBMap[pcb.PCBName];
+                    foreach (string productName in ProductNames)
+                    {
+                        existingPCBProducts.Add(productName);
+                    }
+                } else
+                {
+                    ProductPCBMap.Add(pcb.PCBName, ProductNames);
+                }
             }
 
             LoadSelection();
