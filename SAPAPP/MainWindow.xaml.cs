@@ -115,32 +115,32 @@ namespace SAPAPP
             InitializeScripts();
         }
 
-        private PCB Get_Current_PCB()
+        private Product Get_Current_Product()
         {
-
-            PCB currentPCB = new();
-            foreach (PCB pcb in configs.PCBs)
-            {
-                if (pcb.PCBName == PCBPicker.Text)
-                {
-                    currentPCB = pcb;
-                    break;
-                }
-            }
-            return currentPCB;
-        }
-
-        private ProductConfig Get_Current_Product(PCB pcb)
-        {
-            ProductConfig currentProduct = new();
-            foreach (ProductConfig product in pcb.Products)
+            Product currentProduct = new Product();
+            foreach (Product product in configs.Products)
             {
                 if (product.ProductName == ProductPicker.Text)
                 {
                     currentProduct = product;
+                    break;
                 }
             }
+
             return currentProduct;
+        }
+        private Part Get_Current_Part(Product product)
+        {
+            Part currentPart = new Part();
+            foreach (Part part in product.Parts)
+            {
+                if (part.PartName == PartPicker.Text)
+                {
+                    currentPart = part;
+                    break;
+                }
+            }
+            return currentPart;
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -149,12 +149,14 @@ namespace SAPAPP
             SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
 
 
-            PCB currentPCB = Get_Current_PCB();
-            switch (currentPCB.PCBName)
+            Product currentProduct = Get_Current_Product();
+            Part currentPart = Get_Current_Part(currentProduct); 
+            switch (currentPart.Architecture)
             {
                 case "---": TestScript.Cancel(); break;
                 case "MSP430": FetScript.Cancel(); break;
-                //case 2: MegaScript.Download(); break;
+                case "ATmega": MegaScript.Cancel(); break;
+                case "STM32": STMScript.Cancel(); break;
                 default: break;
             }
 
@@ -170,13 +172,15 @@ namespace SAPAPP
 
             StatusMessageDisplay.Text = "Starting Download";
 
-            PCB currentPCB = Get_Current_PCB();
-            switch (currentPCB.PCBName)
+            Product currentProduct = Get_Current_Product();
+            Part currentPart = Get_Current_Part(currentProduct);
+
+            switch (currentPart.Architecture)
             {
-                case "---": TestScript.Download(Get_Current_Product(currentPCB)); break;
-                case "MSP430": FetScript.Download(Get_Current_Product(currentPCB)); break;
-                case "ATmega": MegaScript.Download(Get_Current_Product(currentPCB)); break;
-                case "STM32": STMScript.Download(Get_Current_Product(currentPCB)); break;
+                case "---": TestScript.Download(currentPart); break;
+                case "MSP430": FetScript.Download(currentPart); break;
+                case "ATmega": MegaScript.Download(currentPart); break;
+                case "STM32": STMScript.Download(currentPart); break;
                 default: break;
 
             }

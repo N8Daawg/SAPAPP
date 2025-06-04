@@ -16,11 +16,11 @@ namespace SAPAPP.Scripts
             STM32_Programmer_CLI = cli;
         }
 
-        public override void Download(ProductConfig product)
+        public override void Download(Part download)
         {
             if(!backgroundWorker.IsBusy)
             {
-                currentDownload = product;
+                currentDownload = download;
                 backgroundWorker.RunWorkerAsync();
             }
         }

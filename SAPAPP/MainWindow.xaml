@@ -48,13 +48,13 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                         <!-- PCB Picker -->
                         <DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
                             <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
-                            <ComboBox x:Name="PCBPicker"
+                            <ComboBox x:Name="ProductPicker"
                             DockPanel.Dock="Top"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding PCBList}"
-                            SelectedItem="{Binding SelectedPCB, Mode=TwoWay}"
+                            ItemsSource="{Binding ProductsList}"
+                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>
@@ -63,13 +63,13 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                         <!-- Product Picker -->
                         <DockPanel Margin="40,36,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
                             <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="White"/>
-                            <ComboBox x:Name="ProductPicker"
+                            <ComboBox x:Name="PartPicker"
                             DockPanel.Dock="Top"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Width="360" Height="24"
-                            ItemsSource="{Binding ProductsList}"
-                            SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                            ItemsSource="{Binding PartsList}"
+                            SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
                             Background="LightGray" Foreground="Black"
                             BorderBrush="Black" BorderThickness="1"
                             Cursor="Hand"/>

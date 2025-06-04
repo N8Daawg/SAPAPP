@@ -24,7 +24,6 @@ namespace SAPAPP.Settings
                     {
                         Save<FirmwareConfigs>(configs, configFile);
                     }
-                    return configs;
                 }
                 catch (Exception ex)
                 {
@@ -33,6 +32,7 @@ namespace SAPAPP.Settings
             }
 
             configs.Sort();
+            MessageBox.Show(configs.ToString());
             return configs;
         }
 

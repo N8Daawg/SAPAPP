@@ -13,7 +13,7 @@ namespace SAPAPP.Scripts
         protected const bool testing = false;
         protected const int delay = 100; // delay time in milliseconds
 
-        protected ProductConfig currentDownload = new();
+        protected Part currentDownload = new();
 
         // Feedback Devices
         protected TextBlock FeedbackDisplay;
@@ -48,7 +48,7 @@ namespace SAPAPP.Scripts
             return worker;
         }
 
-        public abstract void Download(ProductConfig product);
+        public abstract void Download(Part download);
 
         public void Cancel()
         {

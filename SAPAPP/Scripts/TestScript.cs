@@ -8,11 +8,11 @@ namespace SAPAPP.Scripts
 {
     internal class TestScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
-        public override void Download(ProductConfig product)
+        public override void Download(Part download)
         {
             if (!backgroundWorker.IsBusy)
             {
-                currentDownload = product;
+                currentDownload = download;
                 backgroundWorker.RunWorkerAsync();
             }
         }
