@@ -16,8 +16,9 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
     <Grid>
         <!-- Background Image with Darker Overlay -->
         <Grid.Background>
-            <ImageBrush ImageSource="C:\Users\avazquez\Source\Repos\SAPAPP\SAPAPP\Resources\st-hero-min-1024x667(3).png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(3).png" Stretch="UniformToFill"/>
         </Grid.Background>
+
 
         <!-- Darker Transparent Overlay -->
         <!-- <Border Background="gray" Opacity="0.7"/> -->

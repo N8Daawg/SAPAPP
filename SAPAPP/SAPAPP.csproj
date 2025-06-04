@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="OIP-removebg-preview.png" />
+    <None Remove="Resources\st-hero-min-1024x667%283%29.png" />
     <None Remove="st-hero-min-1024x667.png" />
   </ItemGroup>
 
@@ -25,6 +26,9 @@
 
   <ItemGroup>
     <Resource Include="OIP-removebg-preview.png" />
+    <Resource Include="Resources\st-hero-min-1024x667(3).png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="st-hero-min-1024x667.png" />
   </ItemGroup>
 
