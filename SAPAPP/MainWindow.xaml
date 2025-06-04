@@ -16,7 +16,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
     <Grid>
         <!-- Background Image with Darker Overlay -->
         <Grid.Background>
-            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(5).png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(6).png" Stretch="UniformToFill"/>
         </Grid.Background>
 
 
@@ -26,7 +26,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
         <!-- Original Content -->
         <Viewbox Stretch="Fill">
             <DockPanel Height="380" Width="720">
-                <Menu DockPanel.Dock="Top" Height="18" Background="#EED202" Foreground="Black">
+                <Menu DockPanel.Dock="Top" Height="18" Background="black" Foreground="white">
                     <MenuItem Header="_File">
                         <MenuItem Header="_Close" Click="CloseFile_Click" Style="{StaticResource SubMenuItemStyle}"/>
                     </MenuItem>
@@ -139,7 +139,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                 </Grid>
 
                 <!-- StatusBar -->
-                <StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="#EED202" Foreground="Black" Width="800">
+                <StatusBar Name="sbar" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" Background="black" Foreground="white" Width="800">
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
                             <ProgressBar x:Name="progbar" Width="60" Height="20" Minimum="0" Maximum="100" Value="0"/>
