@@ -42,7 +42,7 @@ namespace SAPAPP.Scripts
             }
         }
 
-        public override void Download(ProductConfig product)
+        public override void Download(Part download)
         {
             Initialize();
 

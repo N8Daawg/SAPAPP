@@ -11,11 +11,11 @@ namespace SAPAPP.Scripts
         private static readonly List<string> value = ["Connecting...", "loading...", "verifying..."];
         private readonly List<string> Milestones = value;
 
-        public override async void Download(ProductConfig product)
+        public override async void Download(Part download)
         {
             if (!backgroundWorker.IsBusy)
             {
-                currentDownload = product;
+                currentDownload = download;
                 backgroundWorker.RunWorkerAsync();
             }
         }

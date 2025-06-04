@@ -9,7 +9,9 @@ namespace SAPAPP
     {
         public ObservableCollection<string> ProductsList { get; set; }
         public ObservableCollection<string> PCBList { get; set; }
-        public Dictionary<string, List<string>> ProductPCBMap { get; set; }
+        public ObservableCollection<string> PartsList { get; set; }
+
+        public Dictionary<string, List<string>> ProductPartMap { get; set; }
         private const string SaveFilePath = "selection.json";
 
         private string _selectedProduct;
@@ -20,19 +22,19 @@ namespace SAPAPP
             {
                 _selectedProduct = value;
                 OnPropertyChanged(nameof(SelectedProduct));
+                UpdatePartOptions();
                 SaveSelection();
             }
         }
 
-        private string _selectedPCB;
-        public string SelectedPCB
+        private string _selectedPart;
+        public string SelectedPart
         {
-            get => _selectedPCB;
+            get => _selectedPart;
             set
             {
-                _selectedPCB = value;
-                OnPropertyChanged(nameof(SelectedPCB));
-                UpdateProductOptions();
+                _selectedPart = value;
+                OnPropertyChanged(nameof(SelectedPart));
                 SaveSelection();
             }
         }
@@ -41,61 +43,62 @@ namespace SAPAPP
         {
 
             PCBList = new ObservableCollection<string>();
+
+
             ProductsList = new ObservableCollection<string>();
-            ProductPCBMap = new Dictionary<string, List<string>>();
+            PartsList = new ObservableCollection<string>();
+            ProductPartMap = new Dictionary<string, List<string>>();
 
 
-            PCB defaultView = new();
-            defaultView.Products.Add(new ProductConfig());
-            List<string> products = [defaultView.Products[0].ProductName];
-            PCBList.Add(defaultView.PCBName);
-            ProductPCBMap.Add(defaultView.PCBName, products);
+            Product defaultView = new();
+            defaultView.Parts.Add(new Part());
+            List<string> parts = [defaultView.Parts[0].PartName];
+            ProductsList.Add(defaultView.ProductName);
+            ProductPartMap.Add(defaultView.ProductName, parts);
 
 
-            foreach (PCB pcb in config.PCBs)
+            foreach (Product product in config.Products)
             {
-
-                PCBList.Add(pcb.PCBName);
-                List<string> ProductNames = new List<string>();
-                foreach (ProductConfig product in pcb.Products)
+                ProductsList.Add(product.ProductName);
+                List<string> PartNames = new List<string>();
+                foreach (Part part in product.Parts)
                 {
-                    ProductNames.Add(product.ProductName);
+                    PartNames.Add(part.PartName);
                 }
 
-                if (ProductPCBMap.ContainsKey(pcb.PCBName))
+                if (ProductPartMap.ContainsKey(product.ProductName))
                 {
-                    List<string> existingPCBProducts = ProductPCBMap[pcb.PCBName];
-                    foreach (string productName in ProductNames)
+                    foreach (string PartName in PartNames)
                     {
-                        existingPCBProducts.Add(productName);
+                        ProductPartMap[product.ProductName].Add(PartName);
                     }
                 } else
                 {
-                    ProductPCBMap.Add(pcb.PCBName, ProductNames);
+                    ProductPartMap.Add(product.ProductName, PartNames);
                 }
             }
 
             LoadSelection();
         }
 
-        private void UpdateProductOptions()
-        {
-            ProductsList.Clear();
-            ProductsList.Add("---");
 
-            if (!string.IsNullOrEmpty(SelectedPCB) && ProductPCBMap.ContainsKey(SelectedPCB))
+        private void UpdatePartOptions()
+        {
+            PartsList.Clear();
+            PartsList.Add("---");
+            if (!string.IsNullOrEmpty(SelectedProduct) && ProductPartMap.ContainsKey(SelectedProduct))
             {
-                foreach (var product in ProductPCBMap[SelectedPCB])
+                foreach (var part in ProductPartMap[SelectedProduct])
                 {
-                    ProductsList.Add(product);
+                    PartsList.Add(part);
                 }
             }
-            SelectedProduct = "---"; // Reset PCB selection when product changes
+            SelectedPart = "---"; // Reset Part selection when product changes
         }
 
         private void SaveSelection()
         {
-            var selection = new { PCB = SelectedPCB, Product = SelectedProduct };
+            var selection = new { Product = SelectedProduct, Part = SelectedPart };
             Settings.Serializer.SerializeJson(selection, SaveFilePath);
             //File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
         }
@@ -108,9 +111,9 @@ namespace SAPAPP
                 //var selection = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(SaveFilePath));
                 if (selection != null)
                 {
-                    SelectedPCB = selection.ContainsKey("PCB") ? selection["PCB"] : "---";
-                    UpdateProductOptions();
                     SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";
+                    UpdatePartOptions();
+                    SelectedPart = selection.ContainsKey("Part") ? selection["Part"] : "---";
 
                 }
             }
