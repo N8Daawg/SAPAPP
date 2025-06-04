@@ -6,8 +6,15 @@ using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
 {
-    internal class STMScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
+    internal class STMScript : Script
     {
+        private string STM32_Programmer_CLI;
+
+
+        public STMScript(TextBlock fd, TextBlock pp, ProgressBar pb, string cli) : base(fd, pp, pb)
+        {
+            STM32_Programmer_CLI = cli;
+        }
 
         public override void Download(ProductConfig product)
         {

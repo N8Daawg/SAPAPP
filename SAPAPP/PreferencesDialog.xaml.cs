@@ -69,10 +69,16 @@ namespace SAPAPP
 
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = true;
 
             if (ConfigTextBox.Text != "")
             {
                 parentWindow.Load_Product_Configurations(ConfigTextBox.Text);
+            }
+
+            if (ATmegaPathTextBox.Text != "")
+            {
+                parentWindow.AVRDUDE_CLI = ATmegaPathTextBox.Text;
             }
 
             if (STM32PathTextBox.Text != "")
@@ -80,7 +86,7 @@ namespace SAPAPP
                 parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
             }
 
-            this.DialogResult = true;
+            
             this.Close();
         }
 

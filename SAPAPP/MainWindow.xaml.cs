@@ -20,6 +20,17 @@ namespace SAPAPP
         private const string CLI_config_path = "CLI_configs.json";
 
 
+        private string _AVRDUDE_CLI;
+        public string AVRDUDE_CLI
+        {
+            get => _AVRDUDE_CLI;
+            set
+            {
+                _AVRDUDE_CLI = value;
+                Save_CLIs();
+            }
+        }
+
         //private string STM32_Programmer_CLI = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
         private string _STM32_Programmer_CLI;
         public string STM32_Programmer_CLI
@@ -35,18 +46,18 @@ namespace SAPAPP
         public MainWindow()
         {
             InitializeComponent();
-            InitializeScripts();
 
-            Load_Product_Configurations(Settings.Settings.configFile);
             Load_CLIs(CLI_config_path);
+            InitializeScripts();
+            Load_Product_Configurations(Settings.Settings.configFile);
         }
 
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
-            MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar);
-            STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar);
+            MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
+            STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
         }
 
         public void Load_Product_Configurations(string filename)
@@ -89,6 +100,7 @@ namespace SAPAPP
                 if (selection != null)
                 {
                     STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+                    AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
                 }
             }
             
@@ -98,9 +110,9 @@ namespace SAPAPP
         
         public void Save_CLIs()
         {
-            var selection = new { STM32=STM32_Programmer_CLI };
+            var selection = new { STM32=STM32_Programmer_CLI, AVRDUDE=AVRDUDE_CLI };
             Settings.Serializer.SerializeJson(selection, CLI_config_path);
-
+            InitializeScripts();
         }
 
         private PCB Get_Current_PCB()
