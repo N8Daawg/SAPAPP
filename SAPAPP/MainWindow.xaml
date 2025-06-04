@@ -16,11 +16,12 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
     <Grid>
         <!-- Background Image with Darker Overlay -->
         <Grid.Background>
-            <ImageBrush ImageSource="/st-hero-min-1024x667.png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(3).png" Stretch="UniformToFill"/>
         </Grid.Background>
 
+
         <!-- Darker Transparent Overlay -->
-        <Border Background="gray" Opacity="0.7"/>
+        <!-- <Border Background="gray" Opacity="0.7"/> -->
 
         <!-- Original Content -->
         <Viewbox Stretch="Fill">
@@ -46,7 +47,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
                         <!-- PCB Picker -->
                         <DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
-                            <Label Content="PCB" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
+                            <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
                             <ComboBox x:Name="PCBPicker"
                             DockPanel.Dock="Top"
                             VerticalAlignment="Top"
@@ -121,11 +122,13 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <Image Source="/Resources/SENSIT-LOGO-Options_WhiteYellow-Logo.png" Width="176" Height="176" Margin="-75,0,10,0"/>
-                        <TextBlock Width="70" Height="20" Margin="-50,-15,10,0"
+                        <!-- <Image Source="/Resources/SENSIT-LOGO-Options_WhiteYellow-Logo.png" 
+                        Width="176" Height="176" Margin="-75,0,10,0"/> -->
+                        <TextBlock Width="70" Height="20" Margin="-50,170,10,0"
                         Text="Mission"
                         HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
                         Background="Transparent" Foreground="#EED202"/>
+
 
                         <TextBlock Width="240" Height="67" Margin="-75,0,10,0"
                         Text="Through continually learning and honest and open communication, we make a line of great quality products in a great work atmosphere."
