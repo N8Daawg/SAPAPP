@@ -36,4 +36,10 @@
     <PackageReference Include="System.IO.Ports" Version="9.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
