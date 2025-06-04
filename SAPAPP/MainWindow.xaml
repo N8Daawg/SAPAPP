@@ -46,7 +46,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
                         <!-- PCB Picker -->
                         <DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
-                            <Label Content="PCB" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
+                            <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
                             <ComboBox x:Name="PCBPicker"
                             DockPanel.Dock="Top"
                             VerticalAlignment="Top"
