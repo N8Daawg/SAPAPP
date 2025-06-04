@@ -32,7 +32,6 @@ namespace SAPAPP.Settings
             }
 
             configs.Sort();
-            MessageBox.Show(configs.ToString());
             return configs;
         }
 

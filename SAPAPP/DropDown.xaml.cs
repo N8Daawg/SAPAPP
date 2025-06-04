@@ -8,9 +8,7 @@ namespace SAPAPP
     public class SelectionViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<string> ProductsList { get; set; }
-        public ObservableCollection<string> PCBList { get; set; }
         public ObservableCollection<string> PartsList { get; set; }
-
         public Dictionary<string, List<string>> ProductPartMap { get; set; }
         private const string SaveFilePath = "selection.json";
 
@@ -41,10 +39,6 @@ namespace SAPAPP
 
         public SelectionViewModel(FirmwareConfigs config)
         {
-
-            PCBList = new ObservableCollection<string>();
-
-
             ProductsList = new ObservableCollection<string>();
             PartsList = new ObservableCollection<string>();
             ProductPartMap = new Dictionary<string, List<string>>();
@@ -72,7 +66,8 @@ namespace SAPAPP
                     {
                         ProductPartMap[product.ProductName].Add(PartName);
                     }
-                } else
+                } 
+                else
                 {
                     ProductPartMap.Add(product.ProductName, PartNames);
                 }
@@ -80,7 +75,6 @@ namespace SAPAPP
 
             LoadSelection();
         }
-
 
         private void UpdatePartOptions()
         {
