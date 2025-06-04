@@ -120,7 +120,7 @@ namespace SAPAPP
             Product currentProduct = new Product();
             foreach (Product product in configs.Products)
             {
-                if (product.ProductName == PCBPicker.Text)
+                if (product.ProductName == ProductPicker.Text)
                 {
                     currentProduct = product;
                     break;
@@ -134,7 +134,7 @@ namespace SAPAPP
             Part currentPart = new Part();
             foreach (Part part in product.Parts)
             {
-                if (part.PartName == ProductPicker.Text)
+                if (part.PartName == PartPicker.Text)
                 {
                     currentPart = part;
                     break;
