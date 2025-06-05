@@ -11,6 +11,39 @@ namespace SAPAPP
 {
     public partial class MainWindow : Window
     {
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double scaleFactor = e.NewSize.Width / 1366.0;
+
+            ProductLabel.FontSize = 48 * scaleFactor;
+            PartLabel.FontSize = 48 * scaleFactor;
+            StartButton.FontSize = 40 * scaleFactor;
+            StopButton.FontSize = 40 * scaleFactor;
+
+            ProductPicker.Width = 600 * scaleFactor;
+            PartPicker.Width = 600 * scaleFactor;
+
+            // Adjust positioning dynamically
+            Canvas.SetLeft(ProductLabel, 100 * scaleFactor);
+            Canvas.SetTop(ProductLabel, 80 * scaleFactor);
+            Canvas.SetLeft(PartLabel, 100 * scaleFactor);
+            Canvas.SetTop(PartLabel, 240 * scaleFactor);
+            Canvas.SetLeft(StartButton, 100 * scaleFactor);
+            Canvas.SetTop(StartButton, 420 * scaleFactor);
+            Canvas.SetLeft(StopButton, 400 * scaleFactor);
+            Canvas.SetTop(StopButton, 420 * scaleFactor);
+
+            if (GridBackground != null)
+            {
+                ImageBrush bg = GridBackground.Background as ImageBrush;
+                if (bg != null)
+                {
+                    // Adjust background stretch based on orientation
+                    bg.Stretch = e.NewSize.Width > e.NewSize.Height ? Stretch.UniformToFill : Stretch.Fill;
+                }
+            }
+        }
+
         private TestScript TestScript;
         private FetScript FetScript;
         private MegaScript MegaScript;
@@ -97,7 +130,7 @@ namespace SAPAPP
             wikiDialog.ShowDialog();  // Opens it as a modal window
         }
 
-        public void CloseOverlay_Click(object sender, RoutedEventArgs e)
+        private void CloseOverlay_Click(object sender, RoutedEventArgs e)
         {
             OverlayContainer.Visibility = Visibility.Collapsed;
         }

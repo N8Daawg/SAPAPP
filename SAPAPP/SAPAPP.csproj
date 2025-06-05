@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Navigation.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="OIP-removebg-preview.png" />
     <None Remove="Resources\st-hero-min-1024x667%283%29.png" />
     <None Remove="Resources\st-hero-min-1024x667%284%29.png" />
@@ -18,11 +22,13 @@
     <None Remove="Resources\st-hero-min-1024x667%286%29.png" />
     <None Remove="Resources\st-hero-min-1024x667%287%29.png" />
     <None Remove="Resources\st-hero-min-1024x667%288%29.png" />
+    <None Remove="Resources\st-hero-min-1024x667%289%29.png" />
     <None Remove="st-hero-min-1024x667.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Remove="DropDown.xaml" />
+    <Page Remove="Navigation.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,13 +46,10 @@
     <Resource Include="Resources\st-hero-min-1024x667(5).png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\st-hero-min-1024x667(6).png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\st-hero-min-1024x667(7).png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\st-hero-min-1024x667(8).png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\st-hero-min-1024x667(9).png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="st-hero-min-1024x667.png" />

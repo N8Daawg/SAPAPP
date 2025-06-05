@@ -1,7 +1,7 @@
 ﻿<Window x:Class="SAPAPP.WikiDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Swiss-Army Programmer Wiki" Height="750" Width="900"
+    Title="Swiss-Army Programmer Wiki" Height="750" Width="850"
     WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
     Background="#383838">
 
