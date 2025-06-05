@@ -64,6 +64,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Properties\PublishProfiles\ClickOnceProfile.pubxml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\SENSIT-LOGO-Options_WhiteYellow-Logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

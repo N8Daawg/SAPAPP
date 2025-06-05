@@ -62,31 +62,79 @@
             <Canvas x:Name="MainCanvas" Background="Transparent"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                <!-- Product Section -->
-                <StackPanel Canvas.Left="100" Canvas.Top="80">
-                    <Label x:Name="ProductLabel" Content="Product" FontSize="48" FontWeight="Bold" Foreground="white"/>
-                    <ComboBox x:Name="ProductPicker" Width="600" Height="80"/>
-                </StackPanel>
+                <!-- Adjusted PCB Picker -->
+                <DockPanel Margin="100,100,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <ComboBox x:Name="ProductPicker"
+              DockPanel.Dock="Top"
+              VerticalAlignment="Top"
+              HorizontalAlignment="Left"
+              Width="500" Height="40"
+              ItemsSource="{Binding ProductsList}"
+              SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+              Background="LightGray" Foreground="Black"
+              BorderBrush="Black" BorderThickness="1"
+              Cursor="Hand"/>
+                </DockPanel>
 
-                <!-- Part Section -->
-                <StackPanel Canvas.Left="100" Canvas.Top="240">
-                    <Label x:Name="PartLabel" Content="Part" FontSize="48" FontWeight="Bold" Foreground="White"/>
-                    <ComboBox x:Name="PartPicker" Width="600" Height="80"/>
-                </StackPanel>
-
+                <!-- Adjusted Product Picker -->
+                <DockPanel Margin="100,250,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <ComboBox x:Name="PartPicker"
+              DockPanel.Dock="Top"
+              VerticalAlignment="Top"
+              HorizontalAlignment="Left"
+              Width="500" Height="40"
+              ItemsSource="{Binding PartsList}"
+              SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+              Background="LightGray" Foreground="Black"
+              BorderBrush="Black" BorderThickness="1"
+              Cursor="Hand"/>
+                </DockPanel>
                 <!-- Buttons Section -->
                 <DockPanel Canvas.Left="100" Canvas.Top="420">
-                    <Button x:Name="StartButton" Width="280" Height="100">
+                    <Button x:Name="StartButton" Width="280" Height="100"
+                            Background="LightGray" Foreground="White" BorderBrush="#666" BorderThickness="1"
+                            Cursor="Hand" Click="StartButton_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Gray"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="LightGray"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="Green"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                         <TextBlock Text="Start" FontSize="40" Padding="20"/>
                     </Button>
-                    <Button x:Name="StopButton" Width="280" Height="100">
+
+                    <Button x:Name="StopButton" Width="280" Height="100"
+                            Background="LightGray" Foreground="White" BorderBrush="#666" BorderThickness="1"
+                            Cursor="Hand" Click="StopButton_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Gray"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="LightGray"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Background" Value="Red"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                         <TextBlock Text="Stop" FontSize="40" Padding="20"/>
                     </Button>
                 </DockPanel>
             </Canvas>
         </Grid>
 
-        <!-- StatusBar stays fixed at the bottom -->
+        <!-- Status Bar -->
         <StatusBar Name="sbar" Grid.Row="2" Background="black" Foreground="white" Height="30">
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">

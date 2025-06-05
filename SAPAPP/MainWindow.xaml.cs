@@ -15,23 +15,17 @@ namespace SAPAPP
         {
             double scaleFactor = e.NewSize.Width / 1366.0;
 
-            ProductLabel.FontSize = 48 * scaleFactor;
-            PartLabel.FontSize = 48 * scaleFactor;
-            StartButton.FontSize = 40 * scaleFactor;
-            StopButton.FontSize = 40 * scaleFactor;
+            // Resize font sizes
+            ProductPicker.FontSize = 24 * scaleFactor;
+            PartPicker.FontSize = 24 * scaleFactor;
 
-            ProductPicker.Width = 600 * scaleFactor;
-            PartPicker.Width = 600 * scaleFactor;
+            // Resize ComboBox dimensions
+            ProductPicker.Width = 360 * scaleFactor;
+            PartPicker.Width = 360 * scaleFactor;
 
-            // Adjust positioning dynamically
-            Canvas.SetLeft(ProductLabel, 100 * scaleFactor);
-            Canvas.SetTop(ProductLabel, 80 * scaleFactor);
-            Canvas.SetLeft(PartLabel, 100 * scaleFactor);
-            Canvas.SetTop(PartLabel, 240 * scaleFactor);
-            Canvas.SetLeft(StartButton, 100 * scaleFactor);
-            Canvas.SetTop(StartButton, 420 * scaleFactor);
-            Canvas.SetLeft(StopButton, 400 * scaleFactor);
-            Canvas.SetTop(StopButton, 420 * scaleFactor);
+            // Adjust DockPanel positioning dynamically
+            ProductPicker.Margin = new Thickness(40 * scaleFactor, 16 * scaleFactor, 0, 0);
+            PartPicker.Margin = new Thickness(40 * scaleFactor, 36 * scaleFactor, 0, 0);
 
             if (GridBackground != null)
             {
