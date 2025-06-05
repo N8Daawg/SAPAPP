@@ -62,34 +62,34 @@
             <Canvas x:Name="MainCanvas" Background="Transparent"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                <!-- Adjusted PCB Picker -->
+                <!-- Adjusted Product Picker -->
                 <DockPanel Margin="100,100,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
-                    <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
-                    <ComboBox x:Name="ProductPicker"
-              DockPanel.Dock="Top"
-              VerticalAlignment="Top"
-              HorizontalAlignment="Left"
-              Width="500" Height="40"
-              ItemsSource="{Binding ProductsList}"
-              SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-              Background="LightGray" Foreground="Black"
-              BorderBrush="Black" BorderThickness="1"
-              Cursor="Hand"/>
+                    <Label x:Name="ProductLabel" Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <ComboBox x:Name="ProductPicker" 
+                              DockPanel.Dock="Top"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Left"
+                              Width="500" Height="40"
+                              ItemsSource="{Binding ProductsList}"
+                              SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                              Background="LightGray" Foreground="Black"
+                              BorderBrush="Black" BorderThickness="1"
+                              Cursor="Hand"/>
                 </DockPanel>
 
-                <!-- Adjusted Product Picker -->
+                <!-- Adjusted Part Picker -->
                 <DockPanel Margin="100,250,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
-                    <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <Label x:Name="PartLabel" Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
                     <ComboBox x:Name="PartPicker"
-              DockPanel.Dock="Top"
-              VerticalAlignment="Top"
-              HorizontalAlignment="Left"
-              Width="500" Height="40"
-              ItemsSource="{Binding PartsList}"
-              SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
-              Background="LightGray" Foreground="Black"
-              BorderBrush="Black" BorderThickness="1"
-              Cursor="Hand"/>
+                              DockPanel.Dock="Top"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Left"
+                              Width="500" Height="40"
+                              ItemsSource="{Binding PartsList}"
+                              SelectedItem="{Binding SelectedPart, Mode=TwoWay}"
+                              Background="LightGray" Foreground="Black"
+                              BorderBrush="Black" BorderThickness="1"
+                              Cursor="Hand"/>
                 </DockPanel>
                 <!-- Buttons Section -->
                 <DockPanel Canvas.Left="100" Canvas.Top="420">
