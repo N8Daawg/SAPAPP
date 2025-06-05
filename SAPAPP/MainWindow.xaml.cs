@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 
 namespace SAPAPP
@@ -83,13 +84,22 @@ namespace SAPAPP
             StatusMessageDisplay.Text = "Preferences option selected";
 
             PreferencesDialog preferencesDialog = new(this);
-            preferencesDialog.ShowDialog();
+            preferencesDialog.Owner = this;  // Sets MainWindow as the owner
+            preferencesDialog.ShowDialog();  // Opens it as a modal window
         }
 
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
+            StatusMessageDisplay.Text = "Wiki option selected";
+
             WikiDialog wikiDialog = new();
-            wikiDialog.ShowDialog();
+            wikiDialog.Owner = this;  // Sets MainWindow as the owner
+            wikiDialog.ShowDialog();  // Opens it as a modal window
+        }
+
+        public void CloseOverlay_Click(object sender, RoutedEventArgs e)
+        {
+            OverlayContainer.Visibility = Visibility.Collapsed;
         }
 
         public void Load_CLIs(string filename)

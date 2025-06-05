@@ -5,7 +5,7 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 mc:Ignorable="d"
 Title="SAP APP" Height="380" Width="720" HorizontalAlignment="Center"
-WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithGrip">
+WindowState="Maximized" ResizeMode="NoResize" WindowStyle="SingleBorderWindow" Topmost="True">
     <Window.Resources>
         <!-- Style for sub menu items -->
         <Style TargetType="MenuItem" x:Key="SubMenuItemStyle">
@@ -16,8 +16,30 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
     <Grid>
         <!-- Background Image with Darker Overlay -->
         <Grid.Background>
-            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(6).png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="/Resources/st-hero-min-1024x667(8).png" Stretch="UniformToFill"/>
         </Grid.Background>
+
+        <Border x:Name="OverlayContainer"
+        Visibility="Collapsed"
+        Background="Black"
+        Opacity="0.8"
+        CornerRadius="10"
+        Margin="40">
+            <Grid>
+                <TextBlock x:Name="OverlayContent"
+                   Foreground="White"
+                   FontSize="18"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text=""/>
+                <Button Content="Close"
+                Width="100"
+                Height="30"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                Click="CloseOverlay_Click"/>
+            </Grid>
+        </Border>
 
 
         <!-- Darker Transparent Overlay -->
@@ -46,7 +68,7 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
 
                     <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" VerticalAlignment="Top" Height="272">
                         <!-- PCB Picker -->
-                        <DockPanel Margin="40,16,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <DockPanel Margin="40,40,0,0" Width="360" VerticalAlignment="Top" HorizontalAlignment="Left">
                             <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Foreground="white"/>
                             <ComboBox x:Name="ProductPicker"
                             DockPanel.Dock="Top"
@@ -119,22 +141,6 @@ WindowStyle="SingleBorderWindow" WindowState="Normal" ResizeMode="CanResizeWithG
                                 <TextBlock Text="Stop" FontSize="16" FontWeight="Bold"/>
                             </Button>
                         </DockPanel>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="200">
-                        <!-- <Image Source="/Resources/SENSIT-LOGO-Options_WhiteYellow-Logo.png" 
-                        Width="176" Height="176" Margin="-75,0,10,0"/> -->
-                        <TextBlock Width="70" Height="20" Margin="-40,170,10,0"
-                        Text="Mission"
-                        HorizontalAlignment="Center" FontSize="11" FontWeight="Bold"
-                        Background="Transparent" Foreground="#EED202"/>
-
-
-                        <TextBlock Width="240" Height="67" Margin="-65,0,10,0"
-                        Text="Through continually learning and honest and open communication, we make a line of great quality products in a great work atmosphere."
-                        HorizontalAlignment="Center" TextAlignment="Center" FontSize="11" FontWeight="Bold"
-                        Background="Transparent" Foreground="White"
-                        TextWrapping="Wrap"/>
                     </StackPanel>
                 </Grid>
 
