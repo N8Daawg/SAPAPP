@@ -4,9 +4,7 @@
         Title="SAP APP"
         Height="768" Width="1366"
         WindowState="Maximized"
-        ResizeMode="NoResize"
-        WindowStyle="SingleBorderWindow"
-        Topmost="True"
+        ResizeMode="CanResize"
         SizeToContent="Manual"
         SizeChanged="Window_SizeChanged">
 
@@ -64,7 +62,7 @@
 
                 <!-- Adjusted PCB Picker -->
                 <DockPanel Margin="100,100,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
-                    <Label Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <Label x:Name="ProductLabel" Content="Part" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
                     <ComboBox x:Name="ProductPicker"
               DockPanel.Dock="Top"
               VerticalAlignment="Top"
@@ -79,7 +77,7 @@
 
                 <!-- Adjusted Product Picker -->
                 <DockPanel Margin="100,250,0,0" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left">
-                    <Label Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
+                    <Label x:Name="PartLabel" Content="Product" DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Foreground="White"/>
                     <ComboBox x:Name="PartPicker"
               DockPanel.Dock="Top"
               VerticalAlignment="Top"
