@@ -4,28 +4,31 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 
 
 namespace SAPAPP
 {
     public partial class MainWindow : Window
     {
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            double scaleFactor = e.NewSize.Width / 1366.0;
+        #region instanceVariables
 
-            // Resize font sizes
-            ProductPicker.FontSize = 24 * scaleFactor;
-            PartPicker.FontSize = 24 * scaleFactor;
+            ProductLabel.FontSize = 48 * scaleFactor;
+            PartLabel.FontSize = 48 * scaleFactor;
+            StartButton.FontSize = 40 * scaleFactor;
+            StopButton.FontSize = 40 * scaleFactor;
 
-            // Resize ComboBox dimensions
-            ProductPicker.Width = 360 * scaleFactor;
-            PartPicker.Width = 360 * scaleFactor;
+            ProductPicker.Width = 600 * scaleFactor;
+            PartPicker.Width = 600 * scaleFactor;
 
-            // Adjust DockPanel positioning dynamically
-            ProductPicker.Margin = new Thickness(40 * scaleFactor, 16 * scaleFactor, 0, 0);
-            PartPicker.Margin = new Thickness(40 * scaleFactor, 36 * scaleFactor, 0, 0);
+            // Adjust positioning dynamically
+            Canvas.SetLeft(ProductLabel, 100 * scaleFactor);
+            Canvas.SetTop(ProductLabel, 80 * scaleFactor);
+            Canvas.SetLeft(PartLabel, 100 * scaleFactor);
+            Canvas.SetTop(PartLabel, 240 * scaleFactor);
+            Canvas.SetLeft(StartButton, 100 * scaleFactor);
+            Canvas.SetTop(StartButton, 420 * scaleFactor);
+            Canvas.SetLeft(StopButton, 400 * scaleFactor);
+            Canvas.SetTop(StopButton, 420 * scaleFactor);
 
             if (GridBackground != null)
             {
@@ -44,7 +47,6 @@ namespace SAPAPP
         private STMScript STMScript;
 
         private FirmwareConfigs configs;
-
         private const string CLI_config_path = "CLI_configs.json";
 
 
@@ -71,6 +73,8 @@ namespace SAPAPP
             }
         }
 
+        #endregion
+
         public MainWindow()
         {
             InitializeComponent();
@@ -80,76 +84,14 @@ namespace SAPAPP
             Load_Product_Configurations(Settings.Settings.configFile);
         }
 
+
+        #region Scripts&Configs
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
             STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
-        }
-
-        public void Load_Product_Configurations(string filename)
-        {
-            configs = Settings.Settings.OpenConfigs(filename);
-            DataContext = new SelectionViewModel(configs);
-        }
-
-        private void CloseFile_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to close?",
-                                                      "Confirm", MessageBoxButton.YesNo,
-                                                      MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                Application.Current.Shutdown(); // Closes the entire application
-            }
-        }
-
-        private void Preferences_Click(object sender, RoutedEventArgs e)
-        {
-            StatusMessageDisplay.Text = "Preferences option selected";
-
-            PreferencesDialog preferencesDialog = new(this);
-            preferencesDialog.Owner = this;  // Sets MainWindow as the owner
-            preferencesDialog.ShowDialog();  // Opens it as a modal window
-        }
-
-        private void Wiki_Click(object sender, RoutedEventArgs e)
-        {
-            StatusMessageDisplay.Text = "Wiki option selected";
-
-            WikiDialog wikiDialog = new();
-            wikiDialog.Owner = this;  // Sets MainWindow as the owner
-            wikiDialog.ShowDialog();  // Opens it as a modal window
-        }
-
-        private void CloseOverlay_Click(object sender, RoutedEventArgs e)
-        {
-            OverlayContainer.Visibility = Visibility.Collapsed;
-        }
-
-        public void Load_CLIs(string filename)
-        {
-            if (File.Exists(filename))
-            {
-                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(filename);
-                if (selection != null)
-                {
-                    STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
-                    AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
-                }
-            }
-            
-            Save_CLIs();
-
-        }
-        
-        public void Save_CLIs()
-        {
-            var selection = new { STM32=STM32_Programmer_CLI, AVRDUDE=AVRDUDE_CLI };
-            Settings.Serializer.SerializeJson(selection, CLI_config_path);
-            InitializeScripts();
         }
 
         private Product Get_Current_Product()
@@ -180,25 +122,39 @@ namespace SAPAPP
             return currentPart;
         }
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
+        public void Load_Product_Configurations(string filename)
         {
-            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
-            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
+            configs = Settings.Settings.OpenConfigs(filename);
+            DataContext = new SelectionViewModel(configs);
+        }
 
-
-            Product currentProduct = Get_Current_Product();
-            Part currentPart = Get_Current_Part(currentProduct); 
-            switch (currentPart.Architecture)
+        public void Load_CLIs(string filename)
+        {
+            if (File.Exists(filename))
             {
-                case "---": TestScript.Cancel(); break;
-                case "MSP430": FetScript.Cancel(); break;
-                case "ATmega": MegaScript.Cancel(); break;
-                case "STM32": STMScript.Cancel(); break;
-                default: break;
+                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(filename);
+                if (selection != null)
+                {
+                    STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+                    AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
+                }
             }
 
-            StatusMessageDisplay.Text = "Download Canceled";
+            Save_CLIs();
+
         }
+
+        public void Save_CLIs()
+        {
+            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI };
+            Settings.Serializer.SerializeJson(selection, CLI_config_path);
+            InitializeScripts();
+        }
+
+        #endregion
+
+
+        #region Buttons
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -225,16 +181,83 @@ namespace SAPAPP
             StartButton.IsEnabled = true;
         }
 
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
+            SetButtonAppearance(StopButton, Brushes.Red, Brushes.White);
+
+
+            Product currentProduct = Get_Current_Product();
+            Part currentPart = Get_Current_Part(currentProduct);
+            switch (currentPart.Architecture)
+            {
+                case "---": TestScript.Cancel(); break;
+                case "MSP430": FetScript.Cancel(); break;
+                case "ATmega": MegaScript.Cancel(); break;
+                case "STM32": STMScript.Cancel(); break;
+                default: break;
+            }
+
+            StatusMessageDisplay.Text = "Download Canceled";
+        }
+
         private static void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;
             button.Foreground = foreground;
         }
 
+        #endregion
+
+
+        #region ToolbarMethods
+        private void CloseFile_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to close?",
+                                                      "Confirm", MessageBoxButton.YesNo,
+                                                      MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown(); // Closes the entire application
+            }
+        }
+
+        private void Preferences_Click(object sender, RoutedEventArgs e)
+        {
+            StatusMessageDisplay.Text = "Preferences option selected";
+
+            PreferencesDialog preferencesDialog = new(this);
+            preferencesDialog.Owner = this;  // Sets MainWindow as the owner
+            preferencesDialog.ShowDialog();  // Opens it as a modal window
+        }
+
+        private void Wiki_Click(object sender, RoutedEventArgs e)
+        {
+            StatusMessageDisplay.Text = "Wiki option selected";
+
+            WikiDialog wikiDialog = new();
+            wikiDialog.Owner = this;  // Sets MainWindow as the owner
+            wikiDialog.ShowDialog();  // Opens it as a modal window
+        }
+
+        #endregion
+
+
+        #region Feedback
         private void ResetProgressBar()
         {
             progbar.IsIndeterminate = false;
             progbar.Value = 0;
+        }
+
+        #endregion
+
+
+        #region MiscUIMethods
+        private void CloseOverlay_Click(object sender, RoutedEventArgs e)
+        {
+            OverlayContainer.Visibility = Visibility.Collapsed;
         }
 
         private void ToggleDarkMode_Click(object sender, RoutedEventArgs e)
@@ -296,6 +319,41 @@ namespace SAPAPP
         private void PCBPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double scaleFactor = e.NewSize.Width / 1366.0;
+
+            ProductLabel.FontSize = 48 * scaleFactor;
+            PartLabel.FontSize = 48 * scaleFactor;
+            StartButton.FontSize = 40 * scaleFactor;
+            StopButton.FontSize = 40 * scaleFactor;
+
+            ProductPicker.Width = 600 * scaleFactor;
+            PartPicker.Width = 600 * scaleFactor;
+
+            // Adjust positioning dynamically
+            Canvas.SetLeft(ProductLabel, 100 * scaleFactor);
+            Canvas.SetTop(ProductLabel, 80 * scaleFactor);
+            Canvas.SetLeft(PartLabel, 100 * scaleFactor);
+            Canvas.SetTop(PartLabel, 240 * scaleFactor);
+            Canvas.SetLeft(StartButton, 100 * scaleFactor);
+            Canvas.SetTop(StartButton, 420 * scaleFactor);
+            Canvas.SetLeft(StopButton, 400 * scaleFactor);
+            Canvas.SetTop(StopButton, 420 * scaleFactor);
+
+            if (GridBackground != null)
+            {
+                ImageBrush bg = GridBackground.Background as ImageBrush;
+                if (bg != null)
+                {
+                    // Adjust background stretch based on orientation
+                    bg.Stretch = e.NewSize.Width > e.NewSize.Height ? Stretch.UniformToFill : Stretch.Fill;
+                }
+            }
+        }
+
+        #endregion
     }
 
     public static class Program
