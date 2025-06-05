@@ -58,6 +58,10 @@ namespace SAPAPP
 
 
         #region Scripts&Configs
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
@@ -66,6 +70,10 @@ namespace SAPAPP
             STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private Product Get_Current_Product()
         {
             Product currentProduct = new Product();
@@ -80,6 +88,12 @@ namespace SAPAPP
 
             return currentProduct;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         private Part Get_Current_Part(Product product)
         {
             Part currentPart = new Part();
@@ -94,12 +108,20 @@ namespace SAPAPP
             return currentPart;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
         public void Load_Product_Configurations(string filename)
         {
             configs = Settings.Settings.OpenConfigs(filename);
             DataContext = new SelectionViewModel(configs);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
         public void Load_CLIs(string filename)
         {
             if (File.Exists(filename))
@@ -116,6 +138,9 @@ namespace SAPAPP
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Save_CLIs()
         {
             var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI };
@@ -128,6 +153,11 @@ namespace SAPAPP
 
         #region Buttons
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             StartButton.IsEnabled = false;
@@ -153,6 +183,11 @@ namespace SAPAPP
             StartButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             SetButtonAppearance(StartButton, Brushes.White, Brushes.Black);
@@ -173,6 +208,12 @@ namespace SAPAPP
             StatusMessageDisplay.Text = "Download Canceled";
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="background"></param>
+        /// <param name="foreground"></param>
         private static void SetButtonAppearance(Button button, Brush background, Brush foreground)
         {
             button.Background = background;
@@ -183,6 +224,12 @@ namespace SAPAPP
 
 
         #region ToolbarMethods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseFile_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Are you sure you want to close?",
@@ -195,6 +242,11 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Preferences_Click(object sender, RoutedEventArgs e)
         {
             StatusMessageDisplay.Text = "Preferences option selected";
@@ -204,6 +256,11 @@ namespace SAPAPP
             preferencesDialog.ShowDialog();  // Opens it as a modal window
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Wiki_Click(object sender, RoutedEventArgs e)
         {
             StatusMessageDisplay.Text = "Wiki option selected";
@@ -217,6 +274,10 @@ namespace SAPAPP
 
 
         #region Feedback
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void ResetProgressBar()
         {
             progbar.IsIndeterminate = false;
@@ -227,11 +288,22 @@ namespace SAPAPP
 
 
         #region MiscUIMethods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseOverlay_Click(object sender, RoutedEventArgs e)
         {
             OverlayContainer.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ToggleDarkMode_Click(object sender, RoutedEventArgs e)
         {
             if (this.Background == Brushes.Black)
@@ -246,6 +318,9 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void SetLightModeColors()
         {
             StatusMessageDisplay.Foreground = Brushes.Black;
@@ -255,6 +330,9 @@ namespace SAPAPP
             StopButton.Background = Brushes.LightGray;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void SetDarkModeColors()
         {
             StatusMessageDisplay.Foreground = Brushes.White;
@@ -264,34 +342,51 @@ namespace SAPAPP
             StopButton.Background = Brushes.Gray;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ToggleStayOnTop_Click(object sender, RoutedEventArgs e)
         {
             this.Topmost = !this.Topmost;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FontSizeSmall_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 12;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FontSizeMedium_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 16;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FontSizeLarge_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 20;
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-        }
-
-        private void PCBPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             double scaleFactor = e.NewSize.Width / 1366.0;

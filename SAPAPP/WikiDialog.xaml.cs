@@ -17,13 +17,21 @@ namespace SAPAPP
             InitializeComponent();
         }
 
-        // Closes the wiki dialog window
+        /// <summary>
+        /// Closes the wiki dialog window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
-        // Opens the official Wiki page
+        /// <summary>
+        ///  Opens the official Wiki page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenWiki_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -33,6 +41,11 @@ namespace SAPAPP
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void WikiPages_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (WikiPages.SelectedItem != null)
@@ -49,6 +62,10 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pageName"></param>
         private void LoadWikiPage(string pageName)
         {
             string filePath = $"WikiPages/{pageName}.txt";
@@ -64,6 +81,11 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (navigationHistory.Count > 1)
@@ -94,7 +116,11 @@ namespace SAPAPP
             }
         }
 
-        // Handles live filtering based on displayed text
+        /// <summary>
+        /// Handles live filtering based on displayed text
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string searchText = SearchBox.Text.ToLower();
@@ -119,6 +145,10 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchText"></param>
         private void HighlightSearchResults(string searchText)
         {
             if (string.IsNullOrEmpty(searchText)) return;
@@ -148,22 +178,41 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PlayVideo_Click(object sender, RoutedEventArgs e)
         {
             TutorialVideo.Play();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PauseVideo_Click(object sender, RoutedEventArgs e)
         {
             TutorialVideo.Pause();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StopVideo_Click(object sender, RoutedEventArgs e)
         {
             TutorialVideo.Stop();
         }
 
-        // Handles search queries and navigates to relevant sections
+        /// <summary>
+        /// Handles search queries and navigates to relevant sections
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchWiki_Click(object sender, RoutedEventArgs e)
         {
             string searchQuery = SearchBox.Text.Trim().ToLower();

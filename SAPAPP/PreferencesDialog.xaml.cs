@@ -3,16 +3,30 @@ using System.Windows;
 
 namespace SAPAPP
 {
+
+    /// <summary>
+    /// Window used for maintaining and configuring settings related to the products and scripts
+    /// </summary>
     public partial class PreferencesDialog : Window
     {
         MainWindow parentWindow;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentWindow"></param>
         public PreferencesDialog(MainWindow parentWindow)
         {
             InitializeComponent();
             this.parentWindow = parentWindow;
-            
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseLog_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -24,6 +38,12 @@ namespace SAPAPP
                 LogTextBox.Text = openFileDialog.FileName;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseConfig_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -37,6 +57,11 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseATmega_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -52,6 +77,11 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseSTM32_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -67,6 +97,11 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
@@ -86,10 +121,15 @@ namespace SAPAPP
                 parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
             }
 
-            
+
             this.Close();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;

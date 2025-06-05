@@ -12,6 +12,11 @@ namespace SAPAPP.Settings
     {
         public static string configFile = "FirmwareConfigurations.xml";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static FirmwareConfigs OpenConfigs(string filename)
         {
             FirmwareConfigs configs = new();

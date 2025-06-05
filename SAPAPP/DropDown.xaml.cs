@@ -37,6 +37,10 @@ namespace SAPAPP
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
         public SelectionViewModel(FirmwareConfigs config)
         {
             ProductsList = new ObservableCollection<string>();
@@ -76,6 +80,9 @@ namespace SAPAPP
             LoadSelection();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void UpdatePartOptions()
         {
             PartsList.Clear();
@@ -90,6 +97,9 @@ namespace SAPAPP
             SelectedPart = "---"; // Reset Part selection when product changes
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void SaveSelection()
         {
             var selection = new { Product = SelectedProduct, Part = SelectedPart };
@@ -97,6 +107,9 @@ namespace SAPAPP
             //File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void LoadSelection()
         {
             if (File.Exists(SaveFilePath))
@@ -114,6 +127,11 @@ namespace SAPAPP
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

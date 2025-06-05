@@ -16,11 +16,23 @@ namespace SAPAPP.Settings
     public static class Serializer
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="myObject"></param>
+        /// <param name="filename"></param>
         public static void SerializeJson<T>(T myObject, string filename)
         {
             File.WriteAllText(filename, JsonSerializer.Serialize(myObject));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static T DeserializeJson<T>(string filename)
         {
             T data = default;

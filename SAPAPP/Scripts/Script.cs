@@ -20,6 +20,12 @@ namespace SAPAPP.Scripts
         protected TextBlock progressPercentage;
         protected ProgressBar progbar;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fd"></param>
+        /// <param name="pp"></param>
+        /// <param name="pb"></param>
         public Script(TextBlock fd, TextBlock pp, ProgressBar pb)
         {
             FeedbackDisplay = fd;
@@ -30,6 +36,10 @@ namespace SAPAPP.Scripts
             backgroundWorker = InitializeBackgroundWorker();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private BackgroundWorker InitializeBackgroundWorker()
         {
             BackgroundWorker worker = new()
@@ -48,8 +58,15 @@ namespace SAPAPP.Scripts
             return worker;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="download"></param>
         public abstract void Download(Part download);
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Cancel()
         {
             if (backgroundWorker.IsBusy)
@@ -86,9 +103,23 @@ namespace SAPAPP.Scripts
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="worker"></param>
+        /// <param name="line"></param>
         protected abstract void HandleError(BackgroundWorker worker, string line);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
         protected abstract void UpdateProgress(string line);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="progress"></param>
         protected void UpdateProgressBar(int progress)
         {
 
