@@ -290,103 +290,88 @@ namespace SAPAPP
         #region MiscUIMethods
 
         /// <summary>
-        /// 
+        /// Helps serves a click event for closing the overlay. 
+        /// Sets the visibility of the overlay container to collapsed
+        /// which serves as hiding the overlay altogether. 
         /// </summary>
         /// <param name="sender"></param>
+        /// Serves as the source of the event, without the need of a close overlay button
         /// <param name="e"></param>
+        /// The event data associated with clicks on the MainWindow.
+        /// </summary>
         private void CloseOverlay_Click(object sender, RoutedEventArgs e)
         {
             OverlayContainer.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>
-        /// 
+        /// Serves in handling the click event for toggling the window in
+        /// being in the state of always on top.
+        /// The property of the Topmost is flipped, which helps in keeping the
+        /// window visible at all times.
         /// </summary>
         /// <param name="sender"></param>
+        /// The source of an event without the need for a toggle button.
         /// <param name="e"></param>
-        private void ToggleDarkMode_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.Background == Brushes.Black)
-            {
-                this.Background = Brushes.White;
-                SetLightModeColors();
-            }
-            else
-            {
-                this.Background = Brushes.Black;
-                SetDarkModeColors();
-            }
-        }
-
-        /// <summary>
-        /// 
+        /// The event data associated with clicks and other functionality.
         /// </summary>
-        private void SetLightModeColors()
-        {
-            StatusMessageDisplay.Foreground = Brushes.Black;
-            progressPercentage.Foreground = Brushes.Black;
-            progbar.Foreground = Brushes.Black;
-            StartButton.Background = Brushes.LightGray;
-            StopButton.Background = Brushes.LightGray;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void SetDarkModeColors()
-        {
-            StatusMessageDisplay.Foreground = Brushes.White;
-            progressPercentage.Foreground = Brushes.White;
-            progbar.Foreground = Brushes.Green;
-            StartButton.Background = Brushes.Gray;
-            StopButton.Background = Brushes.Gray;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ToggleStayOnTop_Click(object sender, RoutedEventArgs e)
         {
             this.Topmost = !this.Topmost;
         }
 
         /// <summary>
-        /// 
+        /// Helps in handling the click event for setting the window's font to
+        /// small based upon a fixed value. 
         /// </summary>
         /// <param name="sender"></param>
+        /// The source of an event without the need for a toggle button.
         /// <param name="e"></param>
+        /// The event data associated with clicks and other functionality.
+        /// </summary>
         private void FontSizeSmall_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 12;
         }
 
         /// <summary>
-        /// 
+        /// Helps in handling the click event for setting the window's font to
+        /// medium based upon a fixed value. 
         /// </summary>
         /// <param name="sender"></param>
+        /// The source of an event without the need for a toggle button.
         /// <param name="e"></param>
+        /// The event data associated with clicks and other functionality.
+        /// </summary>
         private void FontSizeMedium_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 16;
         }
 
         /// <summary>
-        /// 
+        /// Helps in handling the click event for setting the window's font to
+        /// large based upon a fixed value. 
         /// </summary>
         /// <param name="sender"></param>
+        /// The source of an event without the need for a toggle button.
         /// <param name="e"></param>
+        /// The event data associated with clicks and other functionality.
+        /// </summary>
         private void FontSizeLarge_Click(object sender, RoutedEventArgs e)
         {
             this.FontSize = 20;
         }
 
         /// <summary>
-        /// 
+        /// Handles the window size change event through the dynamic 
+        /// layout of the canvas items and other UI elements. 
+        /// Modifies font sizes, button dimensions and other classifications
+        /// based around the aspects of a switch in orientation of the application. 
         /// </summary>
         /// <param name="sender"></param>
+        /// The source of an event without the need for a toggle button.
         /// <param name="e"></param>
+        /// The event data associated with clicks and other functionality.
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             double scaleFactor = e.NewSize.Width / 1366.0;
