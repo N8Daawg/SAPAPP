@@ -91,9 +91,9 @@
                 </DockPanel>
                 <!-- Buttons Section -->
                 <DockPanel Canvas.Left="100" Canvas.Top="420">
-                    <Button x:Name="StartButton" Width="280" Height="100"
+                    <Button x:Name="StartButton" Width="180" Height="100"
                             Background="LightGray" Foreground="White" BorderBrush="#666" BorderThickness="1"
-                            Cursor="Hand" Click="StartButton_Click">
+                            Cursor="Hand" Click="StartButton_Click" Margin="10">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Background" Value="Gray"/>
@@ -110,9 +110,9 @@
                         <TextBlock Text="Start" FontSize="40" Padding="20"/>
                     </Button>
 
-                    <Button x:Name="StopButton" Width="280" Height="100"
+                    <Button x:Name="StopButton" Width="180" Height="100"
                             Background="LightGray" Foreground="White" BorderBrush="#666" BorderThickness="1"
-                            Cursor="Hand" Click="StopButton_Click">
+                            Cursor="Hand" Click="StopButton_Click" Margin="10">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Background" Value="Gray"/>
