@@ -60,7 +60,7 @@ namespace SAPAPP
         #region Scripts&Configs
 
         /// <summary>
-        /// 
+        /// Initializes all loader scripts
         /// </summary>
         private void InitializeScripts()
         {
@@ -71,9 +71,9 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Method reads dropdown and gets the selected product from the configuration
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The selected Product</returns>
         private Product Get_Current_Product()
         {
             Product currentProduct = new Product();
@@ -90,10 +90,10 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Uses selected product and Drop down menu selection to get the selected part to load
         /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
+        /// <param name="product">The currently selected product</param>
+        /// <returns>The currently selected Part</returns>
         private Part Get_Current_Part(Product product)
         {
             Part currentPart = new Part();
@@ -109,17 +109,25 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Loads a new list of products and their respective parts from a configuration file in the form of a filename 
         /// </summary>
         /// <param name="filename"></param>
         public void Load_Product_Configurations(string filename)
         {
             configs = Settings.Settings.OpenConfigs(filename);
-            DataContext = new SelectionViewModel(configs);
+
+            SelectionViewModel newContext = new SelectionViewModel(configs);
+            if (filename != Settings.Settings.configFile)
+            {
+                newContext.SelectedProduct = "---";
+                newContext.SelectedPart = "---";
+            }
+            DataContext = newContext;
+            
         }
 
         /// <summary>
-        /// 
+        /// Loads the configuration file containing the pathways for the required applications for the function to function
         /// </summary>
         /// <param name="filename"></param>
         public void Load_CLIs(string filename)
@@ -139,7 +147,7 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Saves the configurations for the current pathways of the required applications for this software to function
         /// </summary>
         public void Save_CLIs()
         {
@@ -154,7 +162,7 @@ namespace SAPAPP
         #region Buttons
 
         /// <summary>
-        /// 
+        /// Method for when the start button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -170,12 +178,14 @@ namespace SAPAPP
             Product currentProduct = Get_Current_Product();
             Part currentPart = Get_Current_Part(currentProduct);
 
-            switch (currentPart.Architecture)
+            switch (currentPart.Architecture.ToLower())
             {
                 case "---": TestScript.Download(currentPart); break;
-                case "MSP430": FetScript.Download(currentPart); break;
-                case "ATmega": MegaScript.Download(currentPart); break;
-                case "STM32": STMScript.Download(currentPart); break;
+                case "msp430": FetScript.Download(currentPart); break;
+                case "atmega": MegaScript.Download(currentPart); break;
+                case "stm32": STMScript.Download(currentPart); break;
+                case "laird": break;
+                case "fuel gauge": break;
                 default: break;
 
             }

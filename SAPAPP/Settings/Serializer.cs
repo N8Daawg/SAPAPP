@@ -5,8 +5,9 @@ using System.Xml.Serialization;
 
 namespace SAPAPP.Settings
 {
+    
     /// <summary>
-    /// A generic class used to serialize objects.
+    /// A generic class used to serialize objects to and from json and xml files.
     /// </summary>
     /// <remarks>
     /// Inspired by the following articles:
@@ -17,21 +18,21 @@ namespace SAPAPP.Settings
     {
 
         /// <summary>
-        /// 
+        ///  Save a serializable object to an XML file.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="myObject"></param>
-        /// <param name="filename"></param>
+        /// <param name="myObject">the object being serialized</param>
+        /// <param name="filename">the file the object is being serialized to</param>
         public static void SerializeJson<T>(T myObject, string filename)
         {
             File.WriteAllText(filename, JsonSerializer.Serialize(myObject));
         }
 
         /// <summary>
-        /// 
+        /// Return a class object from a serialized JSON file.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="filename"></param>
+        /// <param name="filename">The file being deserialized</param>
         /// <returns></returns>
         public static T DeserializeJson<T>(string filename)
         {

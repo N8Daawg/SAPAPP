@@ -13,10 +13,10 @@ namespace SAPAPP.Settings
         public static string configFile = "FirmwareConfigurations.xml";
 
         /// <summary>
-        /// 
+        /// Deserializes an XML file and returns a configuration object to change the data context of the main window's drop down selectors
         /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
+        /// <param name="filename">the xml file containing some configuration</param>
+        /// <returns>an object representing Configuration loaded</returns>
         public static FirmwareConfigs OpenConfigs(string filename)
         {
             FirmwareConfigs configs = new();
