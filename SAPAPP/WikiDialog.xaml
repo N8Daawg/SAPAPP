@@ -1,7 +1,7 @@
 ﻿<Window x:Class="SAPAPP.WikiDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Swiss-Army Programmer Wiki" Height="750" Width="850"
+    Title="Swiss-Army Programmer Wiki" Height="750" Width="800"
     WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
     Background="white">
 
@@ -38,7 +38,7 @@
             </Button>
 
             <!-- Search Box -->
-            <TextBox x:Name="SearchBox" Width="669" Height="35" Margin="5" TextChanged="SearchBox_TextChanged"/>
+            <TextBox x:Name="SearchBox" Width="600" Height="35" Margin="5" TextChanged="SearchBox_TextChanged"/>
             <Button Content="Search" Width="100" Height="35" Click="SearchWiki_Click"/>
         </StackPanel>
 
