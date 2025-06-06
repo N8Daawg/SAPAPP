@@ -1,9 +1,9 @@
 ﻿<Window x:Class="SAPAPP.WikiDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Swiss-Army Programmer Wiki" Height="750" Width="850"
+    Title="Swiss-Army Programmer Wiki" Height="750" Width="800"
     WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-    Background="#383838">
+    Background="white">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -14,8 +14,8 @@
         </Grid.RowDefinitions>
 
         <!-- Title Header -->
-        <Border Grid.Row="0" Padding="15" Background="#383838" CornerRadius="5" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10">
-            <TextBlock Text="Welcome to the Swiss-Army Programmer Wiki" FontSize="22" FontWeight="Bold" TextAlignment="Center" Foreground="white"/>
+        <Border Grid.Row="0" Padding="15" Background="white" CornerRadius="5" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10">
+            <TextBlock Text="Welcome to the Swiss-Army Programmer Wiki" FontSize="22" FontWeight="Bold" TextAlignment="Center" Foreground="#383838"/>
         </Border>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,10" HorizontalAlignment="Center">
@@ -28,7 +28,6 @@
                             <Ellipse Fill="#F3F3F3" Width="30" Height="30"
                          Stroke="Gray" StrokeThickness="1"/>
 
-                            <!-- Fluent-Style Arrow -->
                             <Path Data="M18,8 L8,15 L18,22"
                       Stroke="Black" StrokeThickness="2"
                       StrokeLineJoin="Round" StrokeStartLineCap="Round"
@@ -39,7 +38,7 @@
             </Button>
 
             <!-- Search Box -->
-            <TextBox x:Name="SearchBox" Width="669" Height="35" Margin="5" TextChanged="SearchBox_TextChanged"/>
+            <TextBox x:Name="SearchBox" Width="600" Height="35" Margin="5" TextChanged="SearchBox_TextChanged"/>
             <Button Content="Search" Width="100" Height="35" Click="SearchWiki_Click"/>
         </StackPanel>
 
@@ -50,7 +49,7 @@
         <RichTextBox x:Name="WikiContent" Grid.Row="2" Width="600" Height="400" AcceptsReturn="True"/>
 
         <!-- Tab Control for Different Pages -->
-        <TabControl x:Name="MainTabControl" Grid.Row="2" Background="#383838" Foreground="white">
+        <TabControl x:Name="MainTabControl" Grid.Row="2" Background="white" Foreground="#383838">
 
             <!-- Introduction Tab -->
             <TabItem Header="Introduction">
@@ -58,9 +57,9 @@
                     <!-- Text Description -->
                     <ScrollViewer Grid.Row="0">
                         <StackPanel Margin="10">
-                            <TextBlock Text="Swiss-Army Programmer Overview" FontSize="20" FontWeight="Bold" Foreground="white"/>
-                            <TextBlock Text="The Swiss-Army Programmer (SAP) Application streamlines firmware uploading by integrating complex configurations into an automated process." TextWrapping="Wrap" Foreground="white"/>
-                            <TextBlock Text="Developed using C# and Windows Presentation Foundation (WPF), it ensures compatibility across multiple Printed Circuit Boards (PCBs)." TextWrapping="Wrap" Foreground="white"/>
+                            <TextBlock Text="Swiss-Army Programmer Overview" FontSize="20" FontWeight="Bold" Foreground="#383838"/>
+                            <TextBlock Text="The Swiss-Army Programmer (SAP) Application streamlines firmware uploading by integrating complex configurations into an automated process." TextWrapping="Wrap" Foreground="#383838"/>
+                            <TextBlock Text="Developed using C# and Windows Presentation Foundation (WPF), it ensures compatibility across multiple Printed Circuit Boards (PCBs)." TextWrapping="Wrap" Foreground="#383838"/>
                         </StackPanel>
                     </ScrollViewer>
 
@@ -85,32 +84,32 @@
             <TabItem Header="Technician Guide">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="Step-by-Step Guide for Using the SAP App" FontSize="20" FontWeight="Bold" Foreground="white"/>
+                        <TextBlock Text="Step-by-Step Guide for Using the SAP App" FontSize="20" FontWeight="Bold" Foreground="#383838"/>
 
-                        <TextBlock Text="Step 1: Launching the Application" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="1. Power on the Windows tablet running the SAP application." Foreground="white"/>
-                        <TextBlock Text="2. Open the Swiss-Army Programmer from the desktop or start menu." Foreground="white"/>
-                        <TextBlock Text="3. The main dashboard will display various options for configuration." Foreground="white"/>
+                        <TextBlock Text="Step 1: Launching the Application" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="1. Power on the Windows tablet running the SAP application." Foreground="#383838"/>
+                        <TextBlock Text="2. Open the Swiss-Army Programmer from the desktop or start menu." Foreground="#383838"/>
+                        <TextBlock Text="3. The main dashboard will display various options for configuration." Foreground="#383838"/>
 
-                        <TextBlock Text="Step 2: Selecting the Product &amp; PCB" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="1. Locate the Product dropdown menu on the interface." Foreground="white"/>
-                        <TextBlock Text="2. Select the desired product category from the available options." Foreground="white"/>
-                        <TextBlock Text="3. Choose the correct Printed Circuit Board (PCB) configuration using the second dropdown." Foreground="white"/>
-                        <TextBlock Text="4. Confirm selection before proceeding." Foreground="white"/>
+                        <TextBlock Text="Step 2: Selecting the Product &amp; PCB" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="1. Locate the Product dropdown menu on the interface." Foreground="#383838"/>
+                        <TextBlock Text="2. Select the desired product category from the available options." Foreground="#383838"/>
+                        <TextBlock Text="3. Choose the correct Printed Circuit Board (PCB) configuration using the second dropdown." Foreground="#383838"/>
+                        <TextBlock Text="4. Confirm selection before proceeding." Foreground="#383838"/>
 
-                        <TextBlock Text="Step 3: USB Microcontroller Interfacing" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="1. Connect the programming tool via USB:" Foreground="white"/>
-                        <TextBlock Text="- MSP430 PCBs → Use MSP-FET Programming Tool." Foreground="white"/>
-                        <TextBlock Text="- Microchip ATMega → Use Atmel AVR ISP Mk2 Programming Tool." Foreground="white"/>
-                        <TextBlock Text="2. Confirm that the device is recognized by the SAP application." Foreground="white"/>
-                        <TextBlock Text="3. Initiate the firmware flashing process for the selected microcontroller." Foreground="white"/>
-                        <TextBlock Text="4. Once completed, disconnect the hardware safely." Foreground="white"/>
+                        <TextBlock Text="Step 3: USB Microcontroller Interfacing" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="1. Connect the programming tool via USB:" Foreground="#383838"/>
+                        <TextBlock Text="- MSP430 PCBs → Use MSP-FET Programming Tool." Foreground="#383838"/>
+                        <TextBlock Text="- Microchip ATMega → Use Atmel AVR ISP Mk2 Programming Tool." Foreground="#383838"/>
+                        <TextBlock Text="2. Confirm that the device is recognized by the SAP application." Foreground="#383838"/>
+                        <TextBlock Text="3. Initiate the firmware flashing process for the selected microcontroller." Foreground="#383838"/>
+                        <TextBlock Text="4. Once completed, disconnect the hardware safely." Foreground="#383838"/>
 
-                        <TextBlock Text="Step 4: Uploading Firmware" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="1. Ensure the correct product and PCB type have been selected." Foreground="white"/>
-                        <TextBlock Text="2. Click the Start button to initiate the firmware upload process." Foreground="white"/>
-                        <TextBlock Text="3. Monitor the progress bar for real-time feedback." Foreground="white"/>
-                        <TextBlock Text="4. If necessary, click Stop to halt the upload." Foreground="white"/>
+                        <TextBlock Text="Step 4: Uploading Firmware" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="1. Ensure the correct product and PCB type have been selected." Foreground="#383838"/>
+                        <TextBlock Text="2. Click the Start button to initiate the firmware upload process." Foreground="#383838"/>
+                        <TextBlock Text="3. Monitor the progress bar for real-time feedback." Foreground="#383838"/>
+                        <TextBlock Text="4. If necessary, click Stop to halt the upload." Foreground="#383838"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -119,26 +118,26 @@
             <TabItem Header="Hardware Requirements">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="Essential Hardware Requirements" FontSize="20" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="Required access to specialized microcontrollers and programming devices." TextWrapping="Wrap" Foreground="white"/>
+                        <TextBlock Text="Essential Hardware Requirements" FontSize="20" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="Required access to specialized microcontrollers and programming devices." TextWrapping="Wrap" Foreground="#383838"/>
 
                         <!-- Supported Microcontrollers -->
-                        <TextBlock Text="Supported Microcontrollers:" FontSize="18" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="- Texas Instruments MSP430" Foreground="white"/>
-                        <TextBlock Text="- Microchip ATmega" Foreground="white"/>
-                        <TextBlock Text="- STMicroelectronics STM32" Foreground="white"/>
-                        <TextBlock Text="- Ezurio BL654 Series Bluetooth/NFC Module" Foreground="white"/>
-                        <TextBlock Text="- Texas Instruments Battery Fuel Gauges" Foreground="white"/>
+                        <TextBlock Text="Supported Microcontrollers:" FontSize="18" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="- Texas Instruments MSP430" Foreground="#383838"/>
+                        <TextBlock Text="- Microchip ATmega" Foreground="#383838"/>
+                        <TextBlock Text="- STMicroelectronics STM32" Foreground="#383838"/>
+                        <TextBlock Text="- Ezurio BL654 Series Bluetooth/NFC Module" Foreground="#383838"/>
+                        <TextBlock Text="- Texas Instruments Battery Fuel Gauges" Foreground="#383838"/>
 
                         <!-- Supported Programming & Debugging Tools -->
-                        <TextBlock Text="Programming &amp; Debugging Tools:" FontSize="18" FontWeight="Bold" Foreground="white"/>
-                        <TextBlock Text="- MSP-FET" Foreground="white"/>
-                        <TextBlock Text="- MSP-GANG" Foreground="white"/>
-                        <TextBlock Text="- MPLAB PICkit 5" Foreground="white"/>
-                        <TextBlock Text="- MPLAB ICE 4" Foreground="white"/>
-                        <TextBlock Text="- STLINK-V3MINIE" Foreground="white"/>
-                        <TextBlock Text="- STLINK-V3SET" Foreground="white"/>
-                        <TextBlock Text="- Arduino UNO R3" Foreground="white"/>
+                        <TextBlock Text="Programming &amp; Debugging Tools:" FontSize="18" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="- MSP-FET" Foreground="#383838"/>
+                        <TextBlock Text="- MSP-GANG" Foreground="#383838"/>
+                        <TextBlock Text="- MPLAB PICkit 5" Foreground="#383838"/>
+                        <TextBlock Text="- MPLAB ICE 4" Foreground="#383838"/>
+                        <TextBlock Text="- STLINK-V3MINIE" Foreground="#383838"/>
+                        <TextBlock Text="- STLINK-V3SET" Foreground="#383838"/>
+                        <TextBlock Text="- Arduino UNO R3" Foreground="#383838"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -147,7 +146,7 @@
             <TabItem Header="Resources">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="For full documentation, visit the official Swiss-Army Programmer Wiki:" FontWeight="Bold" Foreground="white"/>
+                        <TextBlock Text="For full documentation, visit the official Swiss-Army Programmer Wiki:" FontWeight="Bold" Foreground="#383838"/>
                         <TextBlock Foreground="Blue" TextDecorations="Underline" Cursor="Hand"
                                    Text="Click here to open wiki"
                                    MouseDown="OpenWiki_Click"/>

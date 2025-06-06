@@ -3,6 +3,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 
+/// <summary>
+/// ViewModel has the ability of managing product and part
+/// selections.
+/// Maintains a list of available products and parts, along with a
+/// mapping of file paths and structures between them.
+/// Helps in handling of selection updates, dialog notifications of 
+/// changes and persists selections within a JSON file.
+/// </summary>
+
 namespace SAPAPP
 {
     public class SelectionViewModel : INotifyPropertyChanged
@@ -38,9 +47,15 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Initializations of new instances of the SelectionViewModel
+        /// class, and in setting up both product and part lists based on
+        /// the instances of provided firmware configurations through
+        /// ensuring a default selection. 
         /// </summary>
         /// <param name="config"></param>
+        /// The firmware configuration is conveyed in containing both product
+        /// and part details used in the initialization of selections. 
+        /// </param>
         public SelectionViewModel(FirmwareConfigs config)
         {
             ProductsList = new ObservableCollection<string>();
@@ -81,7 +96,12 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Serves as an updater for a list of available parts based on the
+        /// currently selected product.
+        /// Has the ability to clear the existing parts list in adding in a 
+        /// default placeholder, and updates it with the parts that are 
+        /// associated with the selection.
+        /// Resets the selected part and product to the default value.
         /// </summary>
         private void UpdatePartOptions()
         {
@@ -98,7 +118,9 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Serves as a save function of what product and part are currently selected
+        /// onto a JSON file.
+        /// Serializes the selection data and writes it to the specified file path. 
         /// </summary>
         private void SaveSelection()
         {
@@ -108,7 +130,9 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
+        /// Loads the previously saved product and part selection from a JSON file. 
+        /// If the file exists, it deserializes the selection from the data and updates
+        /// the selected product and part accordingly from there. 
         /// </summary>
         private void LoadSelection()
         {
@@ -129,9 +153,12 @@ namespace SAPAPP
         public event PropertyChangedEventHandler PropertyChanged;
         
         /// <summary>
-        /// 
+        /// Notifies users of a change in the property of the selection process
+        /// and invokes the PropertyChanged event with a specified property name.
         /// </summary>
         /// <param name="propertyName"></param>
+        /// Serves as the process of the property of the name change. 
+        /// </param>
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
