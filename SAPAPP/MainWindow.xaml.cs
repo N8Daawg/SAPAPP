@@ -29,11 +29,11 @@ namespace SAPAPP
             set
             {
                 _AVRDUDE_CLI = value;
+                MegaScript.AVRDUDE_CLI = value;
                 Save_CLIs();
             }
         }
 
-        //private string STM32_Programmer_CLI = "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
         private string _STM32_Programmer_CLI;
         public string STM32_Programmer_CLI
         {
@@ -41,6 +41,7 @@ namespace SAPAPP
             set
             {
                 _STM32_Programmer_CLI = value;
+                STMScript.STM32_Programmer_CLI= value;
                 Save_CLIs();
             }
         }
@@ -51,8 +52,8 @@ namespace SAPAPP
         {
             InitializeComponent();
 
-            Load_CLIs(CLI_config_path);
             InitializeScripts();
+            Load_CLIs(CLI_config_path);
             Load_Product_Configurations(Settings.Settings.configFile);
         }
 
@@ -153,7 +154,6 @@ namespace SAPAPP
         {
             var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI };
             Settings.Serializer.SerializeJson(selection, CLI_config_path);
-            InitializeScripts();
         }
 
         #endregion

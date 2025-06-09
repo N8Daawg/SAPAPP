@@ -90,7 +90,7 @@ namespace SAPAPP.Scripts
                         line = cmd.StandardError.ReadLine();
                         if (!string.IsNullOrEmpty(line))
                         {
-                            HandleError(worker, line);
+                            HandleError(line);
                             break;
                         }
 
@@ -111,7 +111,7 @@ namespace SAPAPP.Scripts
             }
         }
 
-        protected override void HandleError(BackgroundWorker worker, string line)
+        protected override void HandleError(string line)
         {
             string message, header;
             line = line.Trim();
@@ -128,7 +128,7 @@ namespace SAPAPP.Scripts
             }
 
             MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-            worker.CancelAsync();
+            Cancel();
         }
 
         protected override void UpdateProgress(string line)

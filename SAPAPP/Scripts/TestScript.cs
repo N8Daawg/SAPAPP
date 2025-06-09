@@ -80,7 +80,7 @@ namespace SAPAPP.Scripts
             }
         }
 
-        protected override void HandleError(BackgroundWorker worker, string line)
+        protected override void HandleError(string line)
         {
             throw new NotImplementedException();
         }

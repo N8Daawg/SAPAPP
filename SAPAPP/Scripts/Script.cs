@@ -108,7 +108,7 @@ namespace SAPAPP.Scripts
         /// </summary>
         /// <param name="worker"></param>
         /// <param name="line"></param>
-        protected abstract void HandleError(BackgroundWorker worker, string line);
+        protected abstract void HandleError(string line);
 
         /// <summary>
         /// 

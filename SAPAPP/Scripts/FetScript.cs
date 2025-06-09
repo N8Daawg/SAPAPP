@@ -67,7 +67,7 @@ namespace SAPAPP.Scripts
                             line = cmd.StandardError.ReadLine();
                             if (line != null)
                             {
-                                HandleError(worker, line);
+                                HandleError( line);
                                 break;
                             }
 
@@ -92,7 +92,7 @@ namespace SAPAPP.Scripts
             }
         }
 
-        protected override void HandleError(BackgroundWorker worker, string line)
+        protected override void HandleError(string line)
         {
             line = line.Trim();
             string message, header;

@@ -1,6 +1,7 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,11 +10,14 @@ namespace SAPAPP.Scripts
     internal class MegaScript : Script
     {
 
-        private string AVRDUDE_CLI;
+        private string _avrdudeCLI;
+        public string AVRDUDE_CLI
+        {
+            get { return string.Format("\"{0}\"", _avrdudeCLI); }
+            set { _avrdudeCLI = value; }
+        }
 
-        private const string localInstallDir = @"\firmware\STMPrograms";
-        private const string testprogram = @"\STM32BIG\build\arduino.avr.megaADK";
-        private const string cliPath = @"C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\atprogram.exe";
+        private string boardType = "m2560";
 
 
         public MegaScript(TextBlock fd, TextBlock pp, ProgressBar pb, string cli) : base(fd, pp, pb)
@@ -34,31 +38,12 @@ namespace SAPAPP.Scripts
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            string fullCommand = "avrdude -c avrispmkII -p m2560 -P usb:20:38 -U flash:w:\"C:\\Users\\nbealsla\\Downloads\\Blink\\build\\arduino.avr.megaADK\\Blink.ino.hex\":i";
+            //string fullCommand = "avrdude -c avrispmkII -p m2560 -P usb:20:38 -U flash:w:\"C:\\Users\\nbealsla\\Downloads\\Blink\\build\\arduino.avr.megaADK\\Blink.ino.hex\":i";
 
-
-            string connect = "-c avrispmkII -p m2560 -P usb:20:38";
+            string connect = GetConnection();
             string write = "-U flash:w:" + currentDownload.Executable + ":i";
-
-            //string strCmdText = cliPath + " -t avrispmk2 -i ISP -d atmega2560 program -f megaADK.ino.elf";
             string strCmdText = AVRDUDE_CLI + " " + connect + " " + write;
-            string firmwareDir = workingDirectory;
-
-
-            //MessageBox.Show(fullCommand +"\n"+ strCmdText);
-
-            ProcessStartInfo processStartInfo = new()
-            {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                Arguments = "/k" + strCmdText,
-                RedirectStandardOutput = false,
-                RedirectStandardError = false,
-                CreateNoWindow = false,
-                WorkingDirectory = currentDownload.FirmwarePath
-            };
-
-            /*
+            
             ProcessStartInfo processStartInfo = new()
             {
                 FileName = "cmd.exe",
@@ -67,20 +52,18 @@ namespace SAPAPP.Scripts
                 RedirectStandardOutput = !testing,
                 RedirectStandardError = !testing,
                 CreateNoWindow = !testing,
-                WorkingDirectory = firmwareDir
+                WorkingDirectory = currentDownload.FirmwarePath
             };
-            */
+            
 
-
+            
             Process cmd = new()
             {
                 StartInfo = processStartInfo
             };
             cmd.Start();
             cmd.WaitForExit();
-
-
-            /*
+            
             if (!testing)
             {
                 string line = "";
@@ -98,7 +81,7 @@ namespace SAPAPP.Scripts
                         if (line != null)
                         {
                             line = line.Trim();
-                            HandleError(worker, line);
+                            HandleError(line);
                             break;
                         }
 
@@ -109,22 +92,71 @@ namespace SAPAPP.Scripts
                             line = line.Trim();
                             if (line != "")
                             {
-                                Application.Current.Dispatcher.Invoke(new Action(() =>
-                                {
-                                    FeedbackDisplay.Text = line;
-                                }));
-                                System.Threading.Thread.Sleep(delay);
+                                UpdateProgress(line);
                             }
                         }
                     }
                 }
             }
-            */
-            cmd.Close();
             
+            cmd.Close();
+
         }
 
-        protected override void HandleError(BackgroundWorker worker, string line)
+        private string GetConnection()
+        {
+            string fullformat = "-c avrispmkII -p {0} -P {1}";
+            string usbformat = "usb:{0}";
+
+            string strCmdText = AVRDUDE_CLI + " " + string.Format(fullformat, boardType, string.Format(usbformat, "xxx")) + " -v";
+            
+            ProcessStartInfo processStartInfo = new()
+            {
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                Arguments = "/c" + strCmdText,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                WorkingDirectory = currentDownload.FirmwarePath
+            };
+
+            Process cmd = new()
+            {
+                StartInfo = processStartInfo,
+            };
+
+            cmd.Start();
+            cmd.WaitForExit();
+
+            string results = cmd.StandardOutput.ReadToEnd();
+            results += "\n";
+            results = cmd.StandardError.ReadToEnd();
+            cmd.Close();
+
+
+            string lastFour = "";
+            string[] lines = results.Split("\n");
+            foreach (string line in lines)
+            {
+                if (line.ToLower().Contains("found"))
+                {
+                    string[] words = line.Split(' ');
+                    string serno = words[words.Length-1];
+
+                    string digitformat = "{0}{1}";
+                    string firstTwo = string.Format(digitformat, serno[serno.Length-5], serno[serno.Length - 4]);
+                    string lastTwo = string.Format(digitformat, serno[serno.Length - 3], serno[serno.Length - 2]);
+
+                    lastFour = string.Format("{0}:{1}", firstTwo, lastTwo);
+                }
+            }
+            string serial = string.Format(usbformat, lastFour);
+
+            return string.Format(fullformat, boardType, serial);
+        }
+
+        protected override void HandleError(string line)
         {
             string message, header;
 
@@ -132,7 +164,7 @@ namespace SAPAPP.Scripts
             header = "Error";
 
             MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-            worker.CancelAsync();
+            Cancel();
         }
 
         protected override void UpdateProgress(string line)
