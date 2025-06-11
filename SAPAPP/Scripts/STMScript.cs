@@ -8,7 +8,12 @@ namespace SAPAPP.Scripts
 {
     internal class STMScript : Script
     {
-        private string STM32_Programmer_CLI;
+        private string _stm32_prog_cli;
+        public string STM32_Programmer_CLI
+        {
+            get { return string.Format("\"{0}\"", _stm32_prog_cli); }
+            set {_stm32_prog_cli = value;}
+        }
 
 
         public STMScript(TextBlock fd, TextBlock pp, ProgressBar pb, string cli) : base(fd, pp, pb)
@@ -63,9 +68,10 @@ namespace SAPAPP.Scripts
 
                 if (!testing)
                 {
-                    string line = "";
+                    string line;
                     while (!cmd.StandardOutput.EndOfStream)
                     {
+                        line = "";
                         if (worker.CancellationPending)
                         {
                             e.Cancel = true;
@@ -73,14 +79,15 @@ namespace SAPAPP.Scripts
                         }
                         else
                         {
-                            line = cmd.StandardError.ReadLine();
+                            line += cmd.StandardError.ReadLine();
+                            line += "\n";
                             if (line != null)
                             {
-                                HandleError(worker, line);
+                                HandleError(line);
                                 break;
                             }
 
-                            line = cmd.StandardOutput.ReadLine();
+                            line += cmd.StandardOutput.ReadLine();
                             if (line != null)
                             {
                                 line = line.Trim();
@@ -88,7 +95,7 @@ namespace SAPAPP.Scripts
                                 {
                                     if (line.Contains("Error"))
                                     {
-                                        HandleError(worker, line);
+                                        HandleError(line);
                                     }
                                     else
                                     {
@@ -109,7 +116,7 @@ namespace SAPAPP.Scripts
             
         }
 
-        protected override void HandleError(BackgroundWorker worker, string line)
+        protected override void HandleError(string line)
         {
             line = line.Trim();
             string message, header;
