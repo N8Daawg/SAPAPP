@@ -179,36 +179,6 @@ namespace SAPAPP
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PlayVideo_Click(object sender, RoutedEventArgs e)
-        {
-            TutorialVideo.Play();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PauseVideo_Click(object sender, RoutedEventArgs e)
-        {
-            TutorialVideo.Pause();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StopVideo_Click(object sender, RoutedEventArgs e)
-        {
-            TutorialVideo.Stop();
-        }
-
-        /// <summary>
         /// Handles search queries and navigates to relevant sections
         /// </summary>
         /// <param name="sender"></param>
