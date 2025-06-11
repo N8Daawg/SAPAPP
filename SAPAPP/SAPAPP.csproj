@@ -32,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Scripts\data.h" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="favicon.ico" />
   </ItemGroup>
 
@@ -60,6 +64,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SolidSoils.Arduino.Client" Version="1.1.1" />
     <PackageReference Include="System.IO.Ports" Version="9.0.5" />
   </ItemGroup>
 

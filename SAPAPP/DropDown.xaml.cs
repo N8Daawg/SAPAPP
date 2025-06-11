@@ -58,9 +58,9 @@ namespace SAPAPP
         /// </param>
         public SelectionViewModel(FirmwareConfigs config)
         {
-            ProductsList = new ObservableCollection<string>();
-            PartsList = new ObservableCollection<string>();
-            ProductPartMap = new Dictionary<string, List<string>>();
+            ProductsList = [];
+            PartsList = [];
+            ProductPartMap = [];
 
 
             Product defaultView = new();
@@ -73,7 +73,7 @@ namespace SAPAPP
             foreach (Product product in config.Products)
             {
                 ProductsList.Add(product.ProductName);
-                List<string> PartNames = new List<string>();
+                List<string> PartNames = [];
                 foreach (Part part in product.Parts)
                 {
                     PartNames.Add(part.PartName);

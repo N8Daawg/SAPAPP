@@ -17,6 +17,7 @@ namespace SAPAPP
         private FetScript FetScript;
         private MegaScript MegaScript;
         private STMScript STMScript;
+        private TIScript TIScript;
 
         private FirmwareConfigs configs;
         private const string CLI_config_path = "CLI_configs.json";
@@ -69,6 +70,7 @@ namespace SAPAPP
             FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
             STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
+            TIScript = new TIScript(StatusMessageDisplay, progressPercentage, progbar);
         }
 
         /// <summary>
@@ -185,7 +187,7 @@ namespace SAPAPP
                 case "atmega": MegaScript.Download(currentPart); break;
                 case "stm32": STMScript.Download(currentPart); break;
                 case "laird": break;
-                case "fuel gauge": break;
+                case "fuel gauge": TIScript.Download(currentPart); break;
                 default: break;
 
             }
