@@ -126,7 +126,6 @@ namespace SAPAPP
         {
             var selection = new { Product = SelectedProduct, Part = SelectedPart };
             Settings.Serializer.SerializeJson(selection, SaveFilePath);
-            //File.WriteAllText(SaveFilePath, JsonSerializer.Serialize(selection));
         }
 
         /// <summary>
@@ -139,13 +138,11 @@ namespace SAPAPP
             if (File.Exists(SaveFilePath))
             {
                 Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(SaveFilePath);
-                //var selection = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(SaveFilePath));
                 if (selection != null)
                 {
                     SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";
                     UpdatePartOptions();
                     SelectedPart = selection.ContainsKey("Part") ? selection["Part"] : "---";
-
                 }
             }
         }

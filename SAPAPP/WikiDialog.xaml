@@ -103,9 +103,6 @@
             <TabItem Header="Hardware Requirements">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="Essential Hardware Requirements" FontSize="20" FontWeight="Bold" Foreground="#383838"/>
-                        <TextBlock Text="Required access to specialized microcontrollers and programming devices." TextWrapping="Wrap" Foreground="#383838"/>
-
                         <!-- Supported Microcontrollers -->
                         <TextBlock Text="Supported Microcontrollers:" FontSize="18" FontWeight="Bold" Foreground="#383838"/>
                         <TextBlock Text="- Texas Instruments MSP430" Foreground="#383838"/>
@@ -114,14 +111,18 @@
                         <TextBlock Text="- Ezurio BL654 Series Bluetooth/NFC Module" Foreground="#383838"/>
                         <TextBlock Text="- Texas Instruments Battery Fuel Gauges" Foreground="#383838"/>
 
-                        <!-- Supported Programming & Debugging Tools -->
-                        <TextBlock Text="Programming &amp; Debugging Tools:" FontSize="18" FontWeight="Bold" Foreground="#383838"/>
-                        <TextBlock Text="- MSP-FET" Foreground="#383838"/>
-                        <TextBlock Text="- MSP-GANG" Foreground="#383838"/>
-                        <TextBlock Text="- MPLAB PICkit 5" Foreground="#383838"/>
-                        <TextBlock Text="- MPLAB ICE 4" Foreground="#383838"/>
-                        <TextBlock Text="- STLINK-V3MINIE" Foreground="#383838"/>
-                        <TextBlock Text="- STLINK-V3SET" Foreground="#383838"/>
+                        <!-- Hardware requirements & Debugging Tools -->
+                        <TextBlock Text="Required Hardware &amp; Debugging Tools::" FontSize="20" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="- MSP-FET for MSP430 microcontrollers" Foreground="#383838"/>
+                        <TextBlock Text="- Microchip avrispmk2 for Microchip ATmega microcontrollers" Foreground="#383838"/>
+                        <TextBlock Text="- Arduino UNO R3 for Ti Fuel Gauges" Foreground="#383838"/>
+
+
+                        <!-- Supported Software  -->
+                        <TextBlock Text="Required Software:" FontSize="18" FontWeight="Bold" Foreground="#383838"/>
+                        <TextBlock Text="- TI Uniflash MSP430 microcontrollers" Foreground="#383838"/>
+                        <TextBlock Text="- AVRDUDE for Microchip ATmega microcontrollers" Foreground="#383838"/>
+                        <TextBlock Text="- STM32 Cube Programmer for STM32 microcontrollers" Foreground="#383838"/>
                         <TextBlock Text="- Arduino UNO R3" Foreground="#383838"/>
                     </StackPanel>
                 </ScrollViewer>

@@ -53,14 +53,14 @@
         <Button Content="Browse Config" Grid.Row="3" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseConfig_Click"/>
 
         <!-- ATmega Programmer Selection -->
-        <Label Content="ATmega Programmer:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
+        <Label Content="SVRDUDE Executable:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
         <TextBox x:Name="ATmegaPathTextBox" Grid.Row="4" Grid.Column="1" Margin="5" Height="35"/>
-        <Button Content="Browse ATmega" Grid.Row="4" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseATmega_Click"/>
+        <Button Content="Browse" Grid.Row="4" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseATmega_Click"/>
 
         <!-- STM32 Programmer Selection -->
-        <Label Content="STM32 Programmer:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
+        <Label Content="STM32 CLI executable:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
         <TextBox x:Name="STM32PathTextBox" Grid.Row="5" Grid.Column="1" Margin="5" Height="35"/>
-        <Button Content="Browse STM32" Grid.Row="5" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseSTM32_Click"/>
+        <Button Content="Browse" Grid.Row="5" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseSTM32_Click"/>
 
         <!-- Action Buttons -->
         <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,78,0,-48" Grid.Column="1">
