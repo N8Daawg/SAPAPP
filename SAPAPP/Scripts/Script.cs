@@ -1,6 +1,5 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,7 +8,6 @@ namespace SAPAPP.Scripts
     internal abstract class Script
     {
         protected BackgroundWorker backgroundWorker;
-        protected string workingDirectory;
         protected const bool testing = false;
         protected const int delay = 100; // delay time in milliseconds
 
@@ -31,7 +29,6 @@ namespace SAPAPP.Scripts
             FeedbackDisplay = fd;
             progressPercentage = pp;
             progbar = pb;
-            workingDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
             backgroundWorker = InitializeBackgroundWorker();
         }
@@ -89,18 +86,21 @@ namespace SAPAPP.Scripts
         // This event handler deals with the results of the background operation.
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled)
+            Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                FeedbackDisplay.Text = "Canceled!";
-            }
-            else if (e.Error != null)
-            {
-                FeedbackDisplay.Text = "Error: " + e.Error.Message;
-            }
-            else
-            {
-                FeedbackDisplay.Text = "Done!";
-            }
+                if (e.Cancelled)
+                {
+                    FeedbackDisplay.Text = "Canceled!";
+                }
+                else if (e.Error != null)
+                {
+                    FeedbackDisplay.Text = "Error: " + e.Error.Message;
+                }
+                else
+                {
+                    FeedbackDisplay.Text = "Done!";
+                }
+            }));
         }
 
         /// <summary>

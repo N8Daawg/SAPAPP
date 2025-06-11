@@ -1,7 +1,6 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -43,64 +42,46 @@ namespace SAPAPP.Scripts
             string connect = GetConnection();
             string write = "-U flash:w:" + currentDownload.Executable + ":i";
             string strCmdText = AVRDUDE_CLI + " " + connect + " " + write;
-            
-            ProcessStartInfo processStartInfo = new()
-            {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
-                RedirectStandardOutput = !testing,
-                RedirectStandardError = !testing,
-                CreateNoWindow = !testing,
-                WorkingDirectory = currentDownload.FirmwarePath
-            };
-            
 
-            
             Process cmd = new()
             {
-                StartInfo = processStartInfo
+                StartInfo = new()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
+                    RedirectStandardOutput = !testing,
+                    RedirectStandardError = !testing,
+                    CreateNoWindow = !testing,
+                    WorkingDirectory = currentDownload.FirmwarePath
+                }
             };
+            cmd.OutputDataReceived += Cmd_OutputDataReceived;
+            cmd.ErrorDataReceived += Cmd_ErrorDataReceived;
+
             cmd.Start();
-            cmd.WaitForExit();
-            
             if (!testing)
             {
-                string line = "";
-                while (!cmd.StandardOutput.EndOfStream)
+                cmd.BeginErrorReadLine();
+                cmd.BeginOutputReadLine();
+                cmd.WaitForExitAsync();
+
+                while ((worker.IsBusy) && (!cmd.HasExited))
                 {
                     if (worker.CancellationPending)
                     {
                         e.Cancel = true;
-                        break;
-                    }
-                    else
-                    {
-                        // read from standard Error to see if there was a mistake
-                        line = cmd.StandardError.ReadLine();
-                        if (line != null)
-                        {
-                            line = line.Trim();
-                            HandleError(line);
-                            break;
-                        }
-
-
-                        line = cmd.StandardOutput.ReadLine();
-                        if (line != null)
-                        {
-                            line = line.Trim();
-                            if (line != "")
-                            {
-                                UpdateProgress(line);
-                            }
-                        }
+                        cmd.CancelErrorRead();
+                        cmd.CancelOutputRead();
+                        cmd.Kill();
                     }
                 }
             }
-            
-            cmd.Close();
 
+            if (!cmd.HasExited)
+            {
+                cmd.Close();
+            }
         }
 
         private string GetConnection()
@@ -109,7 +90,7 @@ namespace SAPAPP.Scripts
             string usbformat = "usb:{0}";
 
             string strCmdText = AVRDUDE_CLI + " " + string.Format(fullformat, boardType, string.Format(usbformat, "xxx")) + " -v";
-            
+
             ProcessStartInfo processStartInfo = new()
             {
                 FileName = "cmd.exe",
@@ -142,10 +123,10 @@ namespace SAPAPP.Scripts
                 if (line.ToLower().Contains("found"))
                 {
                     string[] words = line.Split(' ');
-                    string serno = words[words.Length-1];
+                    string serno = words[words.Length - 1];
 
                     string digitformat = "{0}{1}";
-                    string firstTwo = string.Format(digitformat, serno[serno.Length-5], serno[serno.Length - 4]);
+                    string firstTwo = string.Format(digitformat, serno[serno.Length - 5], serno[serno.Length - 4]);
                     string lastTwo = string.Format(digitformat, serno[serno.Length - 3], serno[serno.Length - 2]);
 
                     lastFour = string.Format("{0}:{1}", firstTwo, lastTwo);
@@ -154,6 +135,22 @@ namespace SAPAPP.Scripts
             string serial = string.Format(usbformat, lastFour);
 
             return string.Format(fullformat, boardType, serial);
+        }
+
+        private void Cmd_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                HandleError(e.Data);
+            }
+        }
+
+        private void Cmd_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                UpdateProgress(line: e.Data);
+            }
         }
 
         protected override void HandleError(string line)

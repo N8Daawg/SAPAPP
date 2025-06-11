@@ -1,6 +1,7 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,80 +24,73 @@ namespace SAPAPP.Scripts
             BackgroundWorker worker = sender as BackgroundWorker;
 
             string strCmdText = "dir";
-            string firmwareDir = workingDirectory;
+            string firmwareDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
 
 
-            ProcessStartInfo processStartInfo = new()
+            Process cmd = new()
             {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                Arguments = "/c" + strCmdText,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                WorkingDirectory = firmwareDir,
-            };
-
-
-            try
-            {
-                Process cmd = new()
+                StartInfo = new()
                 {
-                    StartInfo = processStartInfo
-                };
-                cmd.Start();
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = "/c" + strCmdText,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = firmwareDir,
+                }
+            };
+            cmd.OutputDataReceived += Cmd_OutputDataReceived;
+            cmd.ErrorDataReceived += Cmd_ErrorDataReceived;
 
-                string line = "";
-                while (!cmd.StandardOutput.EndOfStream)
+            cmd.Start();
+            if (!testing)
+            {
+                cmd.BeginErrorReadLine();
+                cmd.BeginOutputReadLine();
+                cmd.WaitForExitAsync();
+
+                while ((worker.IsBusy) && (!cmd.HasExited))
                 {
                     if (worker.CancellationPending)
                     {
                         e.Cancel = true;
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
-                        {
-                            FeedbackDisplay.Text = "Canceled!";
-                        }));
-                        System.Threading.Thread.Sleep(delay);
-                        break;
-                    }
-                    else
-                    {
-                        line = cmd.StandardOutput.ReadLine();
-                        if (line != null)
-                        {
-                            line = line.Trim();
-                            if (line != "")
-                            {
-                                UpdateProgress(line);
-                            }
-                        }
+                        cmd.CancelErrorRead();
+                        cmd.CancelOutputRead();
+                        cmd.Kill();
                     }
                 }
+            }
+
+            if (!cmd.HasExited)
+            {
                 cmd.Close();
             }
-            catch (Exception ex)
+        }
+
+        private void Cmd_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
             {
-                MessageBox.Show(ex.Message);
+                HandleError(e.Data);
+            }
+        }
+
+        private void Cmd_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                UpdateProgress(line: e.Data);
             }
         }
 
         protected override void HandleError(string line)
         {
-            throw new NotImplementedException();
+            MessageBox.Show(line);
         }
 
         protected override void UpdateProgress(string line)
         {
-            string[] words = line.Split(' ');
-
-            string news = "";
-            int i = 0;
-            foreach (string word in words)
-            {
-                news += i + " " + word + "\n";
-                i++;
-            }
-            //MessageBox.Show(news);
             Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
             System.Threading.Thread.Sleep(delay);
         }

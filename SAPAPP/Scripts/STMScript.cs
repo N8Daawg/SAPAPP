@@ -12,7 +12,7 @@ namespace SAPAPP.Scripts
         public string STM32_Programmer_CLI
         {
             get { return string.Format("\"{0}\"", _stm32_prog_cli); }
-            set {_stm32_prog_cli = value;}
+            set { _stm32_prog_cli = value; }
         }
 
 
@@ -23,7 +23,7 @@ namespace SAPAPP.Scripts
 
         public override void Download(Part download)
         {
-            if(!backgroundWorker.IsBusy)
+            if (!backgroundWorker.IsBusy)
             {
                 currentDownload = download;
                 backgroundWorker.RunWorkerAsync();
@@ -41,79 +41,67 @@ namespace SAPAPP.Scripts
             string connect = "-c port=SWD";                                         // connect to board command
             string write = "-w " + currentDownload.Executable + " " + writeHead;    // write command
 
-            string strCmdText = STM32_Programmer_CLI + " "+ connect +" "+ write;
+            string strCmdText = STM32_Programmer_CLI + " " + connect + " " + write;
             string firmwareDir = currentDownload.FirmwarePath;
 
-            
-            ProcessStartInfo processStartInfo = new()
+
+            Process cmd = new()
             {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
-                RedirectStandardOutput = !testing,
-                RedirectStandardError = !testing,
-                CreateNoWindow = !testing,
-                WorkingDirectory = firmwareDir,
+                StartInfo = new()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
+                    RedirectStandardOutput = !testing,
+                    RedirectStandardError = !testing,
+                    CreateNoWindow = !testing,
+                    WorkingDirectory = firmwareDir,
+                }
             };
 
-            try
+            cmd.OutputDataReceived += Cmd_OutputDataReceived;
+            cmd.ErrorDataReceived += Cmd_ErrorDataReceived;
+
+
+            cmd.Start();
+            if (!testing)
             {
+                cmd.BeginErrorReadLine();
+                cmd.BeginOutputReadLine();
+                cmd.WaitForExitAsync();
 
-                Process cmd = new()
+                while ((worker.IsBusy) && (!cmd.HasExited))
                 {
-                    StartInfo = processStartInfo,
-                };
-                cmd.Start();
-                cmd.WaitForExit();
-
-                if (!testing)
-                {
-                    string line;
-                    while (!cmd.StandardOutput.EndOfStream)
+                    if (worker.CancellationPending)
                     {
-                        line = "";
-                        if (worker.CancellationPending)
-                        {
-                            e.Cancel = true;
-                            break;
-                        }
-                        else
-                        {
-                            line += cmd.StandardError.ReadLine();
-                            line += "\n";
-                            if (line != null)
-                            {
-                                HandleError(line);
-                                break;
-                            }
-
-                            line += cmd.StandardOutput.ReadLine();
-                            if (line != null)
-                            {
-                                line = line.Trim();
-                                if (line.Length > 0)
-                                {
-                                    if (line.Contains("Error"))
-                                    {
-                                        HandleError(line);
-                                    }
-                                    else
-                                    {
-                                        UpdateProgress(line);
-                                    }
-                                }
-                            }
-                        }
+                        e.Cancel = true;
+                        cmd.CancelErrorRead();
+                        cmd.CancelOutputRead();
+                        cmd.Kill();
                     }
                 }
-                
+            }
+
+            if (!cmd.HasExited)
+            {
                 cmd.Close();
             }
-            catch (Exception ex)
+        }
+
+        private void Cmd_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
             {
-                MessageBox.Show(ex.Message);
+                HandleError(e.Data);
             }
-            
+        }
+
+        private void Cmd_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                UpdateProgress(e.Data);
+            }
         }
 
         protected override void HandleError(string line)

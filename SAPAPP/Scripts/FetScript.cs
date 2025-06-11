@@ -11,7 +11,7 @@ namespace SAPAPP.Scripts
         private static readonly List<string> value = ["Connecting...", "loading...", "verifying..."];
         private readonly List<string> Milestones = value;
 
-        public override async void Download(Part download)
+        public override void Download(Part download)
         {
             if (!backgroundWorker.IsBusy)
             {
@@ -28,72 +28,70 @@ namespace SAPAPP.Scripts
             string firmwareDir = currentDownload.FirmwarePath;
 
 
-            ProcessStartInfo processStartInfo = new()
+            Process cmd = new()
             {
-                FileName = "cmd.exe",
-                UseShellExecute = false,
-                Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
-                RedirectStandardOutput = !testing,
-                RedirectStandardError = !testing,
-                CreateNoWindow = !testing,
-                WorkingDirectory = firmwareDir,
+                StartInfo = new()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = testing ? "/k" + strCmdText : "/c" + strCmdText,
+                    RedirectStandardOutput = !testing,
+                    RedirectStandardError = !testing,
+                    CreateNoWindow = !testing,
+                    WorkingDirectory = firmwareDir,
+                }
             };
 
-            try
+            cmd.OutputDataReceived += Cmd_OutputDataReceived;
+            cmd.ErrorDataReceived += Cmd_ErrorDataReceived;
+
+
+            cmd.Start();
+            if (!testing)
             {
+                cmd.BeginErrorReadLine();
+                cmd.BeginOutputReadLine();
+                cmd.WaitForExitAsync();
 
-                Process cmd = new()
+                while ((worker.IsBusy) && (!cmd.HasExited))
                 {
-                    StartInfo = processStartInfo
-                };
-                cmd.Start();
-                cmd.WaitForExit();
-
-                if (!testing)
-                {
-
-                    string line = "";
-                    while (!cmd.StandardOutput.EndOfStream)
+                    if (worker.CancellationPending)
                     {
-
-                        if (worker.CancellationPending)
-                        {
-                            e.Cancel = true;
-                            break;
-                        }
-                        else
-                        {
-                            // read from standard Error to see if there was a mistake
-                            line = cmd.StandardError.ReadLine();
-                            if (line != null)
-                            {
-                                HandleError( line);
-                                break;
-                            }
-
-
-                            line = cmd.StandardOutput.ReadLine();
-                            if (line != null)
-                            {
-                                line = line.Trim();
-                                if (line.Length > 0)
-                                {
-                                    UpdateProgress(line);
-                                }
-                            }
-                        }
+                        e.Cancel = true;
+                        cmd.CancelErrorRead();
+                        cmd.CancelOutputRead();
+                        cmd.Kill();
                     }
                 }
+            }
+
+            if (!cmd.HasExited)
+            {
                 cmd.Close();
             }
-            catch (Exception ex)
+        }
+
+        private void Cmd_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
             {
-                MessageBox.Show(ex.Message);
+                HandleError(e.Data);
+            }
+        }
+
+        private void Cmd_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                UpdateProgress(e.Data);
+
             }
         }
 
         protected override void HandleError(string line)
         {
+            Cancel();
+
             line = line.Trim();
             string message, header;
             if (line.Contains("system cannot find the path specified", StringComparison.CurrentCultureIgnoreCase)) // package needs to be recompiled
@@ -113,30 +111,16 @@ namespace SAPAPP.Scripts
             }
 
             MessageBox.Show(message, header, MessageBoxButton.OK, MessageBoxImage.Error);
-            Cancel();
         }
 
         protected override void UpdateProgress(string line)
         {
-
             string[] words = line.Split(' ');
-
-            string news = "";
-            int i = 0;
-            foreach (string word in words)
-            {
-                news += i + " " + word + "\n";
-                i++;
-            }
             if (line.Contains('%'))
             {
                 words[^1] = words[^1].Trim('%');
-                //MessageBox.Show(words[words.Length-1]);
-
                 UpdateProgressBar(int.Parse(words[^1]));
             }
-
-
 
             string display = "";
             if (line.Contains("Connecting"))

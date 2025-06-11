@@ -41,7 +41,7 @@ namespace SAPAPP
             set
             {
                 _STM32_Programmer_CLI = value;
-                STMScript.STM32_Programmer_CLI= value;
+                STMScript.STM32_Programmer_CLI = value;
                 Save_CLIs();
             }
         }
@@ -124,7 +124,7 @@ namespace SAPAPP
                 newContext.SelectedPart = "---";
             }
             DataContext = newContext;
-            
+
         }
 
         /// <summary>
