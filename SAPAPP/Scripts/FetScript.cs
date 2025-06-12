@@ -8,9 +8,6 @@ namespace SAPAPP.Scripts
 {
     internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
-        private static readonly List<string> value = ["Connecting...", "loading...", "verifying..."];
-        private readonly List<string> Milestones = value;
-
         public override void Download(Part download)
         {
             if (!backgroundWorker.IsBusy)
@@ -115,25 +112,37 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
+            line = line.Trim();
             string[] words = line.Split(' ');
-            if (line.Contains('%'))
+            if (line.Contains("Finished"))
             {
-                words[^1] = words[^1].Trim('%');
-                UpdateProgressBar(int.Parse(words[^1]));
+                UpdateProgressBar(100);
             }
+            else if (line.Contains('%'))
+            {
+                UpdateProgressBar(int.Parse(words[^1].Trim('%')));
+            } 
 
             string display = "";
-            if (line.Contains("Connecting"))
+            if (line.Contains("Configuring"))
             {
-                display = Milestones[0];
+                display = line;
+            }
+            else if (line.Contains("Initializing"))
+            {
+                display = line + "...";
+            }
+            else if (line.Contains("Connecting"))
+            {
+                display = line;
             }
             else if (line.Contains("Loading"))
             {
-                display = Milestones[1];
+                display = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
             }
             else if (line.Contains("Verifying"))
             {
-                display = Milestones[2];
+                display = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
             }
 
             if (display != "")

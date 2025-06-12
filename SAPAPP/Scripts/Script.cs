@@ -123,7 +123,10 @@ namespace SAPAPP.Scripts
         protected void UpdateProgressBar(int progress)
         {
 
-            Application.Current.Dispatcher.Invoke(() => { progbar.Value = progress; });
+            Application.Current.Dispatcher.Invoke(() => { 
+                progbar.Value = progress;
+                progressPercentage.Text = progress.ToString() + '%';
+            });
 
         }
     }
