@@ -1,6 +1,7 @@
 ﻿using SAPAPP.Configs;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -41,7 +42,50 @@ namespace SAPAPP.Scripts
 
             string connect = GetConnection();
             string write = "-U flash:w:" + currentDownload.Executable + ":i";
-            string strCmdText = AVRDUDE_CLI + " " + connect + " " + write;
+            string verbose = "-v 3";
+            string strCmdText = AVRDUDE_CLI + " " + connect + " " + write + " " + verbose;
+
+            /*
+            Process cmd = new()
+            {
+                StartInfo = new()
+                {
+                    FileName = "cmd.exe",
+                    UseShellExecute = false,
+                    Arguments = "/k" + strCmdText,
+                    RedirectStandardOutput = false,
+                    RedirectStandardError = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = currentDownload.FirmwarePath,
+                }
+            };
+
+
+            cmd.Start();
+            cmd.WaitForExit();
+
+            //string results = cmd.StandardOutput.ReadToEnd() + cmd.StandardError.ReadToEnd();
+
+            cmd.Close();
+
+            //MessageBox.Show(results);
+
+            /*
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+
+            string[] lines = results.Split('\n');
+            foreach (string line in lines)
+            {
+                sb.Append(i + ": ");
+                sb.Append(line);
+                sb.Append("\n");
+                i++;
+            }
+
+            MessageBox.Show(sb.ToString());
+            
+            /*/
 
             Process cmd = new()
             {
@@ -57,7 +101,7 @@ namespace SAPAPP.Scripts
                 }
             };
             cmd.OutputDataReceived += Cmd_OutputDataReceived;
-            cmd.ErrorDataReceived += Cmd_ErrorDataReceived;
+            cmd.ErrorDataReceived += Cmd_OutputDataReceived;
 
             cmd.Start();
             if (!testing)
@@ -82,6 +126,7 @@ namespace SAPAPP.Scripts
             {
                 cmd.Close();
             }
+            
         }
 
         private string GetConnection()
@@ -149,6 +194,10 @@ namespace SAPAPP.Scripts
         {
             if (e.Data != null)
             {
+                if (e.Data.Contains('%'))
+                {
+                    MessageBox.Show(e.Data);
+                }
                 UpdateProgress(line: e.Data);
             }
         }
@@ -166,7 +215,33 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
-            throw new NotImplementedException();
+            int? progress = null;
+            string? DisplayMessage = null;
+
+            line = line.Trim();
+            string[] words = line.Split(' ');
+
+            if (line.Contains("Writing"))
+            {
+                DisplayMessage = "Writing...";
+            }
+            else if (line.Contains("Reading"))
+            {
+                DisplayMessage = "Reading...";
+            }
+
+
+            if (line.Contains("done"))
+            {
+                progress = 100;
+            }
+            else if (line.Contains('%'))
+            {
+                progress = int.Parse(words[^2].Trim('%'));
+                DisplayMessage = null;
+            }
+
+            UpdateProgressFeedback(progress, DisplayMessage);
         }
     }
 }

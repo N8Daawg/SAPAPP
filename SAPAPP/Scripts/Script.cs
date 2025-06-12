@@ -9,7 +9,7 @@ namespace SAPAPP.Scripts
     {
         protected BackgroundWorker backgroundWorker;
         protected const bool testing = false;
-        protected const int delay = 100; // delay time in milliseconds
+        protected const int delay = 0; // delay time in milliseconds
 
         protected Part currentDownload = new();
 
@@ -116,35 +116,25 @@ namespace SAPAPP.Scripts
         /// <param name="line"></param>
         protected abstract void UpdateProgress(string line);
 
-        protected void UpdateProgressFeedback(int progress, string message)
+        protected void UpdateProgressFeedback(int? progress, string message)
         {
-            if (progress > 100)
+            if ((progress != null) && (progress > 100))
             {
                 progress = 100;
             }
-
             Application.Current.Dispatcher.Invoke(() =>
             {
-                progbar.Value = progress;
-                progressPercentage.Text = progress.ToString() + '%';
-                if (message != "") { FeedbackDisplay.Text = message; }
-
+                if (progress != null)
+                {
+                    progbar.Value = (double)progress;
+                    progressPercentage.Text = progress.ToString() + '%';
+                }
+                if ((message != null) && (message != ""))
+                { 
+                    FeedbackDisplay.Text = message; 
+                }
             });
             System.Threading.Thread.Sleep(delay);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="progress"></param>
-        protected void UpdateProgressBar(int progress)
-        {
-
-            Application.Current.Dispatcher.Invoke(() => { 
-                progbar.Value = progress;
-                progressPercentage.Text = progress.ToString() + '%';
-            });
-
         }
     }
 }

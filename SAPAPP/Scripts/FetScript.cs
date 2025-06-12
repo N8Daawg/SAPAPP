@@ -111,9 +111,8 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
-
-            int progress = 0;
-            string DisplayMessage = "";
+            int? progress = null;
+            string? DisplayMessage = null;
 
 
             line = line.Trim();
@@ -125,7 +124,7 @@ namespace SAPAPP.Scripts
             else if (line.Contains('%'))
             {
                 progress = int.Parse(words[^1].Trim('%'));
-            } 
+            }
 
             if (line.Contains("Configuring"))
             {
@@ -150,7 +149,6 @@ namespace SAPAPP.Scripts
 
 
             UpdateProgressFeedback(progress, DisplayMessage);
-
         }
     }
 }

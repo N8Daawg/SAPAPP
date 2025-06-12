@@ -44,7 +44,7 @@ namespace SAPAPP.Scripts
             string strCmdText = STM32_Programmer_CLI + " " + connect + " " + write;
             string firmwareDir = currentDownload.FirmwarePath;
 
-
+            
             Process cmd = new()
             {
                 StartInfo = new()
@@ -118,8 +118,30 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
-            Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
-            System.Threading.Thread.Sleep(delay);
+            int? progress = null;
+            string? DisplayMessage = null;
+
+            line = line.Trim();
+            string[] words = line.Split(' ');
+
+
+            if (!line.Contains("--"))
+            {
+                DisplayMessage = line;
+            }
+
+
+            if (line.Contains("download complete"))
+            {
+                progress = 100;
+            }
+            else if (line.Contains('%'))
+            {
+                progress = int.Parse(words[^1].Trim('%'));
+                DisplayMessage = null;
+            }
+
+            UpdateProgressFeedback(progress, DisplayMessage);
         }
     }
 }

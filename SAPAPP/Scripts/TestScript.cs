@@ -91,8 +91,10 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
-            Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = line; });
-            System.Threading.Thread.Sleep(delay);
+            int? progress = null;
+            string? DisplayMessage = line;
+
+            UpdateProgressFeedback(progress, DisplayMessage);
         }
     }
 }
