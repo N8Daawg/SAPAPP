@@ -81,7 +81,6 @@ namespace SAPAPP.Scripts
             if (e.Data != null)
             {
                 UpdateProgress(e.Data);
-
             }
         }
 
@@ -112,44 +111,46 @@ namespace SAPAPP.Scripts
 
         protected override void UpdateProgress(string line)
         {
+
+            int progress = 0;
+            string DisplayMessage = "";
+
+
             line = line.Trim();
             string[] words = line.Split(' ');
             if (line.Contains("Finished"))
             {
-                UpdateProgressBar(100);
+                progress = 100;
             }
             else if (line.Contains('%'))
             {
-                UpdateProgressBar(int.Parse(words[^1].Trim('%')));
+                progress = int.Parse(words[^1].Trim('%'));
             } 
 
-            string display = "";
             if (line.Contains("Configuring"))
             {
-                display = line;
+                DisplayMessage = line;
             }
             else if (line.Contains("Initializing"))
             {
-                display = line + "...";
+                DisplayMessage = line + "...";
             }
             else if (line.Contains("Connecting"))
             {
-                display = line;
+                DisplayMessage = line;
             }
             else if (line.Contains("Loading"))
             {
-                display = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
+                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
             }
             else if (line.Contains("Verifying"))
             {
-                display = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
+                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
             }
 
-            if (display != "")
-            {
-                Application.Current.Dispatcher.Invoke(() => { FeedbackDisplay.Text = display; });
-                System.Threading.Thread.Sleep(delay);
-            }
+
+            UpdateProgressFeedback(progress, DisplayMessage);
+
         }
     }
 }

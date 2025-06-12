@@ -116,6 +116,23 @@ namespace SAPAPP.Scripts
         /// <param name="line"></param>
         protected abstract void UpdateProgress(string line);
 
+        protected void UpdateProgressFeedback(int progress, string message)
+        {
+            if (progress > 100)
+            {
+                progress = 100;
+            }
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                progbar.Value = progress;
+                progressPercentage.Text = progress.ToString() + '%';
+                if (message != "") { FeedbackDisplay.Text = message; }
+
+            });
+            System.Threading.Thread.Sleep(delay);
+        }
+
         /// <summary>
         /// 
         /// </summary>
