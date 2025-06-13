@@ -124,8 +124,12 @@ namespace SAPAPP.Scripts
             line = line.Trim();
             string[] words = line.Split(' ');
 
-
-            if (!line.Contains("--"))
+            if (line.Contains("Error:"))
+            {
+                HandleError(line);
+                return;
+            }
+            else if (!line.Contains("--"))
             {
                 DisplayMessage = line;
             }

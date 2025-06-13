@@ -116,6 +116,7 @@ namespace SAPAPP
         public void Load_Product_Configurations(string filename)
         {
             configs = Settings.Settings.OpenConfigs(filename);
+            configs.ConfigureFullPaths();
 
             SelectionViewModel newContext = new SelectionViewModel(configs);
             if (filename != Settings.Settings.configFile)

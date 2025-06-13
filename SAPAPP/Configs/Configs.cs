@@ -10,8 +10,13 @@ namespace SAPAPP.Configs
         public string PartName { get; set; } = "---";
         public string Architecture { get; set; } = "---";
         public string Executable { get; set; } = "---";
-        public string FirmwarePath { get; set; } = "---";
-
+        private string _firmwarepath { get; set; } = "---";
+        public string FirmwarePath 
+        { 
+            get { return DriveLocation + _firmwarepath; }
+            set { _firmwarepath = value; }
+        }
+        public string DriveLocation { get; set; } = @"C:\";
         public new string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -26,6 +31,14 @@ namespace SAPAPP.Configs
         public string ProductName { get; set; } = "---";
 
         public List<Part> Parts { get; set; } = [];
+
+        public void ConfigureFullPaths(string DriveLocation)
+        {
+            foreach (Part part in Parts)
+            {
+                part.DriveLocation = DriveLocation;
+            }
+        }
 
         public void Sort() 
         {
@@ -56,6 +69,16 @@ namespace SAPAPP.Configs
     public class FirmwareConfigs
     {
         public List<Product> Products { get; set; } = [];
+
+        public string DriveLocation { get; set; } = @"C:\";
+
+        public void ConfigureFullPaths()
+        {
+            foreach (Product product in Products)
+            {
+                product.ConfigureFullPaths(DriveLocation);
+            }
+        }
 
         public void Sort() 
         {
