@@ -9,7 +9,6 @@ namespace SAPAPP.Scripts
     internal class FetScript: Script
     {
         public string ToolsFolder { get; set; }
-
         public FetScript(TextBlock fd, TextBlock pp, ProgressBar pb, string folder) : base(fd, pp, pb)
         {
             ToolsFolder = folder;
@@ -30,7 +29,7 @@ namespace SAPAPP.Scripts
 
             string strCmdText = string.Format(
                 "FetExecutor.bat \"{0}\" \"user_files\\configs\\{1}.ccxml\"", 
-                currentDownload.FullFirmwarePath(), currentDownload.Processor);
+                currentDownload.FullFirmwarePath(), currentDownload.Chip);
 
             Process cmd = new()
             {

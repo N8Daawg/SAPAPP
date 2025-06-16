@@ -27,7 +27,7 @@ namespace SAPAPP.Settings
                     configs = Load<FirmwareConfigs>(filename);
                     if (filename != configFile)
                     {
-                        Save<FirmwareConfigs>(configs, configFile);
+                        SaveConfigs(configs);
                     }
                 }
                 catch (Exception ex)
@@ -41,6 +41,10 @@ namespace SAPAPP.Settings
             return configs;
         }
 
+        public static void SaveConfigs(FirmwareConfigs configs)
+        {
+            Save<FirmwareConfigs>(configs, configFile);
+        }
 
         /// <summary>
         /// Retrieve an object of the specified type from the specified settings file

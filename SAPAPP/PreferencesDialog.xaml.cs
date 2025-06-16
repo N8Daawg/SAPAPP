@@ -82,6 +82,20 @@ namespace SAPAPP
             }
         }
 
+        private void BrowseSharePoint_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog openFileDialog = new OpenFolderDialog
+            {
+                Title = "Select Fet Tools Folder",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                SharepointSelectionBox.Text = openFileDialog.FolderName;
+            }
+        }
+
         /// <summary>
         /// Handles the different levels of a click event for browsing
         /// and selecting the STM32 programmer executable file.
@@ -184,7 +198,10 @@ namespace SAPAPP
             {
                 parentWindow.Load_Product_Configurations(ConfigTextBox.Text);
             }
-
+            if (SharepointSelectionBox.Text != "")
+            {
+                parentWindow.SharePointLocation = SharepointSelectionBox.Text;
+            }
             if (STM32PathTextBox.Text != "")
             {
                 parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
