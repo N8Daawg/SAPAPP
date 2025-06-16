@@ -46,14 +46,14 @@ namespace SAPAPP
             }
         }
 
-        private string _fetBatchScript;
-        public string FetBatchScript
+        private string _fetDebugger;
+        public string FetDebugger
         {
-            get => _fetBatchScript;
+            get => _fetDebugger;
             set
             {
-                _fetBatchScript = value;
-                FetScript.BatchScript = value;
+                _fetDebugger = value;
+                FetScript.DebuggerFolder = value;
                 Save_CLIs();
             }
         }
@@ -79,7 +79,7 @@ namespace SAPAPP
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
-            FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar);
+            FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar, FetDebugger);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
             STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
         }
@@ -130,6 +130,7 @@ namespace SAPAPP
         {
             configs = Settings.Settings.OpenConfigs(filename);
 
+
             SelectionViewModel newContext = new SelectionViewModel(configs);
             if (filename != Settings.Settings.configFile)
             {
@@ -153,12 +154,11 @@ namespace SAPAPP
                 {
                     STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
                     AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
-                    FetBatchScript = selection.ContainsKey("FETBATCH") ? selection["FETBATCH"] : "";
+                    FetDebugger = selection.ContainsKey("FETDEBUGGER") ? selection["FETDEBUGGER"] : "";
                 }
             }
 
             Save_CLIs();
-
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SAPAPP
         /// </summary>
         public void Save_CLIs()
         {
-            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETBATCH = FetBatchScript};
+            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETDEBUGGER = FetDebugger };
             Settings.Serializer.SerializeJson(selection, CLI_config_path);
         }
 

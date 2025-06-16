@@ -38,11 +38,11 @@ namespace SAPAPP.Scripts
             string writeHead = "0x08000000";
 
             // basic commands
-            string connect = "-c port=SWD";                                         // connect to board command
-            string write = "-w " + currentDownload.Executable + " " + writeHead;    // write command
+            string connect = "-c port=SWD";                                                 // connect to board command
+            string write = "-w " + currentDownload.FullFirmwarePath() + " " + writeHead;    // write command
 
             string strCmdText = STM32_Programmer_CLI + " " + connect + " " + write;
-            string firmwareDir = currentDownload.FirmwarePath;
+            string firmwareDir = currentDownload.FirmwareFolder;
 
             
             Process cmd = new()
@@ -55,7 +55,6 @@ namespace SAPAPP.Scripts
                     RedirectStandardOutput = !testing,
                     RedirectStandardError = !testing,
                     CreateNoWindow = !testing,
-                    WorkingDirectory = firmwareDir,
                 }
             };
 
@@ -86,6 +85,7 @@ namespace SAPAPP.Scripts
             {
                 cmd.Close();
             }
+            
         }
 
         private void Cmd_ErrorDataReceived(object sender, DataReceivedEventArgs e)

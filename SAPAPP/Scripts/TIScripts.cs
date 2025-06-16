@@ -57,7 +57,7 @@ namespace SAPAPP.Scripts
             BackgroundWorker worker = sender as BackgroundWorker;
 
             string strCmdText = "";
-            string firmwareDir = currentDownload.FirmwarePath;
+            string firmwareDir = currentDownload.FirmwareFolder;
 
             ProcessStartInfo processStartInfo = new()
             {

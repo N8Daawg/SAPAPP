@@ -37,6 +37,7 @@ namespace SAPAPP.Settings
             }
 
             configs.Sort();
+            configs.configureFullPaths();
             return configs;
         }
 

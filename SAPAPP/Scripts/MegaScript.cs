@@ -41,7 +41,7 @@ namespace SAPAPP.Scripts
             //string fullCommand = "avrdude -c avrispmkII -p m2560 -P usb:20:38 -U flash:w:\"C:\\Users\\nbealsla\\Downloads\\Blink\\build\\arduino.avr.megaADK\\Blink.ino.hex\":i";
 
             string connect = GetConnection();
-            string write = "-U flash:w:" + currentDownload.Executable + ":i";
+            string write = "-U flash:w:" + currentDownload.FullFirmwarePath() + ":i";
             string verbose = "-v 3";
             string strCmdText = AVRDUDE_CLI + " " + connect + " " + write + " " + verbose;
 
@@ -97,7 +97,7 @@ namespace SAPAPP.Scripts
                     RedirectStandardOutput = !testing,
                     RedirectStandardError = !testing,
                     CreateNoWindow = !testing,
-                    WorkingDirectory = currentDownload.FirmwarePath
+                    WorkingDirectory = currentDownload.FullFirmwarePath()
                 }
             };
             cmd.OutputDataReceived += Cmd_OutputDataReceived;
@@ -144,7 +144,6 @@ namespace SAPAPP.Scripts
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                WorkingDirectory = currentDownload.FirmwarePath
             };
 
             Process cmd = new()
