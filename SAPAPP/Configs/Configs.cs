@@ -9,7 +9,7 @@ namespace SAPAPP.Configs
     {
         public string PartName { get; set; } = "---";
         public string Architecture { get; set; } = "---";
-        public string Processor { get; set; }
+        public string Chip { get; set; }
         public string DriveLocation { get; set; }
         public string ProductFolder { get; set; }
         public string FirmwareFolder { get; set; }

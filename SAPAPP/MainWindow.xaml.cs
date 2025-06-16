@@ -21,6 +21,18 @@ namespace SAPAPP
         private FirmwareConfigs configs;
         private const string CLI_config_path = "CLI_configs.json";
 
+        private string _sharepointLocation;
+        public string SharePointLocation
+        {
+            get { return _sharepointLocation; }
+            set 
+            { 
+                _sharepointLocation = value;
+                configs.DriveLocation = value;
+                Settings.Settings.SaveConfigs(configs);
+            }
+        }
+
 
         private string _AVRDUDE_CLI;
         public string AVRDUDE_CLI
