@@ -46,14 +46,14 @@ namespace SAPAPP
             }
         }
 
-        private string _fetDebugger;
-        public string FetDebugger
+        private string _fetTools;
+        public string FetTools
         {
-            get => _fetDebugger;
+            get => _fetTools;
             set
             {
-                _fetDebugger = value;
-                FetScript.DebuggerFolder = value;
+                _fetTools = value;
+                FetScript.ToolsFolder = value;
                 Save_CLIs();
             }
         }
@@ -79,7 +79,7 @@ namespace SAPAPP
         private void InitializeScripts()
         {
             TestScript = new TestScript(StatusMessageDisplay, progressPercentage, progbar);
-            FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar, FetDebugger);
+            FetScript = new FetScript(StatusMessageDisplay, progressPercentage, progbar, FetTools);
             MegaScript = new MegaScript(StatusMessageDisplay, progressPercentage, progbar, AVRDUDE_CLI);
             STMScript = new STMScript(StatusMessageDisplay, progressPercentage, progbar, STM32_Programmer_CLI);
         }
@@ -154,7 +154,7 @@ namespace SAPAPP
                 {
                     STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
                     AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
-                    FetDebugger = selection.ContainsKey("FETDEBUGGER") ? selection["FETDEBUGGER"] : "";
+                    FetTools = selection.ContainsKey("FETDEBUGGER") ? selection["FETDEBUGGER"] : "";
                 }
             }
 
@@ -166,7 +166,7 @@ namespace SAPAPP
         /// </summary>
         public void Save_CLIs()
         {
-            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETDEBUGGER = FetDebugger };
+            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETDEBUGGER = FetTools };
             Settings.Serializer.SerializeJson(selection, CLI_config_path);
         }
 

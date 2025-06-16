@@ -127,13 +127,13 @@ namespace SAPAPP
         {
             OpenFolderDialog openFileDialog = new OpenFolderDialog
             {
-                Title = "Select Batch File (FetBatchFile.bat)",
+                Title = "Select Fet Tools Folder",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                FetBatchTextBox.Text = openFileDialog.FolderName;
+                FetToolsTextBox.Text = openFileDialog.FolderName;
             }
         }
 
@@ -190,9 +190,9 @@ namespace SAPAPP
                 parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
             }
 
-            if (FetBatchTextBox.Text != "")
+            if (FetToolsTextBox.Text != "")
             {
-                parentWindow.FetDebugger = FetBatchTextBox.Text;
+                parentWindow.FetTools = FetToolsTextBox.Text;
             }
 
             if (ATmegaPathTextBox.Text != "")

@@ -8,11 +8,11 @@ namespace SAPAPP.Scripts
 {
     internal class FetScript: Script
     {
-        public string DebuggerFolder { get; set; }
+        public string ToolsFolder { get; set; }
 
         public FetScript(TextBlock fd, TextBlock pp, ProgressBar pb, string folder) : base(fd, pp, pb)
         {
-            DebuggerFolder = folder;
+            ToolsFolder = folder;
         }
 
         public override void Download(Part download)
@@ -28,8 +28,8 @@ namespace SAPAPP.Scripts
         {
             BackgroundWorker? worker = sender as BackgroundWorker;
 
-            string strCmdText = string.Format("FetExecutor.bat {0}", currentDownload.FullFirmwarePath());
-            
+            string strCmdText = string.Format("FetExecutor.bat \"{0}\" \"user_files\\configs\\{1}.ccxml\"", currentDownload.FullFirmwarePath(), @"MSP430F2418");
+
             Process cmd = new()
             {
                 StartInfo = new()
@@ -40,7 +40,7 @@ namespace SAPAPP.Scripts
                     RedirectStandardOutput = !testing,
                     RedirectStandardError = !testing,
                     CreateNoWindow = !testing,
-                    WorkingDirectory = DebuggerFolder,
+                    WorkingDirectory = ToolsFolder,
                 }
             };
 
