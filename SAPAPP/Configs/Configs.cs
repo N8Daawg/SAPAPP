@@ -68,15 +68,21 @@ namespace SAPAPP.Configs
     [Serializable]
     public class FirmwareConfigs
     {
+        private string driveLocation = @"C:\";
+
         public List<Product> Products { get; set; } = [];
 
-        public string DriveLocation { get; set; } = @"C:\";
-
-        public void ConfigureFullPaths()
+        private string _driveLocation;
+        public string DriveLocation
         {
-            foreach (Product product in Products)
+            get => _driveLocation;
+            set
             {
-                product.ConfigureFullPaths(DriveLocation);
+                _driveLocation = value;
+                foreach (Product product in Products)
+                {
+                    product.ConfigureFullPaths(DriveLocation);
+                }
             }
         }
 

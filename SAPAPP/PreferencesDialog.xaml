@@ -16,9 +16,11 @@
             <RowDefinition Height="Auto"/>
             <!-- Config File -->
             <RowDefinition Height="Auto"/>
-            <!-- ATmega Programmer -->
-            <RowDefinition Height="Auto"/>
             <!-- STM32 Programmer -->
+            <RowDefinition Height="Auto"/>
+            <!-- FET Programmer -->
+            <RowDefinition Height="Auto"/>
+            <!-- ATmega Programmer -->
             <RowDefinition Height="Auto"/>
             <!-- Action Buttons -->
         </Grid.RowDefinitions>
@@ -52,18 +54,24 @@
         <TextBox x:Name="ConfigTextBox" Grid.Row="3" Grid.Column="1" Margin="5" Height="35"/>
         <Button Content="Browse Config" Grid.Row="3" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseConfig_Click"/>
 
-        <!-- ATmega Programmer Selection -->
-        <Label Content="SVRDUDE Executable:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
-        <TextBox x:Name="ATmegaPathTextBox" Grid.Row="4" Grid.Column="1" Margin="5" Height="35"/>
-        <Button Content="Browse" Grid.Row="4" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseATmega_Click"/>
-
         <!-- STM32 Programmer Selection -->
-        <Label Content="STM32 CLI executable:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
-        <TextBox x:Name="STM32PathTextBox" Grid.Row="5" Grid.Column="1" Margin="5" Height="35"/>
-        <Button Content="Browse" Grid.Row="5" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseSTM32_Click"/>
+        <Label Content="STM32 CLI executable:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
+        <TextBox x:Name="STM32PathTextBox" Grid.Row="4" Grid.Column="1" Margin="5" Height="35"/>
+        <Button Content="Browse" Grid.Row="4" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseSTM32_Click"/>
+        
+        <!-- FET Programmer Selection -->
+        <Label Content="FET Batch Script:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
+        <TextBox x:Name="FetBatchTextBox" Grid.Row="5" Grid.Column="1" Margin="5" Height="35"/>
+        <Button Content="Browse" Grid.Row="5" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseFet_Click"/>
+
+
+        <!-- ATmega Programmer Selection -->
+        <Label Content="AVRDUDE Executable:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Foreground="#383838"/>
+        <TextBox x:Name="ATmegaPathTextBox" Grid.Row="6" Grid.Column="1" Margin="5" Height="35"/>
+        <Button Content="Browse" Grid.Row="6" Grid.Column="2" Margin="5" Padding="8,3" Click="BrowseATmega_Click"/>
 
         <!-- Action Buttons -->
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,78,0,-48" Grid.Column="1">
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,78,0,-48" Grid.Column="1">
             <Button Content="OK" Width="120" Height="40" Margin="10" Click="Ok_Click"/>
             <Button Content="Cancel" Width="120" Height="40" Margin="10" Click="Cancel_Click"/>
         </StackPanel>

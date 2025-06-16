@@ -8,6 +8,13 @@ namespace SAPAPP.Scripts
 {
     internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
     {
+        private string _batchScript;
+        public string BatchScript
+        {
+            get { return string.Format("\"{0}\"", _batchScript); }
+            set { _batchScript = value; }
+        }
+
         public override void Download(Part download)
         {
             if (!backgroundWorker.IsBusy)
@@ -21,7 +28,7 @@ namespace SAPAPP.Scripts
         {
             BackgroundWorker? worker = sender as BackgroundWorker;
 
-            string strCmdText = currentDownload.Executable;
+            string strCmdText = string.Format("test.bat {0}", currentDownload.Executable);
             string firmwareDir = currentDownload.FirmwarePath;
 
 

@@ -46,6 +46,19 @@ namespace SAPAPP
             }
         }
 
+        private string _fetBatchScript;
+        public string FetBatchScript
+        {
+            get => _fetBatchScript;
+            set
+            {
+                _fetBatchScript = value;
+                FetScript.BatchScript = value;
+                Save_CLIs();
+            }
+        }
+
+
         #endregion
 
         public MainWindow()
@@ -116,7 +129,6 @@ namespace SAPAPP
         public void Load_Product_Configurations(string filename)
         {
             configs = Settings.Settings.OpenConfigs(filename);
-            configs.ConfigureFullPaths();
 
             SelectionViewModel newContext = new SelectionViewModel(configs);
             if (filename != Settings.Settings.configFile)
@@ -141,6 +153,7 @@ namespace SAPAPP
                 {
                     STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
                     AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
+                    FetBatchScript = selection.ContainsKey("FETBATCH") ? selection["FETBATCH"] : "";
                 }
             }
 
@@ -153,7 +166,7 @@ namespace SAPAPP
         /// </summary>
         public void Save_CLIs()
         {
-            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI };
+            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETBATCH = FetBatchScript};
             Settings.Serializer.SerializeJson(selection, CLI_config_path);
         }
 

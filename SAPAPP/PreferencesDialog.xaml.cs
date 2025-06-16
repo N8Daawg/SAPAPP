@@ -84,34 +84,6 @@ namespace SAPAPP
 
         /// <summary>
         /// Handles the different levels of a click event for browsing
-        /// and selecting the ATmega programmer executable file.
-        /// Opens a file dialog window that can allow the user to choose
-        /// the ATmega programmer tool, and upload it with the selected
-        /// executable file and path.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// Serves as the source of an click event through the Browse ATmega button.
-        /// <param name="e"></param>
-        /// Whereas this serves as the event data that is associated with a
-        /// click.
-        /// </summary>
-        private void BrowseATmega_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "Select ATmega Programmer (atprogram.exe)",
-                Filter = "Executable Files (*.exe)|*.exe",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                ATmegaPathTextBox.Text = openFileDialog.FileName;
-            }
-        }
-
-        /// <summary>
-        /// Handles the different levels of a click event for browsing
         /// and selecting the STM32 programmer executable file.
         /// Opens a file dialog window that can allow the user to choose
         /// the STM32 programmer tool, and upload it with the selected
@@ -135,6 +107,62 @@ namespace SAPAPP
             if (openFileDialog.ShowDialog() == true)
             {
                 STM32PathTextBox.Text = openFileDialog.FileName;
+            }
+        }
+
+        /// <summary>
+        /// Handles the different levels of a click event for browsing
+        /// and selecting the Fet Batch Script file.
+        /// Opens a file dialog window that can allow the user to choose
+        /// the Fet Batch Script, and upload it with the selected
+        /// executable file and path.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// Serves as the source of an click event through the Browse STM32 button.
+        /// <param name="e"></param>
+        /// Whereas this serves as the event data that is associated with a
+        /// click.
+        /// </summary>
+        private void BrowseFet_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select Batch File (FetBatchFile.bat)",
+                Filter = "Batch Files (*.bat)|*.bat",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FetBatchTextBox.Text = openFileDialog.FileName;
+            }
+        }
+
+        /// <summary>
+        /// Handles the different levels of a click event for browsing
+        /// and selecting the ATmega programmer executable file.
+        /// Opens a file dialog window that can allow the user to choose
+        /// the ATmega programmer tool, and upload it with the selected
+        /// executable file and path.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// Serves as the source of an click event through the Browse ATmega button.
+        /// <param name="e"></param>
+        /// Whereas this serves as the event data that is associated with a
+        /// click.
+        /// </summary>
+        private void BrowseATmega_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select ATmega Programmer (atprogram.exe)",
+                Filter = "Executable Files (*.exe)|*.exe",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                ATmegaPathTextBox.Text = openFileDialog.FileName;
             }
         }
 
