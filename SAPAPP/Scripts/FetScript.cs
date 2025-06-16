@@ -28,7 +28,9 @@ namespace SAPAPP.Scripts
         {
             BackgroundWorker? worker = sender as BackgroundWorker;
 
-            string strCmdText = string.Format("FetExecutor.bat \"{0}\" \"user_files\\configs\\{1}.ccxml\"", currentDownload.FullFirmwarePath(), @"MSP430F2418");
+            string strCmdText = string.Format(
+                "FetExecutor.bat \"{0}\" \"user_files\\configs\\{1}.ccxml\"", 
+                currentDownload.FullFirmwarePath(), currentDownload.Processor);
 
             Process cmd = new()
             {
