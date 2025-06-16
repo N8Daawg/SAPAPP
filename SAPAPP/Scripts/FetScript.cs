@@ -6,13 +6,13 @@ using System.Windows.Controls;
 
 namespace SAPAPP.Scripts
 {
-    internal class FetScript(TextBlock fd, TextBlock pp, ProgressBar pb) : Script(fd, pp, pb)
+    internal class FetScript: Script
     {
-        private string _batchScript;
-        public string BatchScript
+        public string DebuggerFolder { get; set; }
+
+        public FetScript(TextBlock fd, TextBlock pp, ProgressBar pb, string folder) : base(fd, pp, pb)
         {
-            get { return string.Format("\"{0}\"", _batchScript); }
-            set { _batchScript = value; }
+            DebuggerFolder = folder;
         }
 
         public override void Download(Part download)
@@ -28,10 +28,8 @@ namespace SAPAPP.Scripts
         {
             BackgroundWorker? worker = sender as BackgroundWorker;
 
-            string strCmdText = string.Format("test.bat {0}", currentDownload.Executable);
-            string firmwareDir = currentDownload.FirmwarePath;
-
-
+            string strCmdText = string.Format("FetExecutor.bat {0}", currentDownload.FullFirmwarePath());
+            
             Process cmd = new()
             {
                 StartInfo = new()
@@ -42,7 +40,7 @@ namespace SAPAPP.Scripts
                     RedirectStandardOutput = !testing,
                     RedirectStandardError = !testing,
                     CreateNoWindow = !testing,
-                    WorkingDirectory = firmwareDir,
+                    WorkingDirectory = DebuggerFolder,
                 }
             };
 
@@ -147,11 +145,11 @@ namespace SAPAPP.Scripts
             }
             else if (line.Contains("Loading"))
             {
-                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
+                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.FullFirmwarePath();
             }
             else if (line.Contains("Verifying"))
             {
-                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.Executable;
+                DisplayMessage = words[0] + ' ' + words[1] + ' ' + currentDownload.FullFirmwarePath();
             }
 
 

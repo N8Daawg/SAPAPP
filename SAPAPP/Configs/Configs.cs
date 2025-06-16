@@ -9,14 +9,28 @@ namespace SAPAPP.Configs
     {
         public string PartName { get; set; } = "---";
         public string Architecture { get; set; } = "---";
-        public string Executable { get; set; } = "---";
-        private string _firmwarepath { get; set; } = "---";
-        public string FirmwarePath 
-        { 
-            get { return DriveLocation + _firmwarepath; }
-            set { _firmwarepath = value; }
+        public string DriveLocation { get; set; }
+        public string ProductFolder { get; set; }
+        public string FirmwareFolder { get; set; }
+        public string FirmwareFile { get; set; }
+
+        private string FullPath()
+        {
+            string path = string.Empty;
+            if (string.IsNullOrEmpty(FirmwareFolder))
+            {
+                path = string.Format("{0}\\{1}", DriveLocation, ProductFolder);
+            }
+            else
+            {
+                path = string.Format("{0}\\{1}\\{2}", DriveLocation, ProductFolder, FirmwareFolder);
+            }
+            return path;
         }
-        public string DriveLocation { get; set; } = @"C:\";
+        public string FullFirmwarePath()
+        {
+            return string.Format("{0}\\{1}", FullPath(), FirmwareFile);
+        }
         public new string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -29,17 +43,17 @@ namespace SAPAPP.Configs
     public class Product
     {
         public string ProductName { get; set; } = "---";
-
         public List<Part> Parts { get; set; } = [];
-
-        public void ConfigureFullPaths(string DriveLocation)
+        public string ProductFolder { get; set; }
+        public string DriveLocation { get; set; }
+        public void configureFullPaths()
         {
             foreach (Part part in Parts)
             {
+                part.ProductFolder = ProductFolder;
                 part.DriveLocation = DriveLocation;
             }
         }
-
         public void Sort() 
         {
             Parts.Sort(delegate (Part x, Part y)
@@ -50,7 +64,6 @@ namespace SAPAPP.Configs
                 else return x.PartName.CompareTo(y.PartName);
             });
         }
-
         public new string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -68,24 +81,16 @@ namespace SAPAPP.Configs
     [Serializable]
     public class FirmwareConfigs
     {
-        private string driveLocation = @"C:\";
-
         public List<Product> Products { get; set; } = [];
-
-        private string _driveLocation;
-        public string DriveLocation
+        public string DriveLocation { get; set; }
+        public void configureFullPaths()
         {
-            get => _driveLocation;
-            set
+            foreach (Product product in Products)
             {
-                _driveLocation = value;
-                foreach (Product product in Products)
-                {
-                    product.ConfigureFullPaths(DriveLocation);
-                }
+                product.DriveLocation = DriveLocation;
+                product.configureFullPaths();
             }
         }
-
         public void Sort() 
         {
 
@@ -102,7 +107,6 @@ namespace SAPAPP.Configs
                 else return x.ProductName.CompareTo(y.ProductName);
             });
         }
-
         public new string ToString() 
         { 
             StringBuilder sb = new StringBuilder();

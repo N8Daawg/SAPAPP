@@ -125,16 +125,15 @@ namespace SAPAPP
         /// </summary>
         private void BrowseFet_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFolderDialog openFileDialog = new OpenFolderDialog
             {
                 Title = "Select Batch File (FetBatchFile.bat)",
-                Filter = "Batch Files (*.bat)|*.bat",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                FetBatchTextBox.Text = openFileDialog.FileName;
+                FetBatchTextBox.Text = openFileDialog.FolderName;
             }
         }
 
@@ -186,16 +185,20 @@ namespace SAPAPP
                 parentWindow.Load_Product_Configurations(ConfigTextBox.Text);
             }
 
-            if (ATmegaPathTextBox.Text != "")
-            {
-                parentWindow.AVRDUDE_CLI = ATmegaPathTextBox.Text;
-            }
-
             if (STM32PathTextBox.Text != "")
             {
                 parentWindow.STM32_Programmer_CLI = STM32PathTextBox.Text;
             }
 
+            if (FetBatchTextBox.Text != "")
+            {
+                parentWindow.FetDebugger = FetBatchTextBox.Text;
+            }
+
+            if (ATmegaPathTextBox.Text != "")
+            {
+                parentWindow.AVRDUDE_CLI = ATmegaPathTextBox.Text;
+            }
 
             this.Close();
         }
