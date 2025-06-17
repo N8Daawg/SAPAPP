@@ -98,6 +98,7 @@ namespace SAPAPP.Scripts
                 }
                 else
                 {
+                    MessageBox.Show("Download Finished Successfully!", "Download Finished", MessageBoxButton.OK, MessageBoxImage.Information);
                     FeedbackDisplay.Text = "Done!";
                 }
             }));
