@@ -125,7 +125,7 @@
                     </Button>
                 </DockPanel>
             </Canvas>
-            <!-- <Label Grid.Column="1" FontSize="32" Content="TESTING" HorizontalAlignment="Left" Margin="119,324,0,0" VerticalAlignment="Top"/> -->
+            <Label Grid.Column="1" FontSize="32" Content="TESTING" HorizontalAlignment="Left" Margin="119,324,0,0" VerticalAlignment="Top"/>
         </Grid>
 
         <!-- Status Bar -->
