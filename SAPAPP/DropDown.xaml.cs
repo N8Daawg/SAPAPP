@@ -19,7 +19,7 @@ namespace SAPAPP
         public ObservableCollection<string> ProductsList { get; set; }
         public ObservableCollection<string> PartsList { get; set; }
         public Dictionary<string, List<string>> ProductPartMap { get; set; }
-        private const string SaveFilePath = "selection.json";
+        private static string selections_save_File = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SAPAPP", "selection.json");
 
         private string _selectedProduct;
         public string SelectedProduct
@@ -124,8 +124,11 @@ namespace SAPAPP
         /// </summary>
         private void SaveSelection()
         {
-            var selection = new { Product = SelectedProduct, Part = SelectedPart };
-            Settings.Serializer.SerializeJson(selection, SaveFilePath);
+            Dictionary<string, string> selection = new Dictionary<string, string>();
+            selection.Add("Product", SelectedProduct);
+            selection.Add("Part", SelectedPart);
+
+            Settings.Save_Dictionary_Configs(selection, selections_save_File);
         }
 
         /// <summary>
@@ -135,9 +138,9 @@ namespace SAPAPP
         /// </summary>
         private void LoadSelection()
         {
-            if (File.Exists(SaveFilePath))
+            if (File.Exists(selections_save_File))
             {
-                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(SaveFilePath);
+                Dictionary<string, string> selection = Settings.Load_Dictionary_Configs(selections_save_File);
                 if (selection != null)
                 {
                     SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";

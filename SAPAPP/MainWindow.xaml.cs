@@ -12,14 +12,16 @@ namespace SAPAPP
     {
         #region instanceVariables
 
-
         private TestScript TestScript;
         private FetScript FetScript;
         private MegaScript MegaScript;
         private STMScript STMScript;
 
-        private FirmwareConfigs configs;
-        private const string CLI_config_path = "CLI_configs.json";
+        private FirmwareConfigs configs = new();
+
+        private static string App_Data_Folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SAPAPP");
+        private static string product_config_File = Path.Combine(App_Data_Folder, "FirmwareConfigurations.xml");
+        private static string path_config_File = Path.Combine(App_Data_Folder, "CLI_configs.json");
 
         private string _sharepointLocation;
         public string SharePointLocation
@@ -29,10 +31,9 @@ namespace SAPAPP
             { 
                 _sharepointLocation = value;
                 configs.DriveLocation = value;
-                Settings.Settings.SaveConfigs(configs);
+                Save_Firmwares();
             }
         }
-
 
         private string _AVRDUDE_CLI;
         public string AVRDUDE_CLI
@@ -78,12 +79,36 @@ namespace SAPAPP
             InitializeComponent();
 
             InitializeScripts();
-            Load_CLIs(CLI_config_path);
-            Load_Product_Configurations(Settings.Settings.configFile);
+            ConfigureOnStartup();
         }
 
 
         #region Scripts&Configs
+
+        private void ConfigureOnStartup()
+        {
+
+            if (!Directory.Exists(App_Data_Folder))
+            {
+                Directory.CreateDirectory(App_Data_Folder);
+            }
+
+
+            // Load pathing configurations for the first time
+            Dictionary<string, string> selections = new Dictionary<string, string>();
+            if (!File.Exists(path_config_File))
+            {
+                Save_CLIs();
+            }
+            Load_CLIs(path_config_File);
+
+            // Load product configurations for the first time
+            if (!File.Exists(product_config_File))
+            {
+                Save_Firmwares();
+            }
+            Load_Product_Configurations(product_config_File);
+        }
 
         /// <summary>
         /// Initializes all loader scripts
@@ -140,12 +165,13 @@ namespace SAPAPP
         /// <param name="filename"></param>
         public void Load_Product_Configurations(string filename)
         {
-            configs = Settings.Settings.OpenConfigs(filename);
+            configs = Settings.Open_Firmware_Configs(filename);
 
 
             SelectionViewModel newContext = new SelectionViewModel(configs);
-            if (filename != Settings.Settings.configFile)
+            if (filename != product_config_File)
             {
+                Settings.Save_Firmware_Configs(configs, product_config_File);
                 newContext.SelectedProduct = "---";
                 newContext.SelectedPart = "---";
             }
@@ -161,16 +187,20 @@ namespace SAPAPP
         {
             if (File.Exists(filename))
             {
-                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(filename);
+                Dictionary<string, string> selection = Settings.Load_Dictionary_Configs(filename);
                 if (selection != null)
                 {
-                    STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "\"C:\\Program Files\\STMicroelectronics\\STM32Cube\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe\"";
+                    STM32_Programmer_CLI = selection.ContainsKey("STM32") ? selection["STM32"] : "";
                     AVRDUDE_CLI = selection.ContainsKey("AVRDUDE") ? selection["AVRDUDE"] : "";
-                    FetTools = selection.ContainsKey("FETDEBUGGER") ? selection["FETDEBUGGER"] : "";
+                    FetTools = selection.ContainsKey("FETTOOLS") ? selection["FETTOOLS"] : "";
                 }
             }
 
             Save_CLIs();
+        }
+        public void Save_Firmwares()
+        {
+            Settings.Save_Firmware_Configs(configs, product_config_File);
         }
 
         /// <summary>
@@ -178,8 +208,12 @@ namespace SAPAPP
         /// </summary>
         public void Save_CLIs()
         {
-            var selection = new { STM32 = STM32_Programmer_CLI, AVRDUDE = AVRDUDE_CLI , FETDEBUGGER = FetTools };
-            Settings.Serializer.SerializeJson(selection, CLI_config_path);
+            Dictionary<string, string> selections = new Dictionary<string, string>();
+            selections.Add("STM32", STM32_Programmer_CLI);
+            selections.Add("AVRDUDE", AVRDUDE_CLI);
+            selections.Add("FETTOOLS", FetTools);
+
+            Settings.Save_Dictionary_Configs(selections, path_config_File);
         }
 
         #endregion
