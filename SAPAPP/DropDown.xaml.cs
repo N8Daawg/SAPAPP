@@ -124,8 +124,11 @@ namespace SAPAPP
         /// </summary>
         private void SaveSelection()
         {
-            var selection = new { Product = SelectedProduct, Part = SelectedPart };
-            Settings.Serializer.SerializeJson(selection, SaveFilePath);
+            Dictionary<string, string> selection = new Dictionary<string, string>();
+            selection.Add("Product", SelectedProduct);
+            selection.Add("Part", SelectedPart);
+
+            Settings.Save_Dictionary_Configs(selection, SaveFilePath);
         }
 
         /// <summary>
@@ -137,7 +140,7 @@ namespace SAPAPP
         {
             if (File.Exists(SaveFilePath))
             {
-                Dictionary<string, string> selection = Settings.Serializer.DeserializeJson<Dictionary<string, string>>(SaveFilePath);
+                Dictionary<string, string> selection = Settings.Load_Dictionary_Configs(SaveFilePath);
                 if (selection != null)
                 {
                     SelectedProduct = selection.ContainsKey("Product") ? selection["Product"] : "---";

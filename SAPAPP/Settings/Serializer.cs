@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace SAPAPP.Settings
+namespace SAPAPP
 {
     
     /// <summary>
