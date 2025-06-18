@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 
+
 namespace SAPAPP
 {
     public partial class MainWindow : Window
@@ -20,8 +21,8 @@ namespace SAPAPP
         private FirmwareConfigs configs = new();
 
         private static string App_Data_Folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SAPAPP");
-        private static string product_config_File = App_Data_Folder + @"\FirmwareConfigurations.xml";
-        private static string path_config_File = App_Data_Folder + @"\CLI_configs.json";
+        private static string product_config_File = Path.Combine(App_Data_Folder, "FirmwareConfigurations.xml");
+        private static string path_config_File = Path.Combine(App_Data_Folder, "CLI_configs.json");
 
         private string _sharepointLocation;
         public string SharePointLocation
